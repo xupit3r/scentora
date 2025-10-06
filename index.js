@@ -19,6 +19,24 @@ async function getNotes (page) {
   };
 }
 
+async function getAccords (page) {
+  const accords = await page.$$eval('.accord-bar', results => {
+    return results.map(el => {
+      const accord = el.innerText.trim();
+      const parentWidth = el.parentElement.offsetWidth;
+      const myWidth = el.offsetWidth;
+      const percent = Math.round(myWidth / parentWidth * 100);
+
+      return {
+        accord,
+        percent
+      }
+    });
+  });
+
+  return accords;
+}
+
 async function run () {
   const browser = await puppeteer.launch({
     headless: false
@@ -29,9 +47,11 @@ async function run () {
   await page.goto(testPage);
 
   const notes = await getNotes(page);
+  const accords = await getAccords(page);
 
   console.log('-- results --');
   console.log(notes);
+  console.log(accords);
   console.log('-------------');
 
   browser.close();
