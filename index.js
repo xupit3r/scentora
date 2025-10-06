@@ -1,17 +1,21 @@
 import puppeteer from 'puppeteer';
 
 async function getNotes (page) {
+  const TOP_NOTES = 'Top Notes'
+  const MIDDLE_NOTES = 'Middle Notes';
+  const BASE_NOTES = 'Base Notes';
+
   const pyramid = await page.$('#pyramid');
   const text = await page.evaluate(el => el.innerText, pyramid);
   const tokens = text.split('\n').map(t => t.trim()).slice(4);
 
-  const mnIdx = tokens.indexOf('Middle Notes');
-  const bnIdx = tokens.indexOf('Base Notes');
+  const mnIdx = tokens.indexOf(MIDDLE_NOTES);
+  const bnIdx = tokens.indexOf(BASE_NOTES);
 
   return {
-    "Top Notes": tokens.slice(0, mnIdx),
-    "Middle Notes": tokens.slice(mnIdx + 1, bnIdx),
-    "Base Notes": tokens.slice(bnIdx + 1, tokens.length - 1)
+    [TOP_NOTES]: tokens.slice(0, mnIdx),
+    [MIDDLE_NOTES]: tokens.slice(mnIdx + 1, bnIdx),
+    [BASE_NOTES]: tokens.slice(bnIdx + 1, tokens.length - 1)
   };
 }
 
