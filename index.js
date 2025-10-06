@@ -37,24 +37,29 @@ async function getAccords (page) {
   return accords;
 }
 
-async function run () {
+async function getDescription (page) {
+  return await page.$eval('.fragrantica-blockquote', q => q.innerText.trim());
+}
+
+async function getPageInfo (url) {
   const browser = await puppeteer.launch({
     headless: false
   });
   const page = await browser.newPage();
-
-  const testPage = 'https://www.fragrantica.com/perfume/Lattafa-Perfumes/Khamrah-75805.html'; 
-  await page.goto(testPage);
+ 
+  await page.goto(url);
 
   const notes = await getNotes(page);
   const accords = await getAccords(page);
+  const description = await getDescription(page);
 
   console.log('-- results --');
   console.log(notes);
   console.log(accords);
+  console.log(description);
   console.log('-------------');
 
   browser.close();
 }
 
-run();
+getPageInfo('https://www.fragrantica.com/perfume/Lattafa-Perfumes/Khamrah-75805.html');
