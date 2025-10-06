@@ -1,0 +1,20 @@
+{
+  "name": "scentora",
+  "version": "1.0.0",
+  "description": "a library to collect scent info from the interwebs",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "scent",
+    "perfume",
+    "data"
+  ],
+  "author": "Joe D'Alessandro",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^24.23.0"
+  }
+}
