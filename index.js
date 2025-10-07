@@ -41,10 +41,7 @@ async function getDescription (page) {
   return await page.$eval('.fragrantica-blockquote', q => q.innerText.trim());
 }
 
-async function getPageInfo (url) {
-  const browser = await puppeteer.launch({
-    headless: false
-  });
+async function getPageInfo (browser, url) {
   const page = await browser.newPage();
  
   await page.goto(url);
@@ -58,8 +55,51 @@ async function getPageInfo (url) {
   console.log(accords);
   console.log(description);
   console.log('-------------');
-
-  browser.close();
 }
 
-getPageInfo('https://www.fragrantica.com/perfume/Lattafa-Perfumes/Khamrah-75805.html');
+async function collectLinks (page) {
+  try {
+    for (let i = 0; i < 30; i++) {
+      await loadMoreResults(page);
+      await delay(500);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  
+  return page.$$eval('.cell.card.fr-news-box a', results => {
+    return results.map(el => el.href);
+  });
+}
+
+async function loadMoreResults (page) {
+  await page.locator('text/Show more results')
+            .setEnsureElementIsInTheViewport(true)
+            .click();
+}
+
+function delay (time) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  })
+}
+
+async function run () {
+  const url = "https://www.fragrantica.com/search/";
+
+  const browser = await puppeteer.launch({
+    headless: false
+  });
+  const page = await browser.newPage();
+  
+  await page.setViewport({width: 1080, height: 1024});
+  await page.goto(url);
+
+  const links = await collectLinks(page);
+
+  console.log(links.join('\n'));
+
+  await browser.close();
+}
+
+run();
