@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 
-async function getNotes (page) {
+async function getFragranceNotes (page) {
   const TOP_NOTES = 'Top Notes'
   const MIDDLE_NOTES = 'Middle Notes';
   const BASE_NOTES = 'Base Notes';
@@ -19,7 +19,7 @@ async function getNotes (page) {
   };
 }
 
-async function getAccords (page) {
+async function getFrangranceAccords (page) {
   const accords = await page.$$eval('.accord-bar', results => {
     return results.map(el => {
       const accord = el.innerText.trim();
@@ -37,7 +37,7 @@ async function getAccords (page) {
   return accords;
 }
 
-async function getDescription (page) {
+async function getFrangranceDescription (page) {
   return await page.$eval('.fragrantica-blockquote', q => q.innerText.trim());
 }
 
@@ -46,9 +46,9 @@ async function getPageInfo (browser, url) {
  
   await page.goto(url);
 
-  const notes = await getNotes(page);
-  const accords = await getAccords(page);
-  const description = await getDescription(page);
+  const notes = await getFragranceNotes(page);
+  const accords = await getFrangranceAccords(page);
+  const description = await getFrangranceDescription(page);
 
   console.log('-- results --');
   console.log(notes);
@@ -84,20 +84,30 @@ function delay (time) {
   })
 }
 
-async function run () {
-  const url = "https://www.fragrantica.com/search/";
+async function getNotes (page) {
+  await page.goto("https://www.fragrantica.com/notes/");
 
+  return page.$$eval('.notebox a', results => {
+    return results.map(el => {
+      return {
+        note: el.innerText.trim(),
+        url: el.href
+      }
+    });
+  }); 
+}
+
+async function run () {
   const browser = await puppeteer.launch({
     headless: false
   });
   const page = await browser.newPage();
   
   await page.setViewport({width: 1080, height: 1024});
-  await page.goto(url);
 
-  const links = await collectLinks(page);
+  const notes = await getNotes(page);
 
-  console.log(links.join('\n'));
+  console.log(notes);
 
   await browser.close();
 }
