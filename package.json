@@ -15,6 +15,7 @@
   "author": "Joe D'Alessandro",
   "license": "ISC",
   "dependencies": {
+    "nano": "^11.0.2",
     "puppeteer": "^24.23.0"
   }
 }
