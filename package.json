@@ -1,11 +1,16 @@
 {
   "name": "scentora",
   "version": "1.0.0",
-  "description": "a library to collect scent info from the interwebs",
+  "description": "a library to visualize and investigate frangrances",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [
     "scent",
@@ -16,6 +21,14 @@
   "license": "ISC",
   "dependencies": {
     "csvtojson": "^2.0.10",
-    "nano": "^11.0.2"
+    "nano": "^11.0.2",
+    "pinia": "^3.0.3",
+    "vue": "^3.5.22",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.1.7",
+    "vite-plugin-vue-devtools": "^8.0.2"
   }
 }

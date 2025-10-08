@@ -1,2 +1,2 @@
 ## scentora
-a fun little library for scraping scent information from fragrance websites and building neat visualizations of scent profiles.
+a fun little library for viewing and playing with fragrance information
