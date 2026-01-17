@@ -69,4 +69,47 @@ export const notesService = {
   },
 };
 
+export interface CollectionStats {
+  overview: {
+    totalPerfumes: number;
+    totalJournalEntries: number;
+    averageRating: string;
+    uniqueNotes: number;
+    uniqueDesigners: number;
+  };
+  topDesigners: Array<{ designer: string; count: number }>;
+  topNotes: Array<{ note: string; count: number }>;
+  concentrationDistribution: Record<string, number>;
+  yearDistribution: Array<{ year: number; count: number }>;
+  pyramidStats: {
+    topNotes: number;
+    middleNotes: number;
+    baseNotes: number;
+    avgNotesPerPerfume: string;
+  };
+}
+
+export const statsService = {
+  async getCollectionStats(): Promise<CollectionStats> {
+    const { data } = await api.get('/stats');
+    return data;
+  },
+};
+
+export const exportService = {
+  async exportCollection(): Promise<Blob> {
+    const { data } = await api.get('/export/collection', {
+      responseType: 'blob',
+    });
+    return data;
+  },
+
+  async importCollection(file: File): Promise<any> {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    const response = await api.post('/export/import', data);
+    return response.data;
+  },
+};
+
 export default api;

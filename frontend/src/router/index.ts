@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
 import About from '@/views/About.vue';
 import PerfumeDetail from '@/views/PerfumeDetail.vue';
+import Statistics from '@/views/Statistics.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -15,6 +16,11 @@ const router = createRouter({
       path: '/perfume/:id',
       name: 'perfume-detail',
       component: PerfumeDetail,
+    },
+    {
+      path: '/statistics',
+      name: 'statistics',
+      component: Statistics,
     },
     {
       path: '/about',

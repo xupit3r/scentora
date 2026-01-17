@@ -5,6 +5,7 @@
         <h1>🌸 Scentora</h1>
         <div class="nav-links">
           <router-link to="/">Collection</router-link>
+          <router-link to="/statistics">Statistics</router-link>
           <router-link to="/about">About</router-link>
         </div>
       </nav>
