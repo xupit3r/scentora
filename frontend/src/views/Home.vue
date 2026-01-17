@@ -1,29 +1,75 @@
 <template>
   <div class="home">
-    <div class="header-section">
+    <div v-if="!showForm && !editingPerfume" class="header-section">
       <h2>My Collection</h2>
-      <button class="btn-primary">+ Add Perfume</button>
+      <button class="btn-primary" @click="showForm = true">+ Add Perfume</button>
     </div>
     
-    <div v-if="loading" class="loading">Loading your collection...</div>
+    <PerfumeForm
+      v-if="showForm && !editingPerfume"
+      @submit="handleCreatePerfume"
+      @cancel="showForm = false"
+    />
+
+    <PerfumeForm
+      v-if="editingPerfume"
+      :perfume="editingPerfume"
+      @submit="handleUpdatePerfume"
+      @cancel="cancelEdit"
+    />
     
-    <div v-else-if="error" class="error">{{ error }}</div>
-    
-    <div v-else-if="perfumes.length === 0" class="empty-state">
-      <p>📦 Your collection is empty</p>
-      <p>Start by adding your first perfume!</p>
-    </div>
-    
-    <div v-else class="perfume-grid">
-      <div v-for="perfume in perfumes" :key="perfume._id" class="perfume-card">
-        <div class="perfume-image">
-          <img v-if="perfume.imageUrl" :src="perfume.imageUrl" :alt="perfume.name" />
-          <div v-else class="placeholder">🌸</div>
+    <div v-if="!showForm && !editingPerfume">
+      <SearchFilters v-model="filters" />
+
+      <div v-if="loading" class="loading">Loading your collection...</div>
+      
+      <div v-else-if="error" class="error">{{ error }}</div>
+      
+      <div v-else-if="filteredPerfumes.length === 0 && !hasActiveFilters" class="empty-state">
+        <p>📦 Your collection is empty</p>
+        <p>Start by adding your first perfume!</p>
+      </div>
+
+      <div v-else-if="filteredPerfumes.length === 0 && hasActiveFilters" class="empty-state">
+        <p>🔍 No perfumes match your filters</p>
+        <p>Try adjusting your search criteria</p>
+      </div>
+      
+      <div v-else>
+        <div class="results-count">
+          Showing {{ filteredPerfumes.length }} {{ filteredPerfumes.length === 1 ? 'perfume' : 'perfumes' }}
         </div>
-        <div class="perfume-info">
-          <h3>{{ perfume.name }}</h3>
-          <p class="designer">{{ perfume.designer }}</p>
-          <p class="year" v-if="perfume.year">{{ perfume.year }}</p>
+        <div class="perfume-grid">
+          <div
+            v-for="perfume in filteredPerfumes"
+            :key="perfume._id"
+            class="perfume-card"
+          >
+            <div class="card-actions">
+              <button class="action-btn" @click.stop="startEdit(perfume)" title="Edit">
+                ✏️
+              </button>
+              <button class="action-btn" @click.stop="viewPerfume(perfume._id!)" title="View">
+                👁️
+              </button>
+            </div>
+            <div @click="viewPerfume(perfume._id!)">
+              <div class="perfume-image">
+                <img v-if="perfume.imageUrl" :src="perfume.imageUrl" :alt="perfume.name" />
+                <div v-else class="placeholder">🌸</div>
+              </div>
+              <div class="perfume-info">
+                <h3>{{ perfume.name }}</h3>
+                <p class="designer">{{ perfume.designer }}</p>
+                <p class="year" v-if="perfume.year">{{ perfume.year }}</p>
+                <div class="notes-preview">
+                  <span v-if="perfume.pyramid.top.length" class="note-count">
+                    {{ perfume.pyramid.top.length + perfume.pyramid.middle.length + perfume.pyramid.base.length }} notes
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -31,23 +77,80 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { perfumeService } from '@/services/api';
+import { ref, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { perfumeService, type PerfumeFilters } from '@/services/api';
+import PerfumeForm from '@/components/PerfumeForm.vue';
+import SearchFilters from '@/components/SearchFilters.vue';
 import type { Perfume } from '@/types';
 
+const router = useRouter();
 const perfumes = ref<Perfume[]>([]);
+const filteredPerfumes = ref<Perfume[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
+const showForm = ref(false);
+const editingPerfume = ref<Perfume | null>(null);
+const filters = ref<PerfumeFilters>({});
 
-onMounted(async () => {
+const hasActiveFilters = computed(() => {
+  return !!(filters.value.search || filters.value.concentration || filters.value.year || filters.value.note);
+});
+
+watch(filters, async () => {
+  await loadPerfumes();
+}, { deep: true });
+
+async function loadPerfumes() {
   try {
-    perfumes.value = await perfumeService.getAll();
+    loading.value = true;
+    const result = await perfumeService.getAll(filters.value);
+    perfumes.value = result;
+    filteredPerfumes.value = result;
   } catch (err: any) {
     error.value = err.message || 'Failed to load perfumes';
   } finally {
     loading.value = false;
   }
-});
+}
+
+async function handleCreatePerfume(perfumeData: Partial<Perfume>) {
+  try {
+    await perfumeService.create(perfumeData as any);
+    showForm.value = false;
+    await loadPerfumes();
+  } catch (err: any) {
+    error.value = err.message || 'Failed to create perfume';
+  }
+}
+
+async function handleUpdatePerfume(perfumeData: Partial<Perfume>) {
+  if (!editingPerfume.value?._id) return;
+
+  try {
+    await perfumeService.update(editingPerfume.value._id, perfumeData);
+    editingPerfume.value = null;
+    await loadPerfumes();
+  } catch (err: any) {
+    error.value = err.message || 'Failed to update perfume';
+  }
+}
+
+function startEdit(perfume: Perfume) {
+  editingPerfume.value = perfume;
+  showForm.value = false;
+}
+
+function cancelEdit() {
+  editingPerfume.value = null;
+}
+
+function viewPerfume(id: string) {
+  router.push(`/perfume/${id}`);
+}
+
+// Initial load
+loadPerfumes();
 </script>
 
 <style scoped>
@@ -113,11 +216,52 @@ h2 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
+  position: relative;
 }
 
 .perfume-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.perfume-card:hover .card-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+  font-size: 1rem;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.results-count {
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 .perfume-image {
@@ -158,5 +302,15 @@ h2 {
   color: #999;
   font-size: 0.9rem;
   margin-top: 0.25rem;
+}
+
+.notes-preview {
+  margin-top: 0.5rem;
+}
+
+.note-count {
+  font-size: 0.85rem;
+  color: #6b4f9e;
+  font-weight: 500;
 }
 </style>

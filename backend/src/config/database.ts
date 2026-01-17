@@ -17,7 +17,22 @@ export async function initDatabase() {
       console.log(`✓ Database exists: ${config.couchdb.database}`);
     }
 
-    // Create design documents/views here in the future
+    // Create indexes for efficient querying
+    await db.createIndex({
+      index: {
+        fields: ['type', 'createdAt'],
+      },
+      name: 'type-createdAt-index',
+    });
+
+    await db.createIndex({
+      index: {
+        fields: ['type', 'perfumeId', 'date'],
+      },
+      name: 'journal-by-perfume-index',
+    });
+
+    console.log('✓ Database indexes created');
     
   } catch (error) {
     console.error('Database initialization error:', error);

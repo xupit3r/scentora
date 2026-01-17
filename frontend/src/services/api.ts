@@ -8,9 +8,16 @@ const api = axios.create({
   },
 });
 
+export interface PerfumeFilters {
+  search?: string;
+  concentration?: string;
+  year?: number;
+  note?: string;
+}
+
 export const perfumeService = {
-  async getAll(): Promise<Perfume[]> {
-    const { data } = await api.get('/perfumes');
+  async getAll(filters?: PerfumeFilters): Promise<Perfume[]> {
+    const { data } = await api.get('/perfumes', { params: filters });
     return data;
   },
 
@@ -52,6 +59,13 @@ export const journalService = {
 
   async delete(id: string): Promise<void> {
     await api.delete(`/journal/${id}`);
+  },
+};
+
+export const notesService = {
+  async getAll(): Promise<string[]> {
+    const { data } = await api.get('/notes');
+    return data.notes;
   },
 };
 
