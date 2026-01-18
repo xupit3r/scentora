@@ -6,9 +6,10 @@ export const perfumeController = {
   async getAll(ctx: Context) {
     try {
       const { search, concentration, year, note } = ctx.query;
+      const userId = ctx.user!.id;
       
       const result = await db.find({
-        selector: { type: 'perfume' },
+        selector: { type: 'perfume', userId },
         sort: [{ createdAt: 'desc' }],
       });
 
@@ -54,9 +55,10 @@ export const perfumeController = {
   async getById(ctx: Context) {
     try {
       const { id } = ctx.params;
+      const userId = ctx.user!.id;
       const perfume = await db.get(id) as any;
       
-      if (perfume.type !== 'perfume') {
+      if (perfume.type !== 'perfume' || perfume.userId !== userId) {
         ctx.status = 404;
         ctx.body = { error: { message: 'Perfume not found' } };
         return;
@@ -76,10 +78,12 @@ export const perfumeController = {
 
   async create(ctx: Context) {
     try {
-      const perfumeData = ctx.request.body as Omit<Perfume, '_id' | '_rev' | 'type' | 'createdAt' | 'updatedAt'>;
+      const userId = ctx.user!.id;
+      const perfumeData = ctx.request.body as Omit<Perfume, '_id' | '_rev' | 'type' | 'userId' | 'createdAt' | 'updatedAt'>;
       
       const perfume: Perfume = {
         ...perfumeData,
+        userId,
         type: 'perfume',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -99,11 +103,12 @@ export const perfumeController = {
   async update(ctx: Context) {
     try {
       const { id } = ctx.params;
+      const userId = ctx.user!.id;
       const updates = ctx.request.body as Partial<Perfume>;
       
       const existing = await db.get(id) as any;
       
-      if (existing.type !== 'perfume') {
+      if (existing.type !== 'perfume' || existing.userId !== userId) {
         ctx.status = 404;
         ctx.body = { error: { message: 'Perfume not found' } };
         return;
@@ -113,6 +118,7 @@ export const perfumeController = {
         ...(existing as Perfume),
         ...updates,
         type: 'perfume',
+        userId,
         _id: existing._id,
         _rev: existing._rev,
         createdAt: existing.createdAt,
@@ -137,9 +143,10 @@ export const perfumeController = {
   async delete(ctx: Context) {
     try {
       const { id } = ctx.params;
+      const userId = ctx.user!.id;
       const perfume = await db.get(id) as any;
       
-      if (perfume.type !== 'perfume') {
+      if (perfume.type !== 'perfume' || perfume.userId !== userId) {
         ctx.status = 404;
         ctx.body = { error: { message: 'Perfume not found' } };
         return;

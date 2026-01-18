@@ -4,12 +4,14 @@ import { db } from '../config/database';
 export const exportController = {
   async exportCollection(ctx: Context) {
     try {
+      const userId = ctx.user!.id;
+      
       const perfumesResult = await db.find({
-        selector: { type: 'perfume' },
+        selector: { type: 'perfume', userId },
       });
 
       const journalResult = await db.find({
-        selector: { type: 'journal' },
+        selector: { type: 'journal', userId },
       });
 
       const exportData = {
@@ -30,6 +32,7 @@ export const exportController = {
 
   async importCollection(ctx: Context) {
     try {
+      const userId = ctx.user!.id;
       const data = ctx.request.body as any;
 
       if (!data.perfumes || !Array.isArray(data.perfumes)) {
@@ -51,6 +54,7 @@ export const exportController = {
           const { _id, _rev, ...perfumeData } = perfume;
           await db.insert({
             ...perfumeData,
+            userId,
             type: 'perfume',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -68,6 +72,7 @@ export const exportController = {
             const { _id, _rev, ...entryData } = entry;
             await db.insert({
               ...entryData,
+              userId,
               type: 'journal',
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),

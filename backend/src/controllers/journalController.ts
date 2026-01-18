@@ -6,10 +6,12 @@ export const journalController = {
   async getByPerfumeId(ctx: Context) {
     try {
       const { perfumeId } = ctx.params;
+      const userId = ctx.user!.id;
       
       const result = await db.find({
         selector: { 
           type: 'journal',
+          userId,
           perfumeId,
         },
         sort: [{ date: 'desc' }],
@@ -25,12 +27,13 @@ export const journalController = {
   async create(ctx: Context) {
     try {
       const { perfumeId } = ctx.params;
-      const entryData = ctx.request.body as Omit<JournalEntry, '_id' | '_rev' | 'type' | 'createdAt' | 'updatedAt'>;
+      const userId = ctx.user!.id;
+      const entryData = ctx.request.body as Omit<JournalEntry, '_id' | '_rev' | 'type' | 'userId' | 'createdAt' | 'updatedAt'>;
       
-      // Verify perfume exists
+      // Verify perfume exists and belongs to user
       try {
         const perfume = await db.get(perfumeId) as any;
-        if (perfume.type !== 'perfume') {
+        if (perfume.type !== 'perfume' || perfume.userId !== userId) {
           ctx.status = 404;
           ctx.body = { error: { message: 'Perfume not found' } };
           return;
@@ -46,6 +49,7 @@ export const journalController = {
 
       const entry: JournalEntry = {
         ...entryData,
+        userId,
         perfumeId,
         type: 'journal',
         createdAt: new Date().toISOString(),
@@ -66,11 +70,12 @@ export const journalController = {
   async update(ctx: Context) {
     try {
       const { id } = ctx.params;
+      const userId = ctx.user!.id;
       const updates = ctx.request.body as Partial<JournalEntry>;
       
       const existing = await db.get(id) as any;
       
-      if (existing.type !== 'journal') {
+      if (existing.type !== 'journal' || existing.userId !== userId) {
         ctx.status = 404;
         ctx.body = { error: { message: 'Journal entry not found' } };
         return;
@@ -80,6 +85,7 @@ export const journalController = {
         ...(existing as JournalEntry),
         ...updates,
         type: 'journal',
+        userId,
         _id: existing._id,
         _rev: existing._rev,
         perfumeId: existing.perfumeId,
@@ -105,9 +111,10 @@ export const journalController = {
   async delete(ctx: Context) {
     try {
       const { id } = ctx.params;
+      const userId = ctx.user!.id;
       const entry = await db.get(id) as any;
       
-      if (entry.type !== 'journal') {
+      if (entry.type !== 'journal' || entry.userId !== userId) {
         ctx.status = 404;
         ctx.body = { error: { message: 'Journal entry not found' } };
         return;

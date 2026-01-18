@@ -4,6 +4,7 @@ import journalRoutes from './journal';
 import notesRoutes from './notes';
 import statsRoutes from './stats';
 import exportRoutes from './export';
+import authRoutes from './auth';
 
 const router = new Router({
   prefix: '/api',
@@ -17,7 +18,11 @@ router.get('/health', (ctx) => {
   };
 });
 
-// Mount sub-routes
+// Auth routes (no authentication required)
+router.use(authRoutes.routes());
+router.use(authRoutes.allowedMethods());
+
+// Protected routes (require authentication)
 router.use(perfumeRoutes.routes());
 router.use(perfumeRoutes.allowedMethods());
 router.use(journalRoutes.routes());

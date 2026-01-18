@@ -8,6 +8,7 @@ export interface Perfume {
   _id?: string;
   _rev?: string;
   type: 'perfume';
+  userId: string;
   name: string;
   designer: string;
   year?: number;
@@ -23,6 +24,7 @@ export interface JournalEntry {
   _id?: string;
   _rev?: string;
   type: 'journal';
+  userId: string;
   perfumeId: string;
   date: string;
   content: string;
@@ -31,4 +33,32 @@ export interface JournalEntry {
   weather?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface User {
+  _id?: string;
+  _rev?: string;
+  type: 'user';
+  email: string;
+  username: string;
+  password: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  username: string;
+}
+
+export interface RefreshToken {
+  _id?: string;
+  _rev?: string;
+  type: 'refresh_token';
+  userId: string;
+  token: string;
+  expiresAt: string;
+  createdAt: string;
+  revoked: boolean;
 }

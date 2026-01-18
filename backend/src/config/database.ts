@@ -20,16 +20,30 @@ export async function initDatabase() {
     // Create indexes for efficient querying
     await db.createIndex({
       index: {
-        fields: ['type', 'createdAt'],
+        fields: ['type', 'userId', 'createdAt'],
       },
-      name: 'type-createdAt-index',
+      name: 'type-userId-createdAt-index',
     });
 
     await db.createIndex({
       index: {
-        fields: ['type', 'perfumeId', 'date'],
+        fields: ['type', 'userId', 'perfumeId', 'date'],
       },
-      name: 'journal-by-perfume-index',
+      name: 'journal-by-user-perfume-index',
+    });
+
+    await db.createIndex({
+      index: {
+        fields: ['type', 'email'],
+      },
+      name: 'user-email-index',
+    });
+
+    await db.createIndex({
+      index: {
+        fields: ['type', 'username'],
+      },
+      name: 'user-username-index',
     });
 
     console.log('✓ Database indexes created');

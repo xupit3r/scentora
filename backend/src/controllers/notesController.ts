@@ -4,8 +4,10 @@ import { db } from '../config/database';
 export const notesController = {
   async getAllNotes(ctx: Context) {
     try {
+      const userId = ctx.user!.id;
+      
       const result = await db.find({
-        selector: { type: 'perfume' },
+        selector: { type: 'perfume', userId },
       });
 
       const notesSet = new Set<string>();

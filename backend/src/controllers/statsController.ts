@@ -4,12 +4,14 @@ import { db } from '../config/database';
 export const statsController = {
   async getCollectionStats(ctx: Context) {
     try {
+      const userId = ctx.user!.id;
+      
       const perfumesResult = await db.find({
-        selector: { type: 'perfume' },
+        selector: { type: 'perfume', userId },
       });
 
       const journalResult = await db.find({
-        selector: { type: 'journal' },
+        selector: { type: 'journal', userId },
       });
 
       const perfumes = perfumesResult.docs as any[];
