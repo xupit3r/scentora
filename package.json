@@ -1,0 +1,41 @@
+{
+  "name": "scentora",
+  "version": "1.0.0",
+  "description": "Perfume cataloging application with scent profiles and journal entries",
+  "private": true,
+  "scripts": {
+    "start": "./scentora.sh start",
+    "stop": "./scentora.sh stop",
+    "restart": "./scentora.sh restart",
+    "status": "./scentora.sh status",
+    "logs:backend": "./scentora.sh logs backend",
+    "logs:frontend": "./scentora.sh logs frontend",
+    "setup": "npm run setup:backend && npm run setup:frontend",
+    "setup:backend": "cd backend && npm install",
+    "setup:frontend": "cd frontend && npm install",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "clean": "rm -rf backend/node_modules frontend/node_modules backend/dist frontend/dist logs",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/scentora.git"
+  },
+  "keywords": [
+    "perfume",
+    "catalog",
+    "scent",
+    "fragrance",
+    "notes",
+    "journal"
+  ],
+  "author": "",
+  "license": "MIT"
+}

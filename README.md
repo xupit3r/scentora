@@ -39,7 +39,34 @@ A perfume cataloging application for tracking scent profiles, notes, and persona
 - Docker & Docker Compose (or existing CouchDB instance)
 - npm or yarn
 
-### Quick Start
+### Quick Start (Automated)
+
+**The easiest way to run Scentora:**
+
+```bash
+# Linux/Mac
+./scentora.sh start
+
+# Windows
+scentora.bat start
+
+# Or using npm
+npm start
+```
+
+That's it! The launcher will:
+- Start CouchDB
+- Install dependencies if needed
+- Start backend and frontend
+- Show you the URLs
+
+Access the app at http://localhost:5173
+
+See [LAUNCHER_GUIDE.md](LAUNCHER_GUIDE.md) for more launcher options.
+
+### Manual Setup
+
+If you prefer to start services manually:
 
 1. **Clone and navigate to the project**:
    ```bash
