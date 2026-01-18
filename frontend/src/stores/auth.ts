@@ -32,6 +32,24 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!accessToken.value && !!user.value);
 
+  // Check if access token is expired or about to expire
+  function isTokenExpired(token: string): boolean {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return true;
+      
+      const payload = JSON.parse(atob(parts[1]));
+      const exp = payload.exp * 1000; // Convert to milliseconds
+      const now = Date.now();
+      
+      // Consider token expired if it expires in less than 30 seconds
+      return exp - now < 30000;
+    } catch (e) {
+      console.error('Error checking token expiry:', e);
+      return true;
+    }
+  }
+
   // Set auth token in axios headers
   function setAuthHeader(token: string | null) {
     if (token) {
@@ -61,8 +79,23 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Initialize auth state on store creation
+  // Check if we have a token and if it's expired, try to refresh
   if (accessToken.value) {
-    setAuthHeader(accessToken.value);
+    if (isTokenExpired(accessToken.value) && refreshToken.value) {
+      // Token is expired, try to refresh immediately
+      axios.post<RefreshResponse>(`${API_BASE}/auth/refresh`, {
+        refreshToken: refreshToken.value,
+      })
+      .then((response) => {
+        storeTokens(response.data.accessToken, response.data.refreshToken);
+      })
+      .catch(() => {
+        // Refresh failed, clear tokens
+        clearTokens();
+      });
+    } else {
+      setAuthHeader(accessToken.value);
+    }
   }
 
   // Setup axios interceptor for automatic token refresh
@@ -70,6 +103,11 @@ export const useAuthStore = defineStore('auth', () => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
+
+      // Don't try to refresh if this was the refresh request itself
+      if (originalRequest.url?.includes('/auth/refresh')) {
+        return Promise.reject(error);
+      }
 
       // If error is 401 and we haven't tried refreshing yet
       if (error.response?.status === 401 && !originalRequest._retry && refreshToken.value) {
