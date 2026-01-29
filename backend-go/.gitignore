@@ -1,0 +1,8 @@
+.env
+.DS_Store
+scentora-backend
+backend-go
+dist/
+tmp/
+logs/
+*.log
