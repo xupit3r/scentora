@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Scentora Application Launcher
-# Manages the full stack: CouchDB, Backend API, and Frontend
+# Manages the full stack: PostgreSQL, Go Backend API, and Frontend
 
 set -e
 
@@ -17,11 +17,11 @@ NC='\033[0m' # No Color
 # Process tracking
 BACKEND_PID=""
 FRONTEND_PID=""
-COUCHDB_RUNNING=false
+POSTGRES_RUNNING=false
 
 # Directories
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-BACKEND_DIR="$SCRIPT_DIR/backend"
+BACKEND_DIR="$SCRIPT_DIR/backend-go"
 FRONTEND_DIR="$SCRIPT_DIR/frontend"
 
 # Log files
@@ -60,6 +60,10 @@ print_warning() {
 check_dependencies() {
     local missing=()
     
+    if ! command -v go &> /dev/null; then
+        missing+=("go")
+    fi
+    
     if ! command -v node &> /dev/null; then
         missing+=("node")
     fi
@@ -83,66 +87,66 @@ check_dependencies() {
     fi
 }
 
-# Check if CouchDB is running
-check_couchdb() {
-    if curl -s http://localhost:5984 > /dev/null 2>&1; then
-        COUCHDB_RUNNING=true
+# Check if PostgreSQL is running
+check_postgres() {
+    if docker ps | grep -q scentora-postgres; then
+        POSTGRES_RUNNING=true
         return 0
     else
-        COUCHDB_RUNNING=false
+        POSTGRES_RUNNING=false
         return 1
     fi
 }
 
-# Start CouchDB
-start_couchdb() {
-    print_info "Starting CouchDB..."
+# Start PostgreSQL
+start_postgres() {
+    print_info "Starting PostgreSQL..."
     
-    if check_couchdb; then
-        print_success "CouchDB already running"
+    if check_postgres; then
+        print_success "PostgreSQL already running"
         return 0
     fi
     
     cd "$SCRIPT_DIR"
     
     # Try with sudo if permission denied
-    if docker-compose up -d 2>&1 | grep -q "permission denied"; then
+    if docker compose up -d postgres 2>&1 | grep -q "permission denied"; then
         print_warning "Docker requires elevated privileges"
         if command -v sudo &> /dev/null; then
-            sudo docker-compose up -d > /dev/null 2>&1 || true
+            sudo docker compose up -d postgres > /dev/null 2>&1 || true
         fi
     else
-        docker-compose up -d > /dev/null 2>&1 || true
+        docker compose up -d postgres > /dev/null 2>&1 || true
     fi
     
-    # Wait for CouchDB to be ready
+    # Wait for PostgreSQL to be ready
     local retries=0
     local max_retries=30
     
     while [ $retries -lt $max_retries ]; do
-        if check_couchdb; then
-            print_success "CouchDB is ready (http://localhost:5984)"
+        if check_postgres; then
+            print_success "PostgreSQL is ready (port 5435)"
             return 0
         fi
         sleep 1
         retries=$((retries + 1))
     done
     
-    print_warning "CouchDB may not be running (will continue anyway)"
+    print_warning "PostgreSQL may not be running (will continue anyway)"
     return 0
 }
 
-# Stop CouchDB
-stop_couchdb() {
-    print_info "Stopping CouchDB..."
+# Stop PostgreSQL
+stop_postgres() {
+    print_info "Stopping PostgreSQL..."
     cd "$SCRIPT_DIR"
     
-    if docker-compose down > /dev/null 2>&1; then
-        print_success "CouchDB stopped"
-    elif sudo docker-compose down > /dev/null 2>&1; then
-        print_success "CouchDB stopped"
+    if docker compose stop postgres > /dev/null 2>&1; then
+        print_success "PostgreSQL stopped"
+    elif sudo docker compose stop postgres > /dev/null 2>&1; then
+        print_success "PostgreSQL stopped"
     else
-        print_warning "Could not stop CouchDB (may not be running)"
+        print_warning "Could not stop PostgreSQL (may not be running)"
     fi
 }
 
@@ -160,16 +164,33 @@ check_npm_deps() {
     fi
 }
 
-# Start Backend
+# Check if Go backend is built
+check_go_backend() {
+    if [ ! -f "$BACKEND_DIR/scentora-backend" ]; then
+        print_info "Building Go backend..."
+        cd "$BACKEND_DIR"
+        go build -o scentora-backend cmd/server/main.go
+        print_success "Go backend built"
+    fi
+}
+
+# Start Backend (Go)
 start_backend() {
-    print_info "Starting Backend API..."
+    print_info "Starting Go Backend API..."
     
-    check_npm_deps "$BACKEND_DIR" "Backend"
+    # Check for .env file
+    if [ ! -f "$BACKEND_DIR/.env" ]; then
+        print_info "Creating .env from .env.example..."
+        cd "$BACKEND_DIR"
+        cp .env.example .env
+    fi
+    
+    check_go_backend
     
     cd "$BACKEND_DIR"
     
     # Start backend in background
-    npm run dev > "$BACKEND_LOG" 2>&1 &
+    ./scentora-backend > "$BACKEND_LOG" 2>&1 &
     BACKEND_PID=$!
     
     # Wait for backend to be ready
@@ -177,7 +198,7 @@ start_backend() {
     local max_retries=30
     
     while [ $retries -lt $max_retries ]; do
-        if curl -s http://localhost:3000/api/health > /dev/null 2>&1; then
+        if curl -s http://localhost:3000/health > /dev/null 2>&1; then
             print_success "Backend API ready (http://localhost:3000)"
             return 0
         fi
@@ -235,7 +256,7 @@ stop_all() {
         print_success "Frontend stopped"
     fi
     
-    stop_couchdb
+    stop_postgres
     
     echo ""
     print_success "All services stopped"
@@ -258,15 +279,15 @@ show_status() {
     echo -e "${CYAN}Service Status:${NC}"
     echo ""
     
-    # CouchDB
-    if check_couchdb; then
-        echo -e "  ${GREEN}●${NC} CouchDB    - http://localhost:5984"
+    # PostgreSQL
+    if check_postgres; then
+        echo -e "  ${GREEN}●${NC} PostgreSQL - port 5435"
     else
-        echo -e "  ${RED}●${NC} CouchDB    - Not running"
+        echo -e "  ${RED}●${NC} PostgreSQL - Not running"
     fi
     
     # Backend
-    if curl -s http://localhost:3000/api/health > /dev/null 2>&1; then
+    if curl -s http://localhost:3000/health > /dev/null 2>&1; then
         echo -e "  ${GREEN}●${NC} Backend    - http://localhost:3000"
     else
         echo -e "  ${RED}●${NC} Backend    - Not running"
@@ -317,7 +338,7 @@ start_all() {
     echo -e "${YELLOW}Starting all services...${NC}"
     echo ""
     
-    start_couchdb
+    start_postgres
     start_backend
     start_frontend
     
@@ -325,9 +346,9 @@ start_all() {
     print_success "All services started!"
     echo ""
     echo -e "${CYAN}URLs:${NC}"
-    echo -e "  Frontend:  ${GREEN}http://localhost:5173${NC}"
-    echo -e "  Backend:   ${GREEN}http://localhost:3000${NC}"
-    echo -e "  CouchDB:   ${GREEN}http://localhost:5984/_utils${NC}"
+    echo -e "  Frontend:   ${GREEN}http://localhost:5173${NC}"
+    echo -e "  Backend:    ${GREEN}http://localhost:3000${NC}"
+    echo -e "  PostgreSQL: ${GREEN}localhost:5435${NC}"
     echo ""
     echo -e "${CYAN}Logs:${NC}"
     echo -e "  Backend:   $BACKEND_LOG"

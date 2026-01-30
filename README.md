@@ -4,9 +4,9 @@ A perfume cataloging application for tracking scent profiles, notes, and persona
 
 ## Tech Stack
 
-- **Backend**: Koa.js + TypeScript + CouchDB + JWT Authentication
+- **Backend**: Go + Echo + PostgreSQL + JWT Authentication
 - **Frontend**: Vue.js 3 + TypeScript + Pinia
-- **Database**: CouchDB
+- **Database**: PostgreSQL
 
 ## Features
 
@@ -36,8 +36,9 @@ A perfume cataloging application for tracking scent profiles, notes, and persona
 
 ### Prerequisites
 
+- Go 1.21+
 - Node.js 18+ 
-- Docker & Docker Compose (or existing CouchDB instance)
+- Docker & Docker Compose (for PostgreSQL)
 - npm or yarn
 
 ### Quick Start (Automated)
@@ -56,8 +57,9 @@ npm start
 ```
 
 That's it! The launcher will:
-- Start CouchDB
-- Install dependencies if needed
+- Start PostgreSQL
+- Build Go backend if needed
+- Install frontend dependencies if needed
 - Start backend and frontend
 - Show you the URLs
 
@@ -75,22 +77,22 @@ If you prefer to start services manually:
    cd scentora
    ```
 
-2. **Start CouchDB**:
+2. **Start PostgreSQL**:
    ```bash
-   docker-compose up -d
+   docker compose up -d postgres
    ```
-   Access CouchDB admin at http://localhost:5984/_utils (admin/password)
 
 3. **Backend Setup**:
    ```bash
-   cd backend
-   npm install
+   cd backend-go
    
    # Configure environment (optional - defaults work locally)
    cp .env.example .env
    # Edit .env to set JWT_SECRET in production
    
-   npm run dev
+   # Build and run
+   go build -o scentora-backend cmd/server/main.go
+   ./scentora-backend
    ```
    Backend runs at http://localhost:3000
 

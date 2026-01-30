@@ -1,7 +1,7 @@
 {
   "name": "scentora",
-  "version": "1.0.0",
-  "description": "Perfume cataloging application with scent profiles and journal entries",
+  "version": "2.0.0",
+  "description": "Perfume cataloging application with scent profiles and journal entries - Go Backend",
   "private": true,
   "scripts": {
     "start": "./scentora.sh start",
@@ -10,19 +10,18 @@
     "status": "./scentora.sh status",
     "logs:backend": "./scentora.sh logs backend",
     "logs:frontend": "./scentora.sh logs frontend",
-    "setup": "npm run setup:backend && npm run setup:frontend",
-    "setup:backend": "cd backend && npm install",
+    "setup": "npm run setup:frontend",
     "setup:frontend": "cd frontend && npm install",
     "build": "npm run build:backend && npm run build:frontend",
-    "build:backend": "cd backend && npm run build",
+    "build:backend": "cd backend-go && go build -o scentora-backend cmd/server/main.go",
     "build:frontend": "cd frontend && npm run build",
     "test": "npm run test:backend && npm run test:frontend",
-    "test:backend": "cd backend && npm test",
+    "test:backend": "cd backend-go && go test ./...",
     "test:frontend": "cd frontend && npm test",
-    "clean": "rm -rf backend/node_modules frontend/node_modules backend/dist frontend/dist logs",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f"
+    "clean": "rm -rf frontend/node_modules frontend/dist logs backend-go/scentora-backend",
+    "docker:up": "docker compose up -d postgres",
+    "docker:down": "docker compose stop postgres",
+    "docker:logs": "docker compose logs -f postgres"
   },
   "repository": {
     "type": "git",
@@ -34,7 +33,9 @@
     "scent",
     "fragrance",
     "notes",
-    "journal"
+    "journal",
+    "go",
+    "postgresql"
   ],
   "author": "",
   "license": "MIT"

@@ -1,18 +1,4 @@
-version: '3.8'
-
 services:
-  couchdb:
-    image: couchdb:3.3
-    container_name: scentora-couchdb
-    ports:
-      - "5984:5984"
-    environment:
-      - COUCHDB_USER=admin
-      - COUCHDB_PASSWORD=password
-    volumes:
-      - couchdb_data:/opt/couchdb/data
-    restart: unless-stopped
-
   postgres:
     image: postgres:15
     container_name: scentora-postgres
@@ -32,5 +18,4 @@ services:
       retries: 5
 
 volumes:
-  couchdb_data:
   postgres_data:
