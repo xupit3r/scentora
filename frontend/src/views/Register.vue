@@ -6,6 +6,18 @@
 
       <form @submit.prevent="handleRegister" class="auth-form">
         <div class="form-group">
+          <label for="invitationCode">Invitation Code</label>
+          <input
+            id="invitationCode"
+            v-model="invitationCode"
+            type="text"
+            required
+            placeholder="Enter your invitation code"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-group">
           <label for="username">Username</label>
           <input
             id="username"
@@ -87,6 +99,7 @@ import { useAuthStore } from '../stores/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
+const invitationCode = ref('');
 const email = ref('');
 const username = ref('');
 const password = ref('');
@@ -108,7 +121,7 @@ const validationError = computed(() => {
 async function handleRegister() {
   if (validationError.value) return;
 
-  const success = await authStore.register(email.value, username.value, password.value);
+  const success = await authStore.register(invitationCode.value, email.value, username.value, password.value);
   if (success) {
     router.push('/');
   }

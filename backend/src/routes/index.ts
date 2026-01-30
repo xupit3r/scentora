@@ -5,6 +5,7 @@ import notesRoutes from './notes';
 import statsRoutes from './stats';
 import exportRoutes from './export';
 import authRoutes from './auth';
+import invitationRoutes from './invitations';
 
 const router = new Router({
   prefix: '/api',
@@ -33,5 +34,7 @@ router.use(statsRoutes.routes());
 router.use(statsRoutes.allowedMethods());
 router.use(exportRoutes.routes());
 router.use(exportRoutes.allowedMethods());
+router.use(invitationRoutes.routes());
+router.use(invitationRoutes.allowedMethods());
 
 export default router;
