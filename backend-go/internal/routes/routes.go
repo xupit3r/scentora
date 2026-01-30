@@ -35,9 +35,11 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 
 	// API group
 	api := e.Group("/api")
+	api.Use(middleware.GeneralRateLimiter())
 
 	// Auth routes (public)
 	auth := api.Group("/auth")
+	auth.Use(middleware.AuthRateLimiter())
 	auth.POST("/register", authHandler.Register)
 	auth.POST("/login", authHandler.Login)
 	auth.POST("/refresh", authHandler.Refresh)
