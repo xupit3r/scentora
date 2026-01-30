@@ -73,3 +73,45 @@ func GetUserID(c echo.Context) string {
 	userID, _ := c.Get("userId").(string)
 	return userID
 }
+
+// OptionalJWTAuth is middleware that sets user context if valid token is present,
+// but continues without error if no token or invalid token
+func OptionalJWTAuth(cfg *config.Config) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			authHeader := c.Request().Header.Get("Authorization")
+			
+			// No auth header - continue without setting user context
+			if authHeader == "" {
+				return next(c)
+			}
+
+			parts := strings.Split(authHeader, " ")
+			if len(parts) != 2 || parts[0] != "Bearer" {
+				// Invalid format - continue without setting user context
+				return next(c)
+			}
+
+			tokenString := parts[1]
+
+			// Parse and validate token
+			token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+				return []byte(cfg.JWTSecret), nil
+			})
+
+			// Invalid or expired token - continue without setting user context
+			if err != nil || !token.Valid {
+				return next(c)
+			}
+
+			claims, ok := token.Claims.(*JWTClaims)
+			if ok {
+				// Set user info in context
+				c.Set("userId", claims.UserID)
+				c.Set("email", claims.Email)
+			}
+
+			return next(c)
+		}
+	}
+}
