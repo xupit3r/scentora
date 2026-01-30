@@ -2,7 +2,7 @@
 
 ## Summary
 
-Successfully rewrote the Scentora backend from TypeScript/Koa to Go/Echo with PostgreSQL, maintaining 100% API compatibility with the Vue.js frontend.
+Successfully rewrote the Scentora backend from TypeScript/Koa to Go/Echo with PostgreSQL, maintaining 100% API compatibility with the Vue.js frontend. Achieved complete feature parity with the Node.js backend.
 
 ## What Was Built
 
@@ -12,6 +12,8 @@ Successfully rewrote the Scentora backend from TypeScript/Koa to Go/Echo with Po
 - **Authentication**: JWT with bcrypt, access + refresh tokens
 - **Validation**: go-playground/validator for request validation
 - **API**: Full REST API matching original TypeScript implementation
+- **Rate Limiting**: In-memory rate limiting for auth and general endpoints
+- **Security**: CORS, JWT middleware, password hashing, user isolation
 
 ### Complete Feature Set
 1. **Authentication System**
@@ -19,7 +21,9 @@ Successfully rewrote the Scentora backend from TypeScript/Koa to Go/Echo with Po
    - Login with JWT token generation
    - Refresh token rotation
    - Logout with token revocation
+   - **Logout from all devices** (NEW)
    - Protected routes with middleware
+   - **Optional authentication middleware** (NEW)
 
 2. **Perfume Management**
    - Create, read, update, delete perfumes
@@ -34,31 +38,101 @@ Successfully rewrote the Scentora backend from TypeScript/Koa to Go/Echo with Po
    - Occasion and weather tracking
    - Date-based sorting
 
-4. **Additional Features**
+4. **Data Management**
    - Notes aggregation (all unique notes from user's collection)
    - Statistics (perfume count, journal entry count)
-   - Data export (full user data as JSON)
+   - **Data export** (full user data as JSON with version, exportDate, journalEntries)
+   - **Data import** (import perfumes and journal entries from JSON) (NEW)
    - Health check endpoint
+
+5. **Invitation System**
+   - Create invitation codes (with optional email restriction)
+   - List user's invitations
+   - Revoke invitation codes
+   - Email-specific invitations
+   - Expiration handling
+
+6. **Rate Limiting** (NEW)
+   - Auth endpoints: 5 requests per 15 minutes
+   - General endpoints: 100 requests per minute
+   - IP-based identification
+   - Proper 429 error responses
 
 ### Database Schema
 - **users**: id, email, username, password_hash, timestamps
 - **perfumes**: id, user_id, name, designer, year, concentration, notes arrays, timestamps
 - **journal_entries**: id, user_id, perfume_id, date, content, rating, occasion, weather, timestamps
 - **refresh_tokens**: id, user_id, token_hash, expires_at, revoked, timestamps
+- **invitations**: id, code, email, created_by, expires_at, used, used_at, used_by, timestamps
+
+## Backend Parity Features ✅
+
+The following features were added to achieve complete parity with the Node.js backend:
+
+### 1. Logout All (Phase 1)
+- **Endpoint**: `POST /api/auth/logout-all`
+- **Function**: Revokes all refresh tokens for the authenticated user
+- **Use case**: Logout from all devices simultaneously
+
+### 2. Import Collection (Phase 2)
+- **Endpoint**: `POST /api/export/import`
+- **Function**: Import perfumes and journal entries from JSON
+- **Format**: Accepts same format as export
+- **Returns**: Count of imported items and any errors
+
+### 3. Export Format Alignment (Phase 3)
+- **Fields**: `version`, `exportDate`, `perfumes`, `journalEntries`
+- **Format**: Matches Node.js backend exactly
+- **Headers**: Proper Content-Type and Content-Disposition
+
+### 4. Rate Limiting (Phase 4)
+- **Auth routes**: 5 requests per 15 minutes
+- **General routes**: 100 requests per minute
+- **Implementation**: Echo's built-in rate limiter with in-memory store
+- **Response**: 429 Too Many Requests with error message
+
+### 5. Optional Auth Middleware (Phase 5)
+- **Function**: `OptionalJWTAuth()`
+- **Behavior**: Sets user context if valid token present, continues without error otherwise
+- **Use case**: Endpoints that work with or without authentication
 
 ## Testing Results
 
 All endpoints tested and working:
 - ✅ POST /api/auth/register - Creates user with hashed password
 - ✅ POST /api/auth/login - Returns JWT tokens
+- ✅ POST /api/auth/refresh - Refreshes access token
+- ✅ POST /api/auth/logout - Revokes refresh token
+- ✅ POST /api/auth/logout-all - Revokes all refresh tokens (NEW)
 - ✅ GET /api/auth/me - Returns current user info
+- ✅ POST /api/invitations - Creates invitation code
+- ✅ GET /api/invitations - Lists user's invitations
+- ✅ DELETE /api/invitations/:code - Revokes invitation
 - ✅ POST /api/perfumes - Creates perfume with pyramid structure
-- ✅ GET /api/perfumes - Lists all user's perfumes
+- ✅ GET /api/perfumes - Lists all user's perfumes with filters
 - ✅ GET /api/perfumes/:id - Gets single perfume
+- ✅ PUT /api/perfumes/:id - Updates perfume
+- ✅ DELETE /api/perfumes/:id - Deletes perfume
 - ✅ POST /api/perfumes/:id/journal - Creates journal entry
+- ✅ GET /api/perfumes/:perfumeId/journal - Lists journal entries for perfume
+- ✅ PUT /api/journal/:id - Updates journal entry
+- ✅ DELETE /api/journal/:id - Deletes journal entry
 - ✅ GET /api/notes - Returns unique notes array
 - ✅ GET /api/stats - Returns collection statistics
+- ✅ GET /api/export - Exports user data (NEW format)
+- ✅ POST /api/export/import - Imports user data (NEW)
 - ✅ GET /health - Server health check
+
+### Parity Test Suite
+
+Run `./test-parity.sh` to validate all parity features:
+- Export format validation (version, exportDate, journalEntries)
+- Import endpoint functionality
+- Logout-all endpoint
+- Rate limiting middleware
+- Optional auth middleware
+
+All tests passing ✅
 
 ## API Compatibility
 
