@@ -1,6 +1,6 @@
 @echo off
 REM Scentora Application Launcher for Windows
-REM Manages the full stack: CouchDB, Backend API, and Frontend
+REM Manages the full stack: PostgreSQL, Go Backend API, and Frontend
 
 setlocal EnableDelayedExpansion
 
@@ -9,6 +9,15 @@ echo ========================================
 echo   Scentora Application Manager
 echo ========================================
 echo.
+
+REM Check for Go
+where go >nul 2>nul
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] Go is not installed
+    echo Please install Go from https://go.dev
+    pause
+    exit /b 1
+)
 
 REM Check for Node.js
 where node >nul 2>nul
@@ -31,12 +40,12 @@ REM Check for Docker
 where docker >nul 2>nul
 if %ERRORLEVEL% NEQ 0 (
     echo [WARNING] Docker is not installed
-    echo CouchDB may not start automatically
+    echo PostgreSQL may not start automatically
     echo.
 )
 
 set SCRIPT_DIR=%~dp0
-set BACKEND_DIR=%SCRIPT_DIR%backend
+set BACKEND_DIR=%SCRIPT_DIR%backend-go
 set FRONTEND_DIR=%SCRIPT_DIR%frontend
 
 REM Parse command
@@ -56,26 +65,26 @@ goto HELP
 echo [INFO] Starting all services...
 echo.
 
-REM Start CouchDB
-echo [INFO] Starting CouchDB...
+REM Start PostgreSQL
+echo [INFO] Starting PostgreSQL...
 cd "%SCRIPT_DIR%"
-start /B docker-compose up >nul 2>&1
-timeout /t 3 >nul
-
-REM Check if CouchDB is running
-curl -s http://localhost:5984 >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
-    echo [OK] CouchDB is ready
-) else (
-    echo [WARNING] CouchDB may not be running
-)
+start /B docker compose up -d postgres >nul 2>&1
+timeout /t 5 >nul
+echo [OK] PostgreSQL starting
 echo.
 
-REM Install backend dependencies if needed
-if not exist "%BACKEND_DIR%\node_modules" (
-    echo [INFO] Installing backend dependencies...
+REM Check if backend .env exists
+if not exist "%BACKEND_DIR%\.env" (
+    echo [INFO] Creating .env file...
+    copy "%BACKEND_DIR%\.env.example" "%BACKEND_DIR%\.env" >nul
+)
+
+REM Build Go backend if needed
+if not exist "%BACKEND_DIR%\scentora-backend.exe" (
+    echo [INFO] Building Go backend...
     cd "%BACKEND_DIR%"
-    call npm install
+    go build -o scentora-backend.exe cmd/server/main.go
+    echo [OK] Backend built
     echo.
 )
 
@@ -88,9 +97,9 @@ if not exist "%FRONTEND_DIR%\node_modules" (
 )
 
 REM Start Backend
-echo [INFO] Starting Backend API...
+echo [INFO] Starting Go Backend API...
 cd "%BACKEND_DIR%"
-start "Scentora Backend" cmd /c "npm run dev"
+start "Scentora Backend" cmd /c "scentora-backend.exe"
 timeout /t 5 >nul
 
 REM Start Frontend
@@ -105,9 +114,9 @@ echo   All services started!
 echo ========================================
 echo.
 echo URLs:
-echo   Frontend:  http://localhost:5173
-echo   Backend:   http://localhost:3000
-echo   CouchDB:   http://localhost:5984/_utils
+echo   Frontend:   http://localhost:5173
+echo   Backend:    http://localhost:3000
+echo   PostgreSQL: localhost:5435
 echo.
 echo To stop services, run: scentora.bat stop
 echo Or close the terminal windows manually
@@ -122,9 +131,9 @@ echo Please close the following windows:
 echo   - Scentora Backend
 echo   - Scentora Frontend
 echo.
-echo To stop CouchDB:
+echo To stop PostgreSQL:
 cd "%SCRIPT_DIR%"
-docker-compose down
+docker compose stop postgres
 echo.
 echo [OK] Services stopped
 pause
@@ -134,14 +143,16 @@ goto END
 echo [INFO] Checking service status...
 echo.
 
-curl -s http://localhost:5984 >nul 2>&1
+REM Check PostgreSQL
+docker ps | findstr scentora-postgres >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
-    echo [RUNNING] CouchDB - http://localhost:5984
+    echo [RUNNING] PostgreSQL - localhost:5435
 ) else (
-    echo [STOPPED] CouchDB
+    echo [STOPPED] PostgreSQL
 )
 
-curl -s http://localhost:3000/api/health >nul 2>&1
+REM Check Backend
+curl -s http://localhost:3000/health >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
     echo [RUNNING] Backend - http://localhost:3000
 ) else (
