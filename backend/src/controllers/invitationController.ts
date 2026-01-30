@@ -47,10 +47,14 @@ export const invitationController = {
           type: 'invitation',
           createdBy: userId,
         },
-        sort: [{ createdAt: 'desc' }],
       });
 
-      ctx.body = { invitations: result.docs };
+      // Sort in JavaScript instead of in the query
+      const sortedDocs = result.docs.sort((a: any, b: any) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+
+      ctx.body = { invitations: sortedDocs };
     } catch (error: any) {
       ctx.status = 500;
       ctx.body = { error: { message: error.message } };

@@ -46,6 +46,20 @@ export async function initDatabase() {
       name: 'user-username-index',
     });
 
+    await db.createIndex({
+      index: {
+        fields: ['type', 'code'],
+      },
+      name: 'invitation-code-index',
+    });
+
+    await db.createIndex({
+      index: {
+        fields: ['type', 'createdBy', 'createdAt'],
+      },
+      name: 'invitation-by-creator-index',
+    });
+
     console.log('✓ Database indexes created');
     
   } catch (error) {
