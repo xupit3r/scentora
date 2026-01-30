@@ -282,3 +282,199 @@ curl -X POST http://localhost:3000/api/perfumes/abc123/journal \
     "weather": "Sunny"
   }'
 ```
+
+---
+
+## Authentication Endpoints
+
+### Register (Public)
+
+Create a new user account with an invitation code.
+
+```http
+POST /auth/register
+```
+
+**Request Body:**
+```json
+{
+  "invitationCode": "1cca231895da73f52b5c48d84b2a8633",
+  "email": "user@example.com",
+  "username": "myusername",
+  "password": "securepassword123"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "user": {
+    "id": "user-id-123",
+    "email": "user@example.com",
+    "username": "myusername"
+  },
+  "accessToken": "eyJhbGc...",
+  "refreshToken": "eyJhbGc..."
+}
+```
+
+**Error Responses:**
+- `400 Bad Request` - Invalid invitation code, code already used, or code expired
+- `400 Bad Request` - Email or username already exists
+- `400 Bad Request` - Validation failed (invalid email, password too short, etc.)
+
+**Example:**
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "invitationCode": "1cca231895da73f52b5c48d84b2a8633",
+    "email": "user@example.com",
+    "username": "myusername",
+    "password": "securepassword123"
+  }'
+```
+
+### Login (Public)
+
+Authenticate with email and password.
+
+```http
+POST /auth/login
+```
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "user": {
+    "id": "user-id-123",
+    "email": "user@example.com",
+    "username": "myusername"
+  },
+  "accessToken": "eyJhbGc...",
+  "refreshToken": "eyJhbGc..."
+}
+```
+
+**Error Response:**
+- `401 Unauthorized` - Invalid email or password
+
+---
+
+## Invitation Endpoints
+
+All invitation endpoints require authentication.
+
+### Create Invitation
+
+Generate a new invitation code.
+
+```http
+POST /invitations
+Authorization: Bearer <accessToken>
+```
+
+**Request Body:**
+```json
+{
+  "email": "friend@example.com",
+  "expiresInDays": 7
+}
+```
+
+- `email` (optional): Restrict invitation to specific email address
+- `expiresInDays` (optional): Number of days until expiration (default: 7, max: 365)
+
+**Response (201 Created):**
+```json
+{
+  "invitation": {
+    "_id": "invitation-id-123",
+    "type": "invitation",
+    "code": "a1b2c3d4e5f6g7h8",
+    "email": "friend@example.com",
+    "createdBy": "user-id-123",
+    "expiresAt": "2026-02-06T00:00:00.000Z",
+    "used": false,
+    "createdAt": "2026-01-30T00:00:00.000Z"
+  }
+}
+```
+
+**Example:**
+```bash
+curl -X POST http://localhost:3000/api/invitations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGc..." \
+  -d '{
+    "email": "friend@example.com",
+    "expiresInDays": 7
+  }'
+```
+
+### List Invitations
+
+Get all invitations you've created.
+
+```http
+GET /invitations
+Authorization: Bearer <accessToken>
+```
+
+**Response (200 OK):**
+```json
+{
+  "invitations": [
+    {
+      "_id": "invitation-id-123",
+      "type": "invitation",
+      "code": "a1b2c3d4e5f6g7h8",
+      "email": "friend@example.com",
+      "createdBy": "user-id-123",
+      "expiresAt": "2026-02-06T00:00:00.000Z",
+      "used": false,
+      "createdAt": "2026-01-30T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Example:**
+```bash
+curl http://localhost:3000/api/invitations \
+  -H "Authorization: Bearer eyJhbGc..."
+```
+
+### Revoke Invitation
+
+Revoke an invitation you created.
+
+```http
+DELETE /invitations/:code
+Authorization: Bearer <accessToken>
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Invitation revoked successfully"
+}
+```
+
+**Error Responses:**
+- `403 Forbidden` - You don't own this invitation
+- `404 Not Found` - Invitation not found
+
+**Example:**
+```bash
+curl -X DELETE http://localhost:3000/api/invitations/a1b2c3d4e5f6g7h8 \
+  -H "Authorization: Bearer eyJhbGc..."
+```

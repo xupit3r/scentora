@@ -18,6 +18,7 @@ A perfume cataloging application for tracking scent profiles, notes, and persona
 - 🔒 Secure password hashing (bcrypt)
 - 📱 Persistent sessions with logout-all capability
 - 🚫 Token rotation for enhanced security
+- 🎫 Invitation-only registration system
 
 ### Perfume Management
 - ✨ Catalog perfumes with detailed information
@@ -103,7 +104,8 @@ If you prefer to start services manually:
 
 5. **Access the app**:
    - Open http://localhost:5173
-   - Register a new account
+   - You'll need an invitation code to register
+   - See [Creating Invitations](#creating-invitations) below
    - Start cataloging your perfumes!
 
 ## Environment Variables
@@ -126,6 +128,54 @@ JWT_ACCESS_EXPIRES_IN=15m   # Access token expiry
 JWT_REFRESH_EXPIRES_IN=7d   # Refresh token expiry
 ```
 
+## Creating Invitations
+
+Scentora uses an invitation-only registration system. To create your first user and generate invitations:
+
+### Method 1: Direct Database Creation (First User)
+
+For the very first user, create an invitation directly in CouchDB:
+
+```bash
+# Generate a random invitation code
+INVITATION_CODE=$(openssl rand -hex 16)
+echo "Your invitation code: $INVITATION_CODE"
+
+# Create invitation in database
+curl -X POST "http://admin:password@localhost:5984/scentora" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"type\": \"invitation\",
+    \"code\": \"$INVITATION_CODE\",
+    \"createdBy\": \"system\",
+    \"expiresAt\": \"$(date -u -d '+7 days' +%Y-%m-%dT%H:%M:%S.000Z)\",
+    \"used\": false,
+    \"createdAt\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"
+  }"
+```
+
+Then use this code to register at http://localhost:5173/register
+
+### Method 2: API (Authenticated Users)
+
+Once you have an account, you can create invitations through the API:
+
+```bash
+# Login and get access token
+ACCESS_TOKEN="your-access-token"
+
+# Create invitation
+curl -X POST "http://localhost:3000/api/invitations" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -d '{
+    "email": "friend@example.com",
+    "expiresInDays": 7
+  }'
+```
+
+The response will include the invitation code to share with the new user.
+
 ## Project Structure
 
 ```
@@ -138,9 +188,14 @@ scentora/
 ## API Endpoints
 
 ### Authentication (Public)
-- `POST /api/auth/register` - Create new account
+- `POST /api/auth/register` - Create new account (requires invitation code)
 - `POST /api/auth/login` - Login with email/password
 - `GET /api/auth/me` - Get current user info
+
+### Invitations (Protected)
+- `POST /api/invitations` - Create a new invitation
+- `GET /api/invitations` - List your created invitations
+- `DELETE /api/invitations/:code` - Revoke an invitation
 
 ### Perfumes (Protected)
 - `GET /api/perfumes` - List all perfumes (with filters)
