@@ -86,4 +86,5 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	export := api.Group("/export")
 	export.Use(middleware.JWTAuth(cfg))
 	export.GET("", exportHandler.Export)
+	export.POST("/import", exportHandler.Import)
 }

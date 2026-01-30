@@ -93,6 +93,18 @@ type RefreshToken struct {
 	CreatedAt time.Time `db:"created_at"`
 }
 
+type Invitation struct {
+	ID        string     `json:"_id" db:"id"`
+	Code      string     `json:"code" db:"code"`
+	Email     *string    `json:"email,omitempty" db:"email"`
+	CreatedBy string     `json:"createdBy" db:"created_by"`
+	ExpiresAt time.Time  `json:"expiresAt" db:"expires_at"`
+	Used      bool       `json:"used" db:"used"`
+	UsedAt    *time.Time `json:"usedAt,omitempty" db:"used_at"`
+	UsedBy    *string    `json:"usedBy,omitempty" db:"used_by"`
+	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
+}
+
 type CreatePerfumeRequest struct {
 	Name          string   `json:"name" validate:"required"`
 	Designer      string   `json:"designer" validate:"required"`
@@ -131,9 +143,10 @@ type UpdateJournalRequest struct {
 }
 
 type RegisterRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Username string `json:"username" validate:"required,min=3"`
-	Password string `json:"password" validate:"required,min=4"`
+	Email          string `json:"email" validate:"required,email"`
+	Username       string `json:"username" validate:"required,min=3"`
+	Password       string `json:"password" validate:"required,min=4"`
+	InvitationCode string `json:"invitationCode" validate:"required"`
 }
 
 type LoginRequest struct {
@@ -151,6 +164,11 @@ type RefreshRequest struct {
 	RefreshToken string `json:"refreshToken" validate:"required"`
 }
 
+type CreateInvitationRequest struct {
+	Email         *string `json:"email" validate:"omitempty,email"`
+	ExpiresInDays int     `json:"expiresInDays" validate:"omitempty,min=1,max=365"`
+}
+
 type ErrorResponse struct {
 	Error ErrorDetail `json:"error"`
 }
@@ -158,4 +176,43 @@ type ErrorResponse struct {
 type ErrorDetail struct {
 	Message string      `json:"message"`
 	Details interface{} `json:"details,omitempty"`
+}
+
+type ImportCollectionRequest struct {
+	Version        string           `json:"version"`
+	ExportDate     string           `json:"exportDate"`
+	Perfumes       []ImportPerfume  `json:"perfumes" validate:"required"`
+	JournalEntries []ImportJournal  `json:"journalEntries"`
+}
+
+type ImportPerfume struct {
+	Name          string   `json:"name"`
+	Designer      string   `json:"designer"`
+	Year          *int     `json:"year"`
+	Concentration *string  `json:"concentration"`
+	Pyramid       Pyramid  `json:"pyramid"`
+	Description   *string  `json:"description"`
+	ImageURL      *string  `json:"imageUrl"`
+}
+
+type ImportJournal struct {
+	PerfumeID string  `json:"perfumeId"`
+	Date      string  `json:"date"`
+	Content   string  `json:"content"`
+	Rating    *int    `json:"rating"`
+	Occasion  *string `json:"occasion"`
+	Weather   *string `json:"weather"`
+}
+
+type ImportResult struct {
+	PerfumesImported       int      `json:"perfumesImported"`
+	JournalEntriesImported int      `json:"journalEntriesImported"`
+	Errors                 []string `json:"errors"`
+}
+
+type ExportResponse struct {
+	Version        string              `json:"version"`
+	ExportDate     string              `json:"exportDate"`
+	Perfumes       []*PerfumeResponse  `json:"perfumes"`
+	JournalEntries []*JournalEntry     `json:"journalEntries"`
 }
