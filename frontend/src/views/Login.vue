@@ -39,9 +39,8 @@
       </form>
 
       <div class="auth-footer">
-        <p>
-          Don't have an account?
-          <router-link to="/register">Register here</router-link>
+        <p class="info-text">
+          Registration is by invitation only
         </p>
       </div>
     </div>
