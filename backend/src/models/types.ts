@@ -62,3 +62,17 @@ export interface RefreshToken {
   createdAt: string;
   revoked: boolean;
 }
+
+export interface Invitation {
+  _id?: string;
+  _rev?: string;
+  type: 'invitation';
+  code: string;
+  email?: string;
+  createdBy: string;
+  expiresAt: string;
+  used: boolean;
+  usedAt?: string;
+  usedBy?: string;
+  createdAt: string;
+}

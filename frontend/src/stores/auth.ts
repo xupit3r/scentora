@@ -137,11 +137,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
   );
 
-  async function register(email: string, username: string, password: string) {
+  async function register(invitationCode: string, email: string, username: string, password: string) {
     isLoading.value = true;
     error.value = null;
     try {
       const response = await axios.post<AuthResponse>(`${API_BASE}/auth/register`, {
+        invitationCode,
         email,
         username,
         password,

@@ -14,7 +14,49 @@ import type { User, AuthUser } from '../models/types';
 export const authController = {
   async register(ctx: Context) {
     try {
-      const { email, username, password } = ctx.request.body as { email: string; username: string; password: string };
+      const { email, username, password, invitationCode } = ctx.request.body as { 
+        email: string; 
+        username: string; 
+        password: string;
+        invitationCode: string;
+      };
+
+      // Validate invitation code
+      const invitationResult = await db.find({
+        selector: {
+          type: 'invitation',
+          code: invitationCode,
+        },
+      });
+
+      if (invitationResult.docs.length === 0) {
+        ctx.status = 400;
+        ctx.body = { error: { message: 'Invalid invitation code' } };
+        return;
+      }
+
+      const invitation = invitationResult.docs[0] as any;
+
+      // Check if invitation is already used
+      if (invitation.used) {
+        ctx.status = 400;
+        ctx.body = { error: { message: 'Invitation code has already been used' } };
+        return;
+      }
+
+      // Check if invitation is expired
+      if (new Date(invitation.expiresAt) < new Date()) {
+        ctx.status = 400;
+        ctx.body = { error: { message: 'Invitation code has expired' } };
+        return;
+      }
+
+      // Check if invitation is for a specific email
+      if (invitation.email && invitation.email !== email) {
+        ctx.status = 400;
+        ctx.body = { error: { message: 'This invitation is for a different email address' } };
+        return;
+      }
 
       // Check if user already exists
       const existingUsers = await db.find({
@@ -48,6 +90,12 @@ export const authController = {
 
       const result = await db.insert(user);
       const createdUser = await db.get(result.id) as any;
+
+      // Mark invitation as used
+      invitation.used = true;
+      invitation.usedAt = new Date().toISOString();
+      invitation.usedBy = createdUser._id;
+      await db.insert(invitation);
 
       // Generate tokens
       const authUser: AuthUser = {
