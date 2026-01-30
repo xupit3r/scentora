@@ -135,6 +135,33 @@ func runMigrations(db *sql.DB) error {
 		return fmt.Errorf("failed to create refresh_tokens indexes: %w", err)
 	}
 
+	// Create invitations table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS invitations (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			code VARCHAR(255) UNIQUE NOT NULL,
+			email VARCHAR(255),
+			created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			expires_at TIMESTAMP NOT NULL,
+			used BOOLEAN DEFAULT FALSE,
+			used_at TIMESTAMP,
+			used_by UUID REFERENCES users(id) ON DELETE SET NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW()
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create invitations table: %w", err)
+	}
+
+	// Create indexes for invitations
+	_, err = db.Exec(`
+		CREATE INDEX IF NOT EXISTS idx_invitations_code ON invitations(code);
+		CREATE INDEX IF NOT EXISTS idx_invitations_created_by ON invitations(created_by);
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create invitations indexes: %w", err)
+	}
+
 	log.Println("✅ Database migrations completed")
 	return nil
 }

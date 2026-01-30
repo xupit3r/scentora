@@ -86,11 +86,16 @@ The server will:
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
+- `POST /api/auth/register` - Register new user **(requires invitation code)**
 - `POST /api/auth/login` - Login
 - `POST /api/auth/refresh` - Refresh access token
 - `POST /api/auth/logout` - Logout
 - `GET /api/auth/me` - Get current user (protected)
+
+### Invitations (all protected)
+- `POST /api/invitations` - Create invitation code
+- `GET /api/invitations` - List your invitations
+- `DELETE /api/invitations/:code` - Revoke invitation
 
 ### Perfumes (all protected)
 - `GET /api/perfumes` - List perfumes (supports filters)
@@ -145,6 +150,15 @@ The server will:
 - expires_at, revoked
 - created_at
 
+### Invitations
+- id (UUID, PK)
+- code (unique string)
+- email (optional - for email-specific invitations)
+- created_by (FK to users)
+- expires_at
+- used, used_at, used_by (FK to users)
+- created_at
+
 ## Development
 
 ### Environment Variables
@@ -176,15 +190,57 @@ Basic health check:
 curl http://localhost:3000/health
 ```
 
-Register a user:
+### Invitation System
+
+**Note**: Registration now requires an invitation code. To register new users:
+
+1. Login as an existing user:
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@test.com",
+    "password": "test"
+  }'
+```
+
+2. Create an invitation code:
+```bash
+# General invitation (any email)
+curl -X POST http://localhost:3000/api/invitations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{"expiresInDays": 7}'
+
+# Email-specific invitation
+curl -X POST http://localhost:3000/api/invitations \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{"email": "newuser@example.com", "expiresInDays": 7}'
+```
+
+3. Register with the invitation code:
 ```bash
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "test@example.com",
-    "username": "testuser",
-    "password": "password123"
+    "email": "newuser@example.com",
+    "username": "newuser",
+    "password": "password123",
+    "invitationCode": "CODE_FROM_STEP_2"
   }'
+```
+
+4. List your invitations:
+```bash
+curl -X GET http://localhost:3000/api/invitations \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+5. Revoke an invitation:
+```bash
+curl -X DELETE http://localhost:3000/api/invitations/CODE \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ## Production Deployment
