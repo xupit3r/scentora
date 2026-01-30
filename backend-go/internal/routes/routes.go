@@ -16,11 +16,13 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	perfumeRepo := repository.NewPerfumeRepository(db)
 	journalRepo := repository.NewJournalRepository(db)
 	tokenRepo := repository.NewRefreshTokenRepository(db)
+	invitationRepo := repository.NewInvitationRepository(db)
 
 	// Initialize services
-	authService := services.NewAuthService(userRepo, tokenRepo, cfg)
+	authService := services.NewAuthService(userRepo, tokenRepo, invitationRepo, cfg)
 	perfumeService := services.NewPerfumeService(perfumeRepo)
 	journalService := services.NewJournalService(journalRepo, perfumeRepo)
+	invitationService := services.NewInvitationService(invitationRepo)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
@@ -29,6 +31,7 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	notesHandler := handlers.NewNotesHandler(perfumeRepo)
 	statsHandler := handlers.NewStatsHandler(perfumeRepo, journalRepo)
 	exportHandler := handlers.NewExportHandler(perfumeRepo, journalRepo)
+	invitationHandler := handlers.NewInvitationHandler(invitationService)
 
 	// API group
 	api := e.Group("/api")
@@ -44,6 +47,14 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	authProtected := auth.Group("")
 	authProtected.Use(middleware.JWTAuth(cfg))
 	authProtected.GET("/me", authHandler.Me)
+	authProtected.POST("/logout-all", authHandler.LogoutAll)
+
+	// Invitation routes (protected)
+	invitations := api.Group("/invitations")
+	invitations.Use(middleware.JWTAuth(cfg))
+	invitations.POST("", invitationHandler.Create)
+	invitations.GET("", invitationHandler.List)
+	invitations.DELETE("/:code", invitationHandler.Revoke)
 
 	// Perfume routes (protected)
 	perfumes := api.Group("/perfumes")

@@ -36,7 +36,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 		})
 	}
 
-	result, err := h.service.Register(req.Email, req.Username, req.Password)
+	result, err := h.service.Register(req.Email, req.Username, req.Password, req.InvitationCode)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Error: models.ErrorDetail{Message: err.Error()},
@@ -109,6 +109,25 @@ func (h *AuthHandler) Logout(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+func (h *AuthHandler) LogoutAll(c echo.Context) error {
+	userID := middleware.GetUserID(c)
+	if userID == "" {
+		return c.JSON(http.StatusUnauthorized, models.ErrorResponse{
+			Error: models.ErrorDetail{Message: "Unauthorized"},
+		})
+	}
+
+	if err := h.service.LogoutAll(userID); err != nil {
+		return c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: models.ErrorDetail{Message: err.Error()},
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Logged out from all devices",
+	})
 }
 
 func (h *AuthHandler) Me(c echo.Context) error {

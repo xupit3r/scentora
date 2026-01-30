@@ -15,20 +15,43 @@ import (
 )
 
 type AuthService struct {
-	userRepo  *repository.UserRepository
-	tokenRepo *repository.RefreshTokenRepository
-	cfg       *config.Config
+	userRepo       *repository.UserRepository
+	tokenRepo      *repository.RefreshTokenRepository
+	invitationRepo *repository.InvitationRepository
+	cfg            *config.Config
 }
 
-func NewAuthService(userRepo *repository.UserRepository, tokenRepo *repository.RefreshTokenRepository, cfg *config.Config) *AuthService {
+func NewAuthService(userRepo *repository.UserRepository, tokenRepo *repository.RefreshTokenRepository, invitationRepo *repository.InvitationRepository, cfg *config.Config) *AuthService {
 	return &AuthService{
-		userRepo:  userRepo,
-		tokenRepo: tokenRepo,
-		cfg:       cfg,
+		userRepo:       userRepo,
+		tokenRepo:      tokenRepo,
+		invitationRepo: invitationRepo,
+		cfg:            cfg,
 	}
 }
 
-func (s *AuthService) Register(email, username, password string) (*models.AuthResponse, error) {
+func (s *AuthService) Register(email, username, password, invitationCode string) (*models.AuthResponse, error) {
+	// Validate invitation code
+	invitation, err := s.invitationRepo.FindByCode(invitationCode)
+	if err != nil {
+		return nil, fmt.Errorf("invalid invitation code")
+	}
+
+	// Check if already used
+	if invitation.Used {
+		return nil, fmt.Errorf("invitation code has already been used")
+	}
+
+	// Check if expired
+	if time.Now().After(invitation.ExpiresAt) {
+		return nil, fmt.Errorf("invitation code has expired")
+	}
+
+	// Check if email-specific
+	if invitation.Email != nil && *invitation.Email != email {
+		return nil, fmt.Errorf("this invitation is for a different email address")
+	}
+
 	// Check if email exists
 	exists, err := s.userRepo.EmailExists(email)
 	if err != nil {
@@ -62,6 +85,12 @@ func (s *AuthService) Register(email, username, password string) (*models.AuthRe
 
 	if err := s.userRepo.Create(user); err != nil {
 		return nil, err
+	}
+
+	// Mark invitation as used
+	if err := s.invitationRepo.MarkAsUsed(invitation.ID, user.ID); err != nil {
+		// Log error but don't fail registration
+		fmt.Printf("Warning: Failed to mark invitation as used: %v\n", err)
 	}
 
 	// Generate tokens
@@ -167,6 +196,10 @@ func (s *AuthService) Refresh(refreshTokenString string) (*models.AuthResponse, 
 func (s *AuthService) Logout(refreshTokenString string) error {
 	tokenHash := hashToken(refreshTokenString)
 	return s.tokenRepo.Revoke(tokenHash)
+}
+
+func (s *AuthService) LogoutAll(userID string) error {
+	return s.tokenRepo.RevokeAllForUser(userID)
 }
 
 func (s *AuthService) GetUserByID(userID string) (*models.User, error) {
