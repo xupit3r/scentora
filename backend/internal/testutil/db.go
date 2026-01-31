@@ -2,6 +2,7 @@ package testutil
 
 import (
 "database/sql"
+"sync/atomic"
 "fmt"
 "log"
 "os"
@@ -170,4 +171,12 @@ return fmt.Errorf("failed to create invitations table: %w", err)
 
 log.Println("✅ Test database migrations completed")
 return nil
+}
+
+var testCounter uint64
+
+// UniqueEmail generates a unique email for testing
+func UniqueEmail(prefix string) string {
+count := atomic.AddUint64(&testCounter, 1)
+return fmt.Sprintf("%s_%d@test.example.com", prefix, count)
 }

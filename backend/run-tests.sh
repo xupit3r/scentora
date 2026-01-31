@@ -20,7 +20,7 @@ echo ""
 echo "🏃 Running tests..."
 echo ""
 
-go test -v -cover ./internal/config ./internal/repository "$@"
+go test -p 1 -v -cover ./internal/config ./internal/repository "$@"
 
 echo ""
 echo "✅ All tests passed!"

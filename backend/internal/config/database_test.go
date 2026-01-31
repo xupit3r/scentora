@@ -2,6 +2,7 @@ package config
 
 import (
 "database/sql"
+"fmt"
 "testing"
 
 "github.com/yourusername/scentora-backend/internal/testutil"
@@ -158,13 +159,13 @@ expectedDrops int
 {2.75, 55},
 }
 
-for _, tc := range testCases {
+for i, tc := range testCases {
 var volumeDrops int
 err := tdb.DB.QueryRow(`
 INSERT INTO accords (user_id, name, pyramid_position, volume_ml)
 VALUES ($1, $2, 'top', $3)
 RETURNING volume_drops
-`, userID, "Test Accord "+sql.NullString{String: string(rune(tc.volumeMl))}.String, tc.volumeMl).Scan(&volumeDrops)
+`, userID, fmt.Sprintf("Test Accord %d", i), tc.volumeMl).Scan(&volumeDrops)
 
 if err != nil {
 t.Errorf("Failed to insert accord with volume_ml=%.2f: %v", tc.volumeMl, err)
