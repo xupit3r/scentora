@@ -655,12 +655,564 @@ Planned but not implemented in Phase 8.
 
 ---
 
+## Notion-Inspired UI/UX Redesign (Phase 8.9)
+
+### Overview
+
+**Status**: Planned  
+**Goal**: Transform Scentora into a clean, minimalist interface inspired by Notion's design principles  
+**Timeline**: 1-2 weeks  
+**Approach**: Hybrid (Naive UI framework + Tailwind CSS + custom components)
+
+### Design Philosophy Evolution
+
+**Current State** → **Target State**
+
+- Colorful gradients → Subtle, professional tones
+- Top navigation → Sidebar navigation
+- Dense cards → Spacious, breathing room
+- Modal-heavy → Inline editing where possible
+- Basic hover → Sophisticated interactions
+- Mixed spacing → Consistent 8px grid
+
+### Selected UI Framework
+
+**Primary**: **Naive UI** (Recommended)
+- Clean, minimalist design out of the box
+- Excellent TypeScript support
+- Lightweight and performant
+- Tree-shakeable components
+- Customizable theme system
+
+**Styling**: **Tailwind CSS**
+- Utility-first approach
+- Custom design tokens
+- Responsive design utilities
+- Dark mode support (future)
+
+**Alternative**: Headless UI (for maximum control, more dev time)
+
+### New Color System
+
+#### Notion-Inspired Palette
+
+**Text Colors**:
+```css
+--text-primary: #37352F;     /* Main content */
+--text-secondary: #787774;   /* Supporting text */
+--text-tertiary: #9B9A97;    /* Disabled, metadata */
+--text-disabled: #C5C5C3;    /* Disabled state */
+```
+
+**Background Colors**:
+```css
+--bg-primary: #FFFFFF;       /* Cards, modals */
+--bg-secondary: #FAFAFA;     /* Page background */
+--bg-tertiary: #F7F6F3;      /* Alternate sections */
+--bg-hover: #F5F5F4;         /* Hover state */
+```
+
+**Border Colors**:
+```css
+--border-default: #E9E9E7;   /* Subtle borders */
+--border-strong: #D9D9D7;    /* Emphasis borders */
+```
+
+**Semantic Colors**:
+```css
+--success: #0F7B6C;          /* Success messages */
+--error: #E03E3E;            /* Errors, alerts */
+--warning: #F59E0B;          /* Warnings */
+--info: #0B6BCB;             /* Info messages */
+```
+
+**Accent Color** (Primary Actions):
+```css
+--accent-primary: #0F766E;   /* Teal - buttons, links */
+--accent-hover: #0D9488;     /* Hover state */
+--accent-light: #CCFBF1;     /* Light backgrounds */
+```
+
+#### Position Colors (Refined - Subtle)
+
+**Top Notes**:
+```css
+background: #FEF3C7;         /* Soft yellow */
+color: #92400E;              /* Dark amber text */
+```
+
+**Middle Notes**:
+```css
+background: #E9D5FF;         /* Soft purple */
+color: #6B21A8;              /* Dark purple text */
+```
+
+**Base Notes**:
+```css
+background: #F5E6D3;         /* Soft tan */
+color: #78350F;              /* Dark brown text */
+```
+
+### Typography System
+
+**Font Stack**:
+```css
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+             "Helvetica Neue", Arial, sans-serif;
+```
+
+**Type Scale**:
+```css
+--text-xs: 12px;             /* Captions, metadata */
+--text-sm: 14px;             /* Body text, UI elements */
+--text-base: 16px;           /* Comfortable reading */
+--text-lg: 20px;             /* Section headings */
+--text-xl: 24px;             /* Page headings */
+--text-2xl: 32px;            /* Large headings */
+--text-3xl: 40px;            /* Hero text */
+```
+
+**Font Weights**:
+```css
+--font-normal: 400;          /* Body text */
+--font-medium: 500;          /* UI elements */
+--font-semibold: 600;        /* Headings, emphasis */
+```
+
+**Line Heights**:
+```css
+--leading-tight: 1.2;        /* Headings */
+--leading-normal: 1.5;       /* Body text */
+--leading-relaxed: 1.7;      /* Long-form content */
+```
+
+### Spacing System
+
+**8px Grid System**:
+```css
+--space-0: 0;
+--space-1: 4px;              /* Tight spacing */
+--space-2: 8px;              /* Base unit */
+--space-3: 12px;             /* Small gaps */
+--space-4: 16px;             /* Standard gaps */
+--space-5: 20px;             /* Comfortable gaps */
+--space-6: 24px;             /* Section gaps */
+--space-8: 32px;             /* Large sections */
+--space-10: 40px;            /* Major divisions */
+--space-12: 48px;            /* Container padding */
+--space-16: 64px;            /* Page margins */
+--space-20: 80px;            /* Extra large spacing */
+```
+
+**Usage Guidelines**:
+- Container padding: 48-64px (--space-12 to --space-16)
+- Section gaps: 24-32px (--space-6 to --space-8)
+- Related items: 8-16px (--space-2 to --space-4)
+- Inline spacing: 4-8px (--space-1 to --space-2)
+
+### Shadows & Elevation
+
+**Notion-style Subtle Shadows**:
+```css
+--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+--shadow-base: 0 1px 3px rgba(0, 0, 0, 0.12);    /* Cards */
+--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);    /* Modals */
+--shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+```
+
+### Border Radius
+
+**Consistent Rounding**:
+```css
+--radius-sm: 4px;            /* Small elements */
+--radius-base: 6px;          /* Buttons, inputs */
+--radius-md: 8px;            /* Cards */
+--radius-lg: 12px;           /* Large cards, modals */
+--radius-xl: 16px;           /* Very large elements */
+--radius-full: 9999px;       /* Pills, badges */
+```
+
+### Transitions & Animations
+
+**Standard Timing**:
+```css
+--transition-fast: 100ms;    /* Micro-interactions */
+--transition-base: 150ms;    /* Hover states */
+--transition-slow: 200ms;    /* Animations */
+--transition-slower: 300ms;  /* Page transitions */
+```
+
+**Easing Functions**:
+```css
+--ease-in: cubic-bezier(0.4, 0, 1, 1);
+--ease-out: cubic-bezier(0, 0, 0.2, 1);
+--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+```
+
+**Animation Guidelines**:
+- Hover: 150ms ease-out
+- Focus: Instant (no transition)
+- Page load: 200ms ease-in-out
+- Modal: 200ms ease-out
+- Skeleton: 1s ease-in-out (shimmer)
+
+### Layout Structure
+
+#### Sidebar Navigation
+
+**Dimensions**:
+```css
+--sidebar-width: 280px;           /* Desktop expanded */
+--sidebar-collapsed: 64px;        /* Desktop collapsed */
+--sidebar-mobile: 85vw;           /* Mobile drawer */
+--sidebar-max: 400px;             /* Mobile max width */
+```
+
+**Structure**:
+```
+┌─────────────┬────────────────────────────┐
+│   SIDEBAR   │        MAIN CONTENT        │
+│             │                            │
+│ Logo        │  Header (breadcrumbs, actions) │
+│             │                            │
+│ Navigation  │  Content Area              │
+│ - Home      │  (scrollable)              │
+│ - Stats     │                            │
+│ - Settings  │                            │
+│             │                            │
+│ User Profile│                            │
+└─────────────┴────────────────────────────┘
+```
+
+**Sidebar Items**:
+- Logo/Brand (48px height)
+- Navigation (icon + label)
+  - 🏠 Home / Inventory
+  - 📊 Statistics
+  - ⚙️ Settings
+- User Profile (bottom)
+  - Avatar + name
+  - Logout option
+
+**Interaction**:
+- Hover: Background color change (#F5F5F4)
+- Active: Bold text + accent left border
+- Collapse: Icon-only mode
+- Mobile: Drawer from left
+
+#### Page Header
+
+**Structure**:
+```
+┌────────────────────────────────────────────┐
+│ Breadcrumbs > Current Page                 │
+│                                            │
+│ Page Title                    [+ Actions]  │
+└────────────────────────────────────────────┘
+```
+
+**Height**: 80-100px
+**Padding**: 24px horizontal, 20px vertical
+**Background**: White with bottom border
+
+#### Content Area
+
+**Max Width**: 1400px (centered)
+**Padding**: 24-32px
+**Background**: #FAFAFA
+
+### Component Redesigns
+
+#### AccordCard (Notion-style)
+
+**Current Issues**:
+- Too colorful (vibrant gradients)
+- Dense information
+- Always visible actions
+- Heavy borders
+
+**New Design**:
+```
+┌──────────────────────────────────────────┐
+│ 🌼 Bergamot Essential Oil                │  ← Emoji + Name (18px, semibold)
+│ Top Note • 25ml • 500 drops              │  ← Meta (14px, secondary color)
+│                                          │
+│ fresh  citrus  summer                    │  ← Tags (subtle pills)
+│                                          │
+│ Perfumer's Apprentice                    │  ← Supplier (if exists)
+│                                          │
+│ [Actions appear on hover...]             │  ← Hover-only actions
+└──────────────────────────────────────────┘
+```
+
+**Styling**:
+- Background: White
+- Border: None (use shadow)
+- Shadow: 0 1px 3px rgba(0,0,0,0.12)
+- Border-radius: 8px
+- Padding: 20px
+- Hover: Lift 2px, shadow-md
+- Transition: 150ms ease-out
+- Left border: 3px solid position color (subtle)
+
+**Actions** (on hover):
+- View (eye icon)
+- Edit (pencil icon)
+- Delete (trash icon)
+- Positioned: Bottom right, icon buttons
+
+#### AccordForm (Improved)
+
+**Current Issues**:
+- Multi-section tabs create friction
+- Form feels dense
+- Modal too large
+
+**New Design**:
+- Single-column layout
+- Inline section headers (not tabs)
+- Better spacing between fields
+- Floating labels or top-aligned
+- Auto-save draft after 2s idle
+- Keyboard shortcut: Cmd/Ctrl+Enter to save
+
+**Modal**:
+- Max width: 600px
+- Backdrop: Blur effect
+- Animation: Slide up + fade (200ms)
+- Close: Esc key or backdrop click
+
+#### TagSelector (Notion-style)
+
+**New Features**:
+- Click to open dropdown
+- Search filters instantly
+- Grouped by category with headers
+- Keyboard navigation (↑↓ arrows)
+- Enter to select
+- Create new tag inline
+- Selected tags show above input
+
+**Dropdown Style**:
+- Max height: 320px
+- Shadow: shadow-lg
+- Border-radius: 8px
+- Category headers: Bold, uppercase, 12px
+- Items: Hover background change
+- Keyboard highlight: Accent color
+
+#### FilterPanel
+
+**New Design**:
+- Collapsible sections
+- Clean checkbox styles (no borders)
+- Radio buttons with custom styling
+- Active filters: Accent color
+- Clear all: Ghost button
+- Filter count badges
+
+**Mobile**:
+- Drawer from right
+- Full height
+- Backdrop overlay
+- Swipe to close
+
+### Interaction Patterns
+
+#### Inline Editing
+
+**Implementation**:
+- Click to edit: Accord name, volume
+- Input appears with focus
+- Save on blur or Enter
+- Cancel on Esc
+- Auto-save after 2s delay
+- Optimistic UI updates
+
+**Visual Feedback**:
+- Editable items: Dotted underline on hover
+- Editing: Blue border on input
+- Saving: Subtle spinner
+- Success: Brief green highlight
+
+#### Keyboard Shortcuts
+
+**Global**:
+- `/` - Focus search
+- `N` - New accord
+- `?` - Show shortcuts help
+- `Esc` - Close modal/drawer/cancel
+- `Cmd/Ctrl + K` - Command palette (future)
+
+**Navigation**:
+- `H` - Go to home
+- `S` - Go to statistics
+- `G then H` - Go to home (Gmail-style)
+
+**List Navigation**:
+- `↑` `↓` - Navigate items
+- `Enter` - Open selected
+- `E` - Edit selected
+- `D` - Delete selected (with confirmation)
+
+#### Hover States
+
+**Standard Pattern**:
+- Transition: 150ms ease-out
+- Background change (not border)
+- Subtle lift on cards (2-4px)
+- Icon color change
+- Cursor: pointer
+
+**Examples**:
+```css
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.button:hover {
+  background: var(--accent-hover);
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+```
+
+#### Loading States
+
+**Skeleton Screens** (not spinners):
+- Use for initial page load
+- Shimmer animation (1s)
+- Match actual content layout
+- Gray placeholder blocks
+
+**Progress Indicators**:
+- Linear progress bar (top of page)
+- For actions: Button shows spinner
+- For searches: Subtle spinner in input
+
+#### Empty States
+
+**Design**:
+- Large icon or illustration
+- Heading (24px, semibold)
+- Description (16px, secondary color)
+- Primary action button
+- Helpful tips or suggestions
+
+**Examples**:
+- Empty inventory: "Start building your collection"
+- No search results: "Try different keywords"
+- No filtered results: "Adjust your filters"
+
+### Mobile Responsive Design
+
+**Breakpoints**:
+```css
+--mobile: 0-767px
+--tablet: 768-1023px
+--desktop: 1024px+
+```
+
+**Mobile Changes**:
+- Sidebar: Drawer (toggle button in header)
+- Cards: Single column
+- Filters: Bottom sheet or drawer
+- Header: Compact (logo + menu)
+- Touch targets: Minimum 44x44px
+- Font sizes: Slightly larger (16px base)
+
+**Gestures**:
+- Swipe left: Open filters
+- Swipe right: Open sidebar
+- Pull to refresh: Reload list
+- Long press: Show context menu
+
+### Accessibility
+
+**Requirements**:
+- WCAG 2.1 Level AA compliance
+- Keyboard navigation for all interactions
+- Focus indicators (2px accent border)
+- ARIA labels for icons and actions
+- Color contrast ratios:
+  - Text: 4.5:1 minimum
+  - Large text: 3:1 minimum
+  - Interactive elements: 3:1 minimum
+- Screen reader support
+- Reduced motion support (prefer-reduced-motion)
+
+**Focus Management**:
+- Skip links for main content
+- Focus trap in modals
+- Return focus after modal close
+- Visible focus indicators
+- Logical tab order
+
+### Performance Targets
+
+**Metrics**:
+- First Contentful Paint: < 1.5s
+- Time to Interactive: < 3.0s
+- Cumulative Layout Shift: < 0.1
+- Largest Contentful Paint: < 2.5s
+- Lighthouse Score: > 90
+
+**Optimization**:
+- Lazy load components
+- Code splitting by route
+- Image optimization
+- Tree-shaking (Naive UI supports this)
+- Bundle size < 500KB gzipped
+
+### Browser Support (Updated)
+
+- Chrome 90+ ✅
+- Firefox 88+ ✅
+- Safari 14+ ✅
+- Edge 90+ ✅
+- Mobile Safari 14+ ✅
+- Chrome Android 90+ ✅
+
+---
+
+## Implementation Notes (Updated)
+
+**Technology Stack**:
+- **UI Framework**: Naive UI (primary components)
+- **Styling**: Tailwind CSS (utility classes + custom theme)
+- **Icons**: Heroicons or Lucide (outline style)
+- **Animations**: CSS transitions + view-transition API (future)
+- **State**: Pinia (existing)
+- **Forms**: vee-validate (existing)
+- **Toast**: Naive UI Toast (built-in)
+
+**Development Approach**:
+1. Set up Naive UI + Tailwind
+2. Create design token system
+3. Migrate layout (sidebar)
+4. Redesign components one by one
+5. Test and refine
+6. Remove old code
+
+**Documentation**:
+- Component stories (Storybook optional)
+- Design token documentation
+- Keyboard shortcuts guide
+- Accessibility testing checklist
+
+---
+
 ## Notes
 
 - All measurements in pixels (px)
 - Use CSS Grid and Flexbox for layouts
-- Tailwind CSS or custom CSS
-- Component library: Consider Headless UI or Radix UI
-- Icons: Heroicons or Lucide
-- Date picker: Native HTML5 or vue-datepicker
-- Toast notifications: vue-toastification
+- Component library: Naive UI (selected)
+- Styling: Tailwind CSS
+- Icons: Heroicons or Lucide (outline style)
+- Date picker: Naive UI DatePicker
+- Toast notifications: Naive UI Toast (built-in)
+- Design philosophy: Less is more, clarity over decoration

@@ -704,6 +704,262 @@ POST   /api/export/import        - Import accords
 
 ---
 
+### Phase 8.9: Notion-Inspired UI/UX Redesign
+
+**Status**: Planned  
+**Priority**: High  
+**Timeline**: 1-2 weeks  
+**Goal**: Transform Scentora into a clean, minimalist interface inspired by Notion's design principles
+
+#### Design Framework Selection
+
+After evaluating 6 Vue UI frameworks, the recommended approach is:
+
+**Selected Stack**: **Naive UI + Tailwind CSS** (Hybrid Approach)
+
+**Framework Comparison**:
+- ✅ **Naive UI** (9/10) - Clean, minimalist, TypeScript-first, lightweight
+- Headless UI (10/10) - Maximum control but more development time
+- PrimeVue (6/10) - Requires heavy theming
+- Element Plus (5/10) - Too opinionated
+- Vuetify (4/10) - Material Design conflicts with Notion aesthetic
+- Ant Design Vue (5/10) - Different design language
+
+**Rationale**:
+- Naive UI provides clean, minimalist base components
+- Tailwind CSS for utility-first custom styling
+- Best balance of speed vs. control
+- Excellent TypeScript support
+- Lightweight and performant
+
+#### Design Principles to Implement
+
+**1. Clean Typography**
+- System font stack with excellent readability
+- Clear hierarchy (titles, headings, body, captions)
+- Generous line height (1.5-1.7)
+- Restrained font sizes (14px base, 16px for comfortable reading)
+
+**2. Minimalist Color Palette**
+```javascript
+// Notion-inspired colors
+text: {
+  primary: '#37352F',
+  secondary: '#787774',
+  tertiary: '#9B9A97',
+}
+background: {
+  primary: '#FFFFFF',
+  secondary: '#FAFAFA',
+  tertiary: '#F7F6F3',
+}
+border: {
+  default: '#E9E9E7',
+}
+accent: {
+  primary: '#0F766E', // Teal for actions
+}
+```
+
+**3. Spacing System**
+- Consistent 8px grid system
+- Generous whitespace for breathing room
+- 48-64px padding for main containers
+- 24-32px gaps between major sections
+- 8-16px gaps between related items
+
+**4. Interaction Design**
+- Subtle hover states (background changes, not borders)
+- Smooth transitions (150-200ms)
+- Inline editing (click to edit in place)
+- Keyboard shortcuts
+- Delayed tooltips (500ms)
+
+**5. Navigation**
+- Fixed sidebar (collapsible on mobile)
+- Clear hierarchy (workspace → pages → sub-pages)
+- Icon + label for clarity
+- Active state highlighting
+- Breadcrumbs for deep navigation
+
+**6. Component Design**
+- Cards with subtle shadows (0 1px 3px rgba(0,0,0,0.12))
+- Rounded corners (6-8px, not too rounded)
+- Ghost buttons (transparent until hover)
+- Inline actions that appear on hover
+- Modals with backdrop blur
+
+#### Implementation Sub-Phases
+
+**Phase 8.9.1: Foundation & Setup** (2-3 days)
+- [ ] Install Naive UI and Tailwind CSS
+- [ ] Create design system (`design-system/tokens.ts`)
+- [ ] Configure Tailwind with custom theme
+- [ ] Set up global styles and typography
+- [ ] Create base component wrappers
+
+**Phase 8.9.2: Navigation & Layout** (2-3 days)
+- [ ] Create `AppSidebar.vue` component
+  - Logo area at top
+  - Navigation items with icons (Home, Statistics, Settings)
+  - User profile at bottom
+  - Collapse/expand functionality
+- [ ] Restructure `App.vue` for sidebar layout
+- [ ] Implement responsive sidebar (collapse on mobile)
+- [ ] Add breadcrumb navigation
+- [ ] Create header with page title + actions
+
+**Phase 8.9.3: Core Components Redesign** (3-4 days)
+- [ ] Redesign `AccordCard.vue`
+  - Simplify visual hierarchy
+  - Subtle position indicator (left border or emoji)
+  - Actions appear on hover only
+  - Smooth hover lift effect
+- [ ] Redesign `AccordForm.vue`
+  - Single-column layout
+  - Inline section headers
+  - Better input focus states
+  - Auto-save draft support
+  - Keyboard shortcuts (Cmd+Enter to save)
+- [ ] Redesign `TagSelector.vue`
+  - Notion-style dropdown
+  - Grouped categories with headers
+  - Keyboard navigation
+- [ ] Redesign `AccordFilters.vue`
+  - Collapsible sections
+  - Clean checkbox/radio styles
+  - Subtle active states
+
+**Phase 8.9.4: Advanced Interactions** (2-3 days)
+- [ ] Implement inline editing
+  - Click accord name to edit inline
+  - Click volume to quick-adjust
+  - Auto-save after delay
+- [ ] Add keyboard shortcuts
+  - `/` - Focus search
+  - `N` - New accord
+  - `?` - Show shortcuts help
+  - `Esc` - Close modals/cancel
+- [ ] Standardize hover effects (150ms ease)
+- [ ] Implement skeleton screens (not spinners)
+- [ ] Add optimistic UI updates
+
+**Phase 8.9.5: Typography & Spacing Refinement** (1-2 days)
+- [ ] Define type scale (12, 14, 16, 20, 24, 32, 40px)
+- [ ] Set line heights (1.4 for headings, 1.6 for body)
+- [ ] Review and apply 8px grid consistently
+- [ ] Increase whitespace strategically
+- [ ] Replace vibrant colors with subtle tones
+
+**Phase 8.9.6: Empty States & Feedback** (1 day)
+- [ ] Create beautiful empty states
+  - Empty inventory
+  - Empty search results
+  - Empty filters
+- [ ] Implement toast notifications
+- [ ] Add loading indicators
+- [ ] Create form validation feedback
+
+**Phase 8.9.7: Polish & Testing** (2-3 days)
+- [ ] Responsive testing (desktop, tablet, mobile)
+- [ ] Accessibility audit (keyboard nav, ARIA labels, contrast)
+- [ ] Performance optimization (lazy load, bundle size)
+- [ ] Browser testing (Chrome, Firefox, Safari)
+- [ ] Lighthouse audit (score > 90)
+
+#### New File Structure
+
+```
+frontend/src/
+├── design-system/
+│   ├── tokens.ts              # Design tokens
+│   ├── theme.ts               # Naive UI theme config
+│   └── tailwind.config.js     # Tailwind config
+│
+├── components/
+│   ├── layout/
+│   │   ├── AppSidebar.vue     # NEW: Sidebar navigation
+│   │   ├── AppHeader.vue      # NEW: Page header
+│   │   └── AppBreadcrumbs.vue # NEW: Breadcrumbs
+│   │
+│   ├── accord/
+│   │   ├── AccordCard.vue     # REDESIGN
+│   │   ├── AccordForm.vue     # REDESIGN
+│   │   ├── AccordGrid.vue     # NEW: Grid container
+│   │   └── AccordDetail.vue   # NEW: Detail view
+│   │
+│   ├── ui/
+│   │   ├── TagSelector.vue    # REDESIGN
+│   │   ├── FilterPanel.vue    # REDESIGN
+│   │   ├── EmptyState.vue     # NEW: Reusable empty state
+│   │   └── SkeletonCard.vue   # NEW: Loading skeleton
+│   │
+│   └── common/
+│       ├── Button.vue         # NEW: Custom button wrapper
+│       ├── Input.vue          # NEW: Custom input wrapper
+│       └── Modal.vue          # NEW: Custom modal wrapper
+│
+├── composables/
+│   ├── useKeyboard.ts         # NEW: Keyboard shortcuts
+│   ├── useToast.ts            # NEW: Toast notifications
+│   └── useTheme.ts            # NEW: Theme switching
+│
+└── App.vue                     # MAJOR REDESIGN
+```
+
+#### Success Criteria
+
+**Visual Quality**:
+- Clean, uncluttered interface
+- Consistent spacing throughout
+- Professional typography
+- Subtle, purposeful colors
+- Smooth animations (no jank)
+
+**Usability**:
+- Intuitive navigation
+- Fast, responsive interactions
+- Clear feedback for actions
+- Helpful empty states
+- Keyboard accessible
+
+**Technical**:
+- TypeScript type safety maintained
+- Bundle size < 500KB (gzipped)
+- Lighthouse score > 90
+- No accessibility violations
+- Works on all modern browsers
+
+#### Migration Strategy
+
+**Approach**: Gradual Migration
+1. Set up framework alongside existing components
+2. Migrate App.vue first (navigation/layout)
+3. Redesign one component at a time
+4. Keep old components until new ones are ready
+5. Remove old code once migration complete
+
+**Risk Mitigation**:
+- Feature flags for new UI
+- Git branches for each phase
+- Regular user testing
+- Rollback plan if issues arise
+- Performance monitoring
+
+#### Detailed Design Specifications
+
+For complete design specifications including:
+- Full color palette definitions
+- Typography scale and font weights
+- Spacing system (8px grid)
+- Shadow definitions
+- Component mockups
+- Interaction patterns
+
+See: `/home/joe/.copilot/session-state/*/plan.md` (Session planning document)
+
+---
+
 ## Technical Specifications
 
 For detailed technical specifications, see the `specs/` directory:

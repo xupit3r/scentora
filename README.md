@@ -1,12 +1,19 @@
 # Scentora
 
-A perfume cataloging application for tracking scent profiles, notes, and personal journal entries.
+A perfume formulation and accord management system for DIY perfumers and enthusiasts.
+
+## 🎯 Project Status
+
+**Current Phase**: Transitioning to Accord Inventory System  
+**Latest**: Phase 8.2 Backend + Phase 8.3 Frontend Complete  
+**Next**: Phase 8.9 - Notion-Inspired UI/UX Redesign
 
 ## Tech Stack
 
 - **Backend**: Go + Echo + PostgreSQL + JWT Authentication
 - **Frontend**: Vue.js 3 + TypeScript + Pinia
 - **Database**: PostgreSQL
+- **Planned UI**: Naive UI + Tailwind CSS (Phase 8.9)
 
 ## Features
 
@@ -20,17 +27,27 @@ A perfume cataloging application for tracking scent profiles, notes, and persona
 - 🚫 Token rotation for enhanced security
 - 🎫 Invitation-only registration system
 
-### Perfume Management
-- ✨ Catalog perfumes with detailed information
-- 🏺 Track perfume pyramid (top, middle, base notes)
-- 📝 Personal journal entries for each perfume
-- 🔍 Search and filter by notes, designer, concentration, year
-- 📊 Autocomplete for notes based on your collection
+### Accord Management (Current Focus)
+- ✨ Manage perfume accords and essential oils
+- 🏺 Track pyramid position (top, middle, base notes)
+- 📦 Inventory management (volume tracking in ml and drops)
+- 🏷️ Rich tagging system with 57+ predefined tags
+- 🔍 Advanced filtering by position, volume, supplier, tags
+- 🔎 Full-text search across names, notes, and metadata
+- ⚠️ Low stock warnings
+- 📊 Tag-based organization and discovery
 
-### Analytics & Insights
+### UI/UX (Phase 8.9 - Planned)
+- 🎨 Notion-inspired clean, minimalist interface
+- 📱 Responsive design (desktop, tablet, mobile)
+- ⌨️ Keyboard shortcuts for power users
+- ✏️ Inline editing for quick updates
+- 🎯 Sidebar navigation with collapsible sections
+- 🌙 Dark mode support (future)
+
+### Analytics & Export (Future)
 - 📈 Collection statistics dashboard
-- 🎨 Visual charts for perfume analysis
-- 📤 Export/import your collection as JSON
+- 📤 Export/import collection as JSON
 
 ## Getting Started
 
