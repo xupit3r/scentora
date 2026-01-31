@@ -4,6 +4,8 @@
  * 
  * This file contains the design tokens and base styles
  * for all mockups and future implementation.
+ * 
+ * Includes responsive design patterns for mobile, tablet, and desktop.
  */
 
 /* ============================================
@@ -14,6 +16,15 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+/* ============================================
+   Breakpoints
+   ============================================ */
+/*
+  Mobile:  320px - 767px  (default, mobile-first)
+  Tablet:  768px - 1023px
+  Desktop: 1024px+
+*/
 
 /* ============================================
    Design Tokens (CSS Custom Properties)
@@ -418,4 +429,115 @@ body {
   font-weight: var(--font-weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* ============================================
+   Responsive Utilities
+   ============================================ */
+
+/* Mobile-specific utilities */
+@media (max-width: 767px) {
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: block !important; }
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .hide-tablet { display: none !important; }
+  .show-tablet { display: block !important; }
+  .hide-mobile { display: block !important; }
+  .show-mobile { display: none !important; }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+  .hide-desktop { display: none !important; }
+  .show-desktop { display: block !important; }
+}
+
+/* Touch-friendly tap targets (minimum 44x44px) */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile drawer overlay */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.drawer-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile drawer */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background-color: var(--color-bg-tertiary);
+  transform: translateX(-100%);
+  transition: transform var(--transition-normal);
+  z-index: 999;
+  overflow-y: auto;
+}
+
+.mobile-drawer.active {
+  transform: translateX(0);
+}
+
+/* Responsive grid */
+.responsive-grid {
+  display: grid;
+  gap: var(--spacing-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .responsive-grid.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Responsive padding */
+@media (max-width: 767px) {
+  .content-wrapper,
+  .responsive-padding {
+    padding: var(--spacing-4) !important;
+  }
+}
+
+/* Responsive font sizes */
+@media (max-width: 767px) {
+  .responsive-title {
+    font-size: var(--font-size-xl) !important;
+  }
+  
+  .responsive-subtitle {
+    font-size: var(--font-size-base) !important;
+  }
 }

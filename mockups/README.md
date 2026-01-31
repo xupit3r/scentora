@@ -7,6 +7,7 @@ This directory contains design mockups and wireframes for **Phase 8.9** - the No
 ```
 mockups/
 ├── index.html                  # Interactive mockup gallery (START HERE!)
+├── MOBILE_RESPONSIVE.md        # Mobile design guidelines
 ├── assets/
 │   ├── design-system.css      # Design tokens and reusable styles
 │   ├── icons.css              # Icon system styles
@@ -29,7 +30,8 @@ mockups/
     ├── 02-register.html
     ├── 03-main-layout.html
     ├── 04-accord-cards.html
-    └── 05-empty-state.html
+    ├── 05-empty-state.html
+    └── 06-mobile-layout.html  # Mobile responsive demo
 ```
 
 ## 🚀 Quick Start
@@ -88,6 +90,18 @@ Simple, flat SVG icons replace emojis for a professional look:
 - **Color-flexible**: Icons inherit `currentColor` for easy theming
 - **Documentation**: See `assets/icons/README.md` for full icon list and usage
 
+### Mobile Responsive Design
+
+The design system is mobile-first and fully responsive:
+- **Breakpoints**: Mobile (< 768px), Tablet (768-1023px), Desktop (1024px+)
+- **Touch-friendly**: Minimum 44x44px touch targets
+- **Navigation drawer**: Slide-out sidebar on mobile devices
+- **Responsive grid**: Adapts from single column to multi-column layouts
+- **FAB button**: Floating action button for primary mobile actions
+- **Full guidelines**: See `MOBILE_RESPONSIVE.md` for complete documentation
+
+**Demo**: View `high-fidelity/06-mobile-layout.html` to see the mobile drawer navigation, card stacking, and touch-optimized interface in action.
+
 ### Color Palette
 
 | Purpose | Color | Hex |
@@ -133,8 +147,8 @@ Simple, flat SVG icons replace emojis for a professional look:
 
 ### Layout States
 - ✅ Sidebar (expanded)
+- ✅ Mobile view (drawer navigation)
 - ⏳ Sidebar (collapsed) - planned
-- ⏳ Mobile view - planned
 
 ## 🛠️ Design System File
 

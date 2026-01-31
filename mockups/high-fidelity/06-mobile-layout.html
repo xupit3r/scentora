@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Layout - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <link rel="stylesheet" href="../assets/icons.css">
+  <style>
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-bg-secondary);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Mobile viewport simulation */
+    .mobile-frame {
+      max-width: 375px;
+      height: 100vh;
+      margin: 0 auto;
+      background-color: var(--color-bg-primary);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    /* Mobile header */
+    .mobile-header {
+      height: 56px;
+      background-color: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--spacing-4);
+      flex-shrink: 0;
+      z-index: 100;
+    }
+    
+    .menu-button {
+      width: 44px;
+      height: 44px;
+      background-color: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: background-color var(--transition-fast);
+    }
+    
+    .menu-button:active {
+      background-color: var(--color-bg-hover);
+    }
+    
+    .header-title {
+      flex: 1;
+      text-align: center;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .header-action {
+      width: 44px;
+      height: 44px;
+      background-color: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: background-color var(--transition-fast);
+    }
+    
+    .header-action:active {
+      background-color: var(--color-bg-hover);
+    }
+    
+    /* Mobile content */
+    .mobile-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Drawer overlay */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+    }
+    
+    .drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    /* Mobile drawer (sidebar) */
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background-color: var(--color-bg-tertiary);
+      transform: translateX(-100%);
+      transition: transform var(--transition-normal);
+      z-index: 201;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-xl);
+    }
+    
+    .mobile-drawer.active {
+      transform: translateX(0);
+    }
+    
+    .drawer-header {
+      padding: var(--spacing-6) var(--spacing-4);
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .drawer-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+    }
+    
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-lg);
+    }
+    
+    .logo-text {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .close-drawer {
+      width: 44px;
+      height: 44px;
+      background-color: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+    }
+    
+    .drawer-nav {
+      flex: 1;
+      padding: var(--spacing-4);
+      overflow-y: auto;
+    }
+    
+    .nav-section {
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .nav-section-title {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0 var(--spacing-3);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3);
+      margin-bottom: var(--spacing-1);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      min-height: 44px;
+    }
+    
+    .nav-item:active {
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .nav-item.active {
+      background-color: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .drawer-footer {
+      padding: var(--spacing-4);
+      border-top: 1px solid var(--color-border-light);
+    }
+    
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      min-height: 44px;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      flex-shrink: 0;
+    }
+    
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .user-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+    
+    .user-email {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+    
+    /* Content area */
+    .content-area {
+      padding: var(--spacing-4);
+    }
+    
+    .page-header {
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .page-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .page-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    /* Mobile card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--spacing-4);
+    }
+    
+    .card {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-4);
+      position: relative;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background-color: var(--color-accent);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: var(--spacing-3);
+    }
+    
+    .card-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .card-badge {
+      padding: var(--spacing-1) var(--spacing-2);
+      background-color: var(--color-accent-light);
+      color: var(--color-accent);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .card-info {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+    }
+    
+    .tag {
+      padding: var(--spacing-1) var(--spacing-2);
+      background-color: var(--color-bg-tertiary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+    
+    /* FAB (Floating Action Button) */
+    .fab {
+      position: fixed;
+      bottom: var(--spacing-6);
+      right: var(--spacing-6);
+      width: 56px;
+      height: 56px;
+      background-color: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.4);
+      cursor: pointer;
+      z-index: 100;
+      transition: all var(--transition-fast);
+    }
+    
+    .fab:active {
+      transform: scale(0.95);
+    }
+    
+    .mockup-badge {
+      position: fixed;
+      top: var(--spacing-2);
+      right: var(--spacing-2);
+      background-color: var(--color-accent);
+      color: white;
+      padding: var(--spacing-1) var(--spacing-2);
+      border-radius: var(--radius-full);
+      font-size: 10px;
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 300;
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-badge">Mobile 375px</div>
+  
+  <div class="mobile-frame">
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <button class="menu-button" onclick="toggleDrawer()">
+        <span class="icon icon-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </span>
+      </button>
+      
+      <h1 class="header-title">Dashboard</h1>
+      
+      <button class="header-action">
+        <span class="icon icon-md">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </span>
+      </button>
+    </header>
+    
+    <!-- Mobile Content -->
+    <main class="mobile-content">
+      <div class="content-area">
+        <div class="page-header">
+          <h2 class="page-title">Accord Inventory</h2>
+          <p class="page-subtitle">47 accords in your collection</p>
+        </div>
+        
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Bergamot Essential Oil</h3>
+              <span class="card-badge">Top</span>
+            </div>
+            <div class="card-info">
+              50 ml • 1,000 drops<br>
+              Essential Oils Co.
+            </div>
+            <div class="card-tags">
+              <span class="tag">Citrus</span>
+              <span class="tag">Fresh</span>
+              <span class="tag">Uplifting</span>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Rose Absolute</h3>
+              <span class="card-badge">Middle</span>
+            </div>
+            <div class="card-info">
+              15 ml • 300 drops<br>
+              Fragrance Supply
+            </div>
+            <div class="card-tags">
+              <span class="tag">Floral</span>
+              <span class="tag">Romantic</span>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Sandalwood Oil</h3>
+              <span class="card-badge">Base</span>
+            </div>
+            <div class="card-info">
+              100 ml • 2,000 drops<br>
+              Nature's Best
+            </div>
+            <div class="card-tags">
+              <span class="tag">Woody</span>
+              <span class="tag">Warm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- FAB -->
+    <button class="fab">
+      <span class="icon icon-xl icon-white">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+  
+  <!-- Drawer Overlay -->
+  <div class="drawer-overlay" id="overlay" onclick="toggleDrawer()"></div>
+  
+  <!-- Mobile Drawer -->
+  <nav class="mobile-drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-logo">
+        <div class="logo-icon">S</div>
+        <div class="logo-text">Scentora</div>
+      </div>
+      <button class="close-drawer" onclick="toggleDrawer()">
+        <span class="icon icon-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+    
+    <div class="drawer-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <a href="#" class="nav-item active">
+          <span class="icon icon-md">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </span>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="icon icon-md">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              <rect x="8" y="8" width="8" height="8" rx="2"/>
+            </svg>
+          </span>
+          <span>Accord Inventory</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="icon icon-md">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 2v4m6-4v4M4 8h16M4 8v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M4 8l2-4h12l2 4"/>
+              <circle cx="12" cy="14" r="2"/>
+            </svg>
+          </span>
+          <span>Formulations</span>
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Analytics</div>
+        <a href="#" class="nav-item">
+          <span class="icon icon-md">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/>
+              <path d="M18 17V9"/>
+              <path d="M13 17V5"/>
+              <path d="M8 17v-3"/>
+            </svg>
+          </span>
+          <span>Statistics</span>
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Settings</div>
+        <a href="#" class="nav-item">
+          <span class="icon icon-md">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v6m0 6v6"/>
+              <path d="M1 12h6m6 0h6"/>
+              <path d="m4.22 4.22 4.24 4.24m5.08 5.08 4.24 4.24"/>
+              <path d="m19.78 4.22-4.24 4.24m-5.08 5.08-4.24 4.24"/>
+            </svg>
+          </span>
+          <span>Preferences</span>
+        </a>
+      </div>
+    </div>
+    
+    <div class="drawer-footer">
+      <div class="user-profile">
+        <div class="user-avatar">JD</div>
+        <div class="user-info">
+          <div class="user-name">John Doe</div>
+          <div class="user-email">john@example.com</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <script>
+    function toggleDrawer() {
+      const drawer = document.getElementById('drawer');
+      const overlay = document.getElementById('overlay');
+      drawer.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
