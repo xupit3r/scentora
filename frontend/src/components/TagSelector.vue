@@ -167,29 +167,29 @@ function removeTag(tag: string) {
 
 .label {
   display: block;
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
+  color: #37352F;
+  margin-bottom: 8px;
 }
 
 .selected-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  min-height: 2rem;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 32px;
 }
 
 .selected-tag {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  background: #14B8A6;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #0F766E;
   color: white;
-  border-radius: 9999px;
-  font-size: 0.875rem;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -203,7 +203,7 @@ function removeTag(tag: string) {
   justify-content: center;
   color: white;
   opacity: 0.8;
-  transition: opacity 0.2s;
+  transition: opacity 200ms;
 }
 
 .remove-btn:hover {
@@ -211,8 +211,8 @@ function removeTag(tag: string) {
 }
 
 .remove-btn svg {
-  width: 1rem;
-  height: 1rem;
+  width: 14px;
+  height: 14px;
 }
 
 .input-wrapper {
@@ -221,17 +221,22 @@ function removeTag(tag: string) {
 
 .tag-input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #D1D5DB;
+  padding: 10px 12px;
+  border: 1px solid #E9E9E7;
   border-radius: 8px;
-  font-size: 0.875rem;
-  transition: all 0.2s;
+  font-size: 14px;
+  transition: all 200ms;
+  color: #37352F;
 }
 
 .tag-input:focus {
   outline: none;
-  border-color: #14B8A6;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+  border-color: #0F766E;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+.tag-input::placeholder {
+  color: #9B9A97;
 }
 
 .dropdown {
@@ -239,12 +244,12 @@ function removeTag(tag: string) {
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 0.25rem;
+  margin-top: 4px;
   background: white;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #E9E9E7;
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  max-height: 16rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+  max-height: 256px;
   overflow-y: auto;
   z-index: 50;
 }
@@ -253,18 +258,18 @@ function removeTag(tag: string) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
+  padding: 10px 12px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 200ms;
 }
 
 .dropdown-item:hover,
 .dropdown-item.highlighted {
-  background-color: #F3F4F6;
+  background-color: #F7F6F3;
 }
 
 .dropdown-item.empty {
-  color: #6B7280;
+  color: #787774;
   cursor: default;
 }
 
@@ -274,35 +279,37 @@ function removeTag(tag: string) {
 
 .tag-name {
   font-weight: 500;
-  color: #1F2937;
+  color: #37352F;
+  font-size: 14px;
 }
 
 .tag-category {
-  font-size: 0.75rem;
-  color: #6B7280;
+  font-size: 12px;
+  color: #9B9A97;
   text-transform: capitalize;
 }
 
 .suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .suggestion-tag {
-  padding: 0.375rem 0.75rem;
-  background: #F3F4F6;
-  border: 1px solid #E5E7EB;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  color: #4B5563;
+  padding: 6px 12px;
+  background: #FAFAFA;
+  border: 1px solid #E9E9E7;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #787774;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 200ms;
 }
 
 .suggestion-tag:hover {
-  background: #E5E7EB;
-  border-color: #D1D5DB;
+  background: #F7F6F3;
+  border-color: #D9D9D7;
+  color: #37352F;
 }
 </style>

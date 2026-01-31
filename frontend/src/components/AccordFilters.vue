@@ -203,8 +203,9 @@ function clearFilters() {
 .filters-panel {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid #E9E9E7;
 }
 
 .filters-panel.mobile {
@@ -216,7 +217,7 @@ function clearFilters() {
   max-width: 400px;
   border-radius: 0;
   transform: translateX(100%);
-  transition: transform 0.3s ease;
+  transition: transform 300ms ease;
   z-index: 1000;
   overflow-y: auto;
 }
@@ -229,116 +230,128 @@ function clearFilters() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #E9E9E7;
 }
 
 .panel-header h3 {
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 600;
-  color: #1F2937;
+  color: #37352F;
   margin: 0;
 }
 
 .close-btn {
-  padding: 0.5rem;
+  padding: 8px;
   background: none;
   border: none;
   cursor: pointer;
-  color: #6B7280;
+  color: #787774;
+  transition: color 200ms;
 }
 
 .close-btn:hover {
-  color: #1F2937;
+  color: #37352F;
 }
 
 .close-btn svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 20px;
+  height: 20px;
 }
 
 .filters-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 20px;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .filter-label {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: #37352F;
 }
 
 .filter-input {
-  padding: 0.625rem 0.875rem;
-  border: 1px solid #D1D5DB;
+  padding: 10px 12px;
+  border: 1px solid #E9E9E7;
   border-radius: 8px;
-  font-size: 0.875rem;
-  transition: all 0.2s;
+  font-size: 14px;
+  transition: all 200ms;
+  color: #37352F;
 }
 
 .filter-input:focus {
   outline: none;
-  border-color: #14B8A6;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+  border-color: #0F766E;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+.filter-input::placeholder {
+  color: #9B9A97;
 }
 
 .radio-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .radio-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   cursor: pointer;
-  font-size: 0.875rem;
-  color: #4B5563;
+  font-size: 14px;
+  color: #787774;
+  transition: color 200ms;
+}
+
+.radio-label:hover {
+  color: #37352F;
 }
 
 .radio-label input[type="radio"] {
-  width: 1rem;
-  height: 1rem;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
+  accent-color: #0F766E;
 }
 
 .position-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .badge-top {
-  background: linear-gradient(135deg, #FFD93D, #FFA800);
-  color: #4a2800;
+  background: #FEF3C7;
+  color: #92400E;
 }
 
 .badge-middle {
-  background: linear-gradient(135deg, #B565D8, #8B5CF6);
-  color: white;
+  background: #E9D5FF;
+  color: #6B21A8;
 }
 
 .badge-base {
-  background: linear-gradient(135deg, #A0826D, #6B4423);
-  color: white;
+  background: #F5E6D3;
+  color: #78350F;
 }
 
 .range-inputs {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .range-inputs .filter-input {
@@ -346,45 +359,52 @@ function clearFilters() {
 }
 
 .range-separator {
-  color: #6B7280;
-  font-size: 0.875rem;
+  color: #9B9A97;
+  font-size: 14px;
 }
 
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   cursor: pointer;
-  font-size: 0.875rem;
-  color: #4B5563;
+  font-size: 14px;
+  color: #787774;
+  transition: color 200ms;
+}
+
+.checkbox-label:hover {
+  color: #37352F;
 }
 
 .checkbox-label input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
+  accent-color: #0F766E;
 }
 
 .filter-actions {
-  padding-top: 0.5rem;
-  border-top: 1px solid #E5E7EB;
+  padding-top: 12px;
+  border-top: 1px solid #E9E9E7;
 }
 
 .btn-clear {
   width: 100%;
-  padding: 0.625rem 1rem;
+  padding: 10px 16px;
   background: white;
-  color: #6B7280;
-  border: 1px solid #D1D5DB;
+  color: #787774;
+  border: 1px solid #E9E9E7;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 200ms;
 }
 
 .btn-clear:hover {
-  background: #F9FAFB;
-  color: #1F2937;
+  background: #FAFAFA;
+  color: #37352F;
+  border-color: #D9D9D7;
 }
 </style>
