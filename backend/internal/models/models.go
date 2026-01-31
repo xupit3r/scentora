@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/lib/pq"
 )
 
 type User struct {
@@ -15,73 +13,53 @@ type User struct {
 	UpdatedAt    time.Time `json:"updatedAt" db:"updated_at"`
 }
 
-type Perfume struct {
-	ID            string         `json:"_id" db:"id"`
-	UserID        string         `json:"userId" db:"user_id"`
-	Name          string         `json:"name" db:"name"`
-	Designer      string         `json:"designer" db:"designer"`
-	Year          *int           `json:"year,omitempty" db:"year"`
-	Concentration *string        `json:"concentration,omitempty" db:"concentration"`
-	TopNotes      pq.StringArray `json:"-" db:"top_notes"`
-	MiddleNotes   pq.StringArray `json:"-" db:"middle_notes"`
-	BaseNotes     pq.StringArray `json:"-" db:"base_notes"`
-	Description   *string        `json:"description,omitempty" db:"description"`
-	ImageURL      *string        `json:"imageUrl,omitempty" db:"image_url"`
-	CreatedAt     time.Time      `json:"createdAt" db:"created_at"`
-	UpdatedAt     time.Time      `json:"updatedAt" db:"updated_at"`
+// Accord represents a perfume ingredient/accord
+type Accord struct {
+	ID                 string     `json:"_id" db:"id"`
+	UserID             string     `json:"userId" db:"user_id"`
+	Name               string     `json:"name" db:"name"`
+	PyramidPosition    string     `json:"pyramidPosition" db:"pyramid_position"`
+	VolumeMl           float64    `json:"volumeMl" db:"volume_ml"`
+	VolumeDrops        int        `json:"volumeDrops" db:"volume_drops"`
+	Supplier           *string    `json:"supplier,omitempty" db:"supplier"`
+	PurchaseDate       *time.Time `json:"purchaseDate,omitempty" db:"purchase_date"`
+	DilutionPercentage *float64   `json:"dilutionPercentage,omitempty" db:"dilution_percentage"`
+	Notes              *string    `json:"notes,omitempty" db:"notes"`
+	CreatedAt          time.Time  `json:"createdAt" db:"created_at"`
+	UpdatedAt          time.Time  `json:"updatedAt" db:"updated_at"`
 }
 
-type Pyramid struct {
-	Top    []string `json:"top"`
-	Middle []string `json:"middle"`
-	Base   []string `json:"base"`
+// AccordTag represents a tag associated with an accord
+type AccordTag struct {
+	ID        string    `json:"_id" db:"id"`
+	AccordID  string    `json:"accordId" db:"accord_id"`
+	Tag       string    `json:"tag" db:"tag"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 }
 
-type PerfumeResponse struct {
-	ID            string    `json:"_id"`
-	UserID        string    `json:"userId"`
-	Name          string    `json:"name"`
-	Designer      string    `json:"designer"`
-	Year          *int      `json:"year,omitempty"`
-	Concentration *string   `json:"concentration,omitempty"`
-	Pyramid       Pyramid   `json:"pyramid"`
-	Description   *string   `json:"description,omitempty"`
-	ImageURL      *string   `json:"imageUrl,omitempty"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+// PredefinedTag represents a system-defined tag
+type PredefinedTag struct {
+	ID        string    `json:"_id" db:"id"`
+	Category  string    `json:"category" db:"category"`
+	Tag       string    `json:"tag" db:"tag"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 }
 
-func (p *Perfume) ToResponse() *PerfumeResponse {
-	return &PerfumeResponse{
-		ID:            p.ID,
-		UserID:        p.UserID,
-		Name:          p.Name,
-		Designer:      p.Designer,
-		Year:          p.Year,
-		Concentration: p.Concentration,
-		Pyramid: Pyramid{
-			Top:    p.TopNotes,
-			Middle: p.MiddleNotes,
-			Base:   p.BaseNotes,
-		},
-		Description: p.Description,
-		ImageURL:    p.ImageURL,
-		CreatedAt:   p.CreatedAt,
-		UpdatedAt:   p.UpdatedAt,
-	}
-}
-
-type JournalEntry struct {
-	ID         string     `json:"_id" db:"id"`
-	UserID     string     `json:"userId" db:"user_id"`
-	PerfumeID  string     `json:"perfumeId" db:"perfume_id"`
-	Date       string     `json:"date" db:"date"`
-	Content    string     `json:"content" db:"content"`
-	Rating     *int       `json:"rating,omitempty" db:"rating"`
-	Occasion   *string    `json:"occasion,omitempty" db:"occasion"`
-	Weather    *string    `json:"weather,omitempty" db:"weather"`
-	CreatedAt  time.Time  `json:"createdAt" db:"created_at"`
-	UpdatedAt  time.Time  `json:"updatedAt" db:"updated_at"`
+// AccordResponse includes tags in the response
+type AccordResponse struct {
+	ID                 string     `json:"_id"`
+	UserID             string     `json:"userId"`
+	Name               string     `json:"name"`
+	PyramidPosition    string     `json:"pyramidPosition"`
+	VolumeMl           float64    `json:"volumeMl"`
+	VolumeDrops        int        `json:"volumeDrops"`
+	Supplier           *string    `json:"supplier,omitempty"`
+	PurchaseDate       *time.Time `json:"purchaseDate,omitempty"`
+	DilutionPercentage *float64   `json:"dilutionPercentage,omitempty"`
+	Notes              *string    `json:"notes,omitempty"`
+	Tags               []string   `json:"tags"`
+	CreatedAt          time.Time  `json:"createdAt"`
+	UpdatedAt          time.Time  `json:"updatedAt"`
 }
 
 type RefreshToken struct {
@@ -105,41 +83,31 @@ type Invitation struct {
 	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
 }
 
-type CreatePerfumeRequest struct {
-	Name          string   `json:"name" validate:"required"`
-	Designer      string   `json:"designer" validate:"required"`
-	Year          *int     `json:"year"`
-	Concentration *string  `json:"concentration"`
-	Pyramid       Pyramid  `json:"pyramid" validate:"required"`
-	Description   *string  `json:"description"`
-	ImageURL      *string  `json:"imageUrl"`
+// Request types for Accords
+type CreateAccordRequest struct {
+	Name               string     `json:"name" validate:"required"`
+	PyramidPosition    string     `json:"pyramidPosition" validate:"required,oneof=top middle base"`
+	VolumeMl           float64    `json:"volumeMl" validate:"required,gte=0"`
+	Supplier           *string    `json:"supplier"`
+	PurchaseDate       *time.Time `json:"purchaseDate"`
+	DilutionPercentage *float64   `json:"dilutionPercentage" validate:"omitempty,gte=0,lte=100"`
+	Notes              *string    `json:"notes"`
+	Tags               []string   `json:"tags"`
 }
 
-type UpdatePerfumeRequest struct {
-	Name          *string  `json:"name"`
-	Designer      *string  `json:"designer"`
-	Year          *int     `json:"year"`
-	Concentration *string  `json:"concentration"`
-	Pyramid       *Pyramid `json:"pyramid"`
-	Description   *string  `json:"description"`
-	ImageURL      *string  `json:"imageUrl"`
+type UpdateAccordRequest struct {
+	Name               *string    `json:"name"`
+	PyramidPosition    *string    `json:"pyramidPosition" validate:"omitempty,oneof=top middle base"`
+	VolumeMl           *float64   `json:"volumeMl" validate:"omitempty,gte=0"`
+	Supplier           *string    `json:"supplier"`
+	PurchaseDate       *time.Time `json:"purchaseDate"`
+	DilutionPercentage *float64   `json:"dilutionPercentage" validate:"omitempty,gte=0,lte=100"`
+	Notes              *string    `json:"notes"`
+	Tags               []string   `json:"tags"`
 }
 
-type CreateJournalRequest struct {
-	PerfumeID string  `json:"perfumeId" validate:"required"`
-	Date      string  `json:"date" validate:"required"`
-	Content   string  `json:"content" validate:"required"`
-	Rating    *int    `json:"rating" validate:"omitempty,min=1,max=10"`
-	Occasion  *string `json:"occasion"`
-	Weather   *string `json:"weather"`
-}
-
-type UpdateJournalRequest struct {
-	Date     *string `json:"date"`
-	Content  *string `json:"content"`
-	Rating   *int    `json:"rating" validate:"omitempty,min=1,max=10"`
-	Occasion *string `json:"occasion"`
-	Weather  *string `json:"weather"`
+type AddTagRequest struct {
+	Tag string `json:"tag" validate:"required,min=1,max=50"`
 }
 
 type RegisterRequest struct {
@@ -178,41 +146,31 @@ type ErrorDetail struct {
 	Details interface{} `json:"details,omitempty"`
 }
 
+// Export/Import types
+type ExportResponse struct {
+	Version    string            `json:"version"`
+	ExportDate string            `json:"exportDate"`
+	Accords    []*AccordResponse `json:"accords"`
+}
+
 type ImportCollectionRequest struct {
-	Version        string           `json:"version"`
-	ExportDate     string           `json:"exportDate"`
-	Perfumes       []ImportPerfume  `json:"perfumes" validate:"required"`
-	JournalEntries []ImportJournal  `json:"journalEntries"`
+	Version    string          `json:"version"`
+	ExportDate string          `json:"exportDate"`
+	Accords    []ImportAccord  `json:"accords" validate:"required"`
 }
 
-type ImportPerfume struct {
-	Name          string   `json:"name"`
-	Designer      string   `json:"designer"`
-	Year          *int     `json:"year"`
-	Concentration *string  `json:"concentration"`
-	Pyramid       Pyramid  `json:"pyramid"`
-	Description   *string  `json:"description"`
-	ImageURL      *string  `json:"imageUrl"`
-}
-
-type ImportJournal struct {
-	PerfumeID string  `json:"perfumeId"`
-	Date      string  `json:"date"`
-	Content   string  `json:"content"`
-	Rating    *int    `json:"rating"`
-	Occasion  *string `json:"occasion"`
-	Weather   *string `json:"weather"`
+type ImportAccord struct {
+	Name               string     `json:"name"`
+	PyramidPosition    string     `json:"pyramidPosition"`
+	VolumeMl           float64    `json:"volumeMl"`
+	Supplier           *string    `json:"supplier"`
+	PurchaseDate       *time.Time `json:"purchaseDate"`
+	DilutionPercentage *float64   `json:"dilutionPercentage"`
+	Notes              *string    `json:"notes"`
+	Tags               []string   `json:"tags"`
 }
 
 type ImportResult struct {
-	PerfumesImported       int      `json:"perfumesImported"`
-	JournalEntriesImported int      `json:"journalEntriesImported"`
-	Errors                 []string `json:"errors"`
-}
-
-type ExportResponse struct {
-	Version        string              `json:"version"`
-	ExportDate     string              `json:"exportDate"`
-	Perfumes       []*PerfumeResponse  `json:"perfumes"`
-	JournalEntries []*JournalEntry     `json:"journalEntries"`
+	AccordsImported int      `json:"accordsImported"`
+	Errors          []string `json:"errors"`
 }

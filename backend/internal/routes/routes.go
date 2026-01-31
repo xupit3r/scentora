@@ -13,24 +13,15 @@ import (
 func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
-	perfumeRepo := repository.NewPerfumeRepository(db)
-	journalRepo := repository.NewJournalRepository(db)
 	tokenRepo := repository.NewRefreshTokenRepository(db)
 	invitationRepo := repository.NewInvitationRepository(db)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepo, tokenRepo, invitationRepo, cfg)
-	perfumeService := services.NewPerfumeService(perfumeRepo)
-	journalService := services.NewJournalService(journalRepo, perfumeRepo)
 	invitationService := services.NewInvitationService(invitationRepo)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
-	perfumeHandler := handlers.NewPerfumeHandler(perfumeService)
-	journalHandler := handlers.NewJournalHandler(journalService)
-	notesHandler := handlers.NewNotesHandler(perfumeRepo)
-	statsHandler := handlers.NewStatsHandler(perfumeRepo, journalRepo)
-	exportHandler := handlers.NewExportHandler(perfumeRepo, journalRepo)
 	invitationHandler := handlers.NewInvitationHandler(invitationService)
 
 	// API group
@@ -58,35 +49,18 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	invitations.GET("", invitationHandler.List)
 	invitations.DELETE("/:code", invitationHandler.Revoke)
 
-	// Perfume routes (protected)
-	perfumes := api.Group("/perfumes")
-	perfumes.Use(middleware.JWTAuth(cfg))
-	perfumes.GET("", perfumeHandler.List)
-	perfumes.GET("/:id", perfumeHandler.Get)
-	perfumes.POST("", perfumeHandler.Create)
-	perfumes.PUT("/:id", perfumeHandler.Update)
-	perfumes.DELETE("/:id", perfumeHandler.Delete)
+	// TODO: Add accord routes in Phase 8.2
+	// accords := api.Group("/accords")
+	// accords.Use(middleware.JWTAuth(cfg))
 
-	// Journal routes (protected)
-	perfumes.GET("/:perfumeId/journal", journalHandler.ListByPerfume)
-	perfumes.POST("/:perfumeId/journal", journalHandler.Create)
+	// TODO: Add tag routes in Phase 8.2
+	// tags := api.Group("/tags")
+	// tags.Use(middleware.JWTAuth(cfg))
 
-	journal := api.Group("/journal")
-	journal.Use(middleware.JWTAuth(cfg))
-	journal.PUT("/:id", journalHandler.Update)
-	journal.DELETE("/:id", journalHandler.Delete)
-
-	// Other routes (protected)
-	notes := api.Group("/notes")
-	notes.Use(middleware.JWTAuth(cfg))
-	notes.GET("", notesHandler.GetAll)
-
-	stats := api.Group("/stats")
-	stats.Use(middleware.JWTAuth(cfg))
-	stats.GET("", statsHandler.Get)
-
-	export := api.Group("/export")
-	export.Use(middleware.JWTAuth(cfg))
-	export.GET("", exportHandler.Export)
-	export.POST("/import", exportHandler.Import)
+	// TODO: Add stats/export routes in Phase 8.4
+	// stats := api.Group("/stats")
+	// stats.Use(middleware.JWTAuth(cfg))
+	
+	// export := api.Group("/export")
+	// export.Use(middleware.JWTAuth(cfg))
 }
