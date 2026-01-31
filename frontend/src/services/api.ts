@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Perfume, JournalEntry, Accord, CreateAccordRequest, UpdateAccordRequest, AccordFilters, PredefinedTag } from '@/types';
+import type { Accord, CreateAccordRequest, UpdateAccordRequest, AccordFilters, PredefinedTag } from '@/types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -88,98 +88,18 @@ export const tagService = {
   },
 };
 
-// Legacy services (to be removed later)
-export interface PerfumeFilters {
-  search?: string;
-  concentration?: string;
-  year?: number;
-  note?: string;
-}
-
-export const perfumeService = {
-  async getAll(filters?: PerfumeFilters): Promise<Perfume[]> {
-    const { data } = await api.get('/perfumes', { params: filters });
-    return data;
-  },
-
-  async getById(id: string): Promise<Perfume> {
-    const { data } = await api.get(`/perfumes/${id}`);
-    return data;
-  },
-
-  async create(perfume: Omit<Perfume, '_id' | '_rev' | 'createdAt' | 'updatedAt'>): Promise<Perfume> {
-    const { data } = await api.post('/perfumes', perfume);
-    return data;
-  },
-
-  async update(id: string, perfume: Partial<Perfume>): Promise<Perfume> {
-    const { data } = await api.put(`/perfumes/${id}`, perfume);
-    return data;
-  },
-
-  async delete(id: string): Promise<void> {
-    await api.delete(`/perfumes/${id}`);
-  },
-};
-
-export const journalService = {
-  async getByPerfumeId(perfumeId: string): Promise<JournalEntry[]> {
-    const { data } = await api.get(`/perfumes/${perfumeId}/journal`);
-    return data;
-  },
-
-  async create(entry: Omit<JournalEntry, '_id' | '_rev' | 'createdAt' | 'updatedAt'>): Promise<JournalEntry> {
-    const { data } = await api.post(`/perfumes/${entry.perfumeId}/journal`, entry);
-    return data;
-  },
-
-  async update(id: string, entry: Partial<JournalEntry>): Promise<JournalEntry> {
-    const { data } = await api.put(`/journal/${id}`, entry);
-    return data;
-  },
-
-  async delete(id: string): Promise<void> {
-    await api.delete(`/journal/${id}`);
-  },
-};
-
-export const notesService = {
-  async getAll(): Promise<string[]> {
-    const { data } = await api.get('/notes');
-    return data.notes;
-  },
-};
-
-export interface CollectionStats {
-  overview: {
-    totalPerfumes: number;
-    totalJournalEntries: number;
-    averageRating: string;
-    uniqueNotes: number;
-    uniqueDesigners: number;
-  };
-  topDesigners: Array<{ designer: string; count: number }>;
-  topNotes: Array<{ note: string; count: number }>;
-  concentrationDistribution: Record<string, number>;
-  yearDistribution: Array<{ year: number; count: number }>;
-  pyramidStats: {
-    topNotes: number;
-    middleNotes: number;
-    baseNotes: number;
-    avgNotesPerPerfume: string;
-  };
-}
-
+// Statistics API Service
 export const statsService = {
-  async getCollectionStats(): Promise<CollectionStats> {
+  async getStats(): Promise<any> {
     const { data } = await api.get('/stats');
     return data;
   },
 };
 
+// Export/Import API Service
 export const exportService = {
   async exportCollection(): Promise<Blob> {
-    const { data } = await api.get('/export/collection', {
+    const { data } = await api.get('/export', {
       responseType: 'blob',
     });
     return data;
@@ -194,3 +114,4 @@ export const exportService = {
 };
 
 export default api;
+
