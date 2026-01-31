@@ -1,42 +1,46 @@
 <template>
   <div class="auth-container">
     <div class="auth-card">
-      <h1>Welcome to Scentora</h1>
-      <p class="subtitle">Login to access your perfume collection</p>
+      <div class="auth-header">
+        <h1>🌸</h1>
+        <h2>Welcome to Scentora</h2>
+        <p class="subtitle">Login to access your perfume collection</p>
+      </div>
 
-      <form @submit.prevent="handleLogin" class="auth-form">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            v-model="email"
+      <n-form @submit.prevent="handleLogin" class="auth-form">
+        <n-form-item label="Email">
+          <n-input
+            v-model:value="email"
             type="email"
-            required
             placeholder="your@email.com"
-            autocomplete="email"
+            size="large"
           />
-        </div>
+        </n-form-item>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            v-model="password"
+        <n-form-item label="Password">
+          <n-input
+            v-model:value="password"
             type="password"
-            required
             placeholder="••••••••"
-            autocomplete="current-password"
+            size="large"
+            show-password-on="click"
           />
-        </div>
+        </n-form-item>
+
+        <n-button
+          type="primary"
+          attr-type="submit"
+          :loading="authStore.isLoading"
+          block
+          size="large"
+        >
+          {{ authStore.isLoading ? 'Logging in...' : 'Login' }}
+        </n-button>
 
         <div v-if="authStore.error" class="error-message">
           {{ authStore.error }}
         </div>
-
-        <button type="submit" :disabled="authStore.isLoading" class="btn-primary">
-          {{ authStore.isLoading ? 'Logging in...' : 'Login' }}
-        </button>
-      </form>
+      </n-form>
 
       <div class="auth-footer">
         <p class="info-text">
@@ -72,110 +76,66 @@ async function handleLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #FAFAFA;
   padding: 20px;
 }
 
 .auth-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 40px;
+  border-radius: 16px;
+  padding: 48px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #E9E9E7;
 }
 
-h1 {
-  margin: 0 0 8px 0;
-  color: #333;
-  font-size: 28px;
+.auth-header {
   text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-header h1 {
+  font-size: 48px;
+  margin: 0 0 16px 0;
+}
+
+.auth-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #37352F;
+  margin: 0 0 8px 0;
 }
 
 .subtitle {
-  margin: 0 0 32px 0;
-  color: #666;
-  text-align: center;
+  color: #787774;
+  margin: 0;
   font-size: 14px;
 }
 
 .auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-group label {
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-}
-
-.form-group input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 15px;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  margin-bottom: 24px;
 }
 
 .error-message {
-  background: #fee;
-  color: #c33;
+  margin-top: 16px;
   padding: 12px;
-  border-radius: 6px;
+  background: #FEE2E2;
+  color: #991B1B;
+  border-radius: 8px;
   font-size: 14px;
-  border-left: 4px solid #c33;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  text-align: center;
 }
 
 .auth-footer {
-  margin-top: 24px;
   text-align: center;
+  padding-top: 24px;
+  border-top: 1px solid #E9E9E7;
+}
+
+.info-text {
+  color: #9B9A97;
   font-size: 14px;
-  color: #666;
-}
-
-.auth-footer a {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.auth-footer a:hover {
-  text-decoration: underline;
+  margin: 0;
 }
 </style>
