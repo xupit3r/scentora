@@ -4,26 +4,70 @@ Guidelines for creating responsive, mobile-friendly interfaces in Scentora.
 
 ## 📱 Breakpoints
 
-We follow a mobile-first approach with three main breakpoints:
+We follow a mobile-first approach with **8 granular breakpoints** to support all device form factors gracefully:
 
-| Device | Breakpoint | Strategy |
-|--------|------------|----------|
-| **Mobile** | 320px - 767px | Default styles, single column |
-| **Tablet** | 768px - 1023px | 2-column layouts, expanded spacing |
-| **Desktop** | 1024px+ | Multi-column, full sidebar |
+| Name | Breakpoint | Devices | Grid Columns |
+|------|------------|---------|--------------|
+| **xs** | 320px - 479px | Small mobile phones | 1 column |
+| **sm** | 480px - 639px | Large mobile phones | 1 column |
+| **md** | 640px - 767px | Small tablets (portrait) | 2 columns |
+| **lg** | 768px - 1023px | Tablets | 2 columns |
+| **xl** | 1024px - 1279px | Small desktops/laptops | 3 columns |
+| **2xl** | 1280px - 1535px | Standard desktops | 4 columns |
+| **3xl** | 1536px - 1919px | Large desktops | 5 columns |
+| **4xl** | 1920px+ | Ultra-wide / 4K displays | 6 columns |
+
+### Usage in CSS
 
 ```css
-/* Mobile-first (default) */
-.element { /* mobile styles */ }
-
-/* Tablet and up */
-@media (min-width: 768px) {
-  .element { /* tablet styles */ }
+/* Mobile-first (xs): Default styles */
+.element { 
+  padding: 16px;
+  font-size: 16px;
 }
 
-/* Desktop and up */
+/* sm: Large phones (480px+) */
+@media (min-width: 480px) {
+  .element { padding: 20px; }
+}
+
+/* md: Small tablets (640px+) */
+@media (min-width: 640px) {
+  .element { padding: 24px; }
+}
+
+/* lg: Tablets (768px+) */
+@media (min-width: 768px) {
+  .element { 
+    padding: 24px;
+    font-size: 18px;
+  }
+}
+
+/* xl: Small desktops (1024px+) */
 @media (min-width: 1024px) {
-  .element { /* desktop styles */ }
+  .element { padding: 32px; }
+}
+
+/* 2xl: Standard desktops (1280px+) */
+@media (min-width: 1280px) {
+  .element { 
+    padding: 40px;
+    font-size: 20px;
+  }
+}
+
+/* 3xl: Large desktops (1536px+) */
+@media (min-width: 1536px) {
+  .element { padding: 48px; }
+}
+
+/* 4xl: Ultra-wide (1920px+) */
+@media (min-width: 1920px) {
+  .element { 
+    padding: 64px;
+    font-size: 24px;
+  }
 }
 ```
 
@@ -57,18 +101,52 @@ We follow a mobile-first approach with three main breakpoints:
 
 ### 3. Content Adaptation
 
-**Mobile:**
-- Single column layouts
-- Stacked cards
-- Reduced padding (16px)
-- Smaller font sizes for titles
-- Hidden secondary information
+**Extra Small Mobile (xs: 320-479px):**
+- Minimal padding (16px)
+- Smallest font sizes
+- Compact spacing
+- Essential content only
+- Single column
 
-**Desktop:**
-- Multi-column grids (2-4 columns)
-- Side-by-side layouts
-- Generous padding (48-64px)
-- Full information displayed
+**Small Mobile (sm: 480-639px):**
+- Slightly increased padding (20px)
+- Single column maintained
+- Better spacing between elements
+
+**Medium (md: 640-767px):**
+- Two-column grids where appropriate
+- Standard padding (24px)
+- More comfortable spacing
+
+**Large / Tablet (lg: 768-1023px):**
+- Two-column layouts standard
+- Expanded spacing
+- Sidebar can be collapsible
+- More detailed information shown
+
+**Extra Large / Desktop (xl: 1024-1279px):**
+- Three-column grids
+- Fixed sidebar (280px)
+- Full feature set
+- Standard desktop spacing
+
+**2X Large / Standard Desktop (2xl: 1280-1535px):**
+- Four-column grids
+- Generous whitespace
+- Comfortable reading widths
+- Full navigation always visible
+
+**3X Large / Large Desktop (3xl: 1536-1919px):**
+- Five-column grids
+- Maximum information density
+- Wide content areas
+- Enhanced spacing
+
+**4X Large / Ultra-wide (4xl: 1920px+):**
+- Six-column grids
+- Optimal for multi-tasking
+- Extra padding (64px+)
+- Larger typography scale
 
 ## 📐 Component Patterns
 
@@ -137,34 +215,86 @@ We follow a mobile-first approach with three main breakpoints:
 
 ### Cards
 
-**Mobile:**
+**Mobile (xs-sm: < 640px):**
 - Full width (single column)
 - Compact padding (16px)
 - Stacked information
 - Essential info only
 
-**Desktop:**
-- Grid layout (2-4 columns)
+**Small Tablet (md: 640-767px):**
+- Two-column grid
 - Standard padding (20px)
+
+**Tablet (lg: 768-1023px):**
+- Two-column grid
 - Expanded information
-- Hover effects
+- Hover effects enabled
+
+**Small Desktop (xl: 1024-1279px):**
+- Three-column grid
+- Standard padding (20px)
+
+**Standard Desktop (2xl: 1280-1535px):**
+- Four-column grid
+- Full information
+- Enhanced hover effects
+
+**Large Desktop (3xl: 1536-1919px):**
+- Five-column grid
+- Comfortable spacing
+
+**Ultra-wide (4xl: 1920px+):**
+- Six-column grid
+- Maximum density
+- Extra spacing between cards
 
 ```css
 .card-grid {
   display: grid;
   gap: var(--spacing-4);
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* xs: 1 col */
+}
+
+@media (min-width: 480px) {
+  .card-grid {
+    gap: var(--spacing-5); /* sm: better spacing */
+  }
 }
 
 @media (min-width: 640px) {
   .card-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr); /* md: 2 cols */
+  }
+}
+
+@media (min-width: 768px) {
+  .card-grid {
+    gap: var(--spacing-6); /* lg: expanded spacing */
   }
 }
 
 @media (min-width: 1024px) {
   .card-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* xl: 3 cols */
+  }
+}
+
+@media (min-width: 1280px) {
+  .card-grid {
+    grid-template-columns: repeat(4, 1fr); /* 2xl: 4 cols */
+  }
+}
+
+@media (min-width: 1536px) {
+  .card-grid {
+    grid-template-columns: repeat(5, 1fr); /* 3xl: 5 cols */
+  }
+}
+
+@media (min-width: 1920px) {
+  .card-grid {
+    grid-template-columns: repeat(6, 1fr); /* 4xl: 6 cols */
+    gap: var(--spacing-8);
   }
 }
 ```
@@ -233,40 +363,149 @@ Scale font sizes appropriately for mobile:
 
 ## 📏 Spacing
 
-Reduce spacing on mobile to maximize content area:
+Spacing scales fluidly across breakpoints to maintain optimal density:
 
 ```css
 .content-wrapper {
-  padding: var(--spacing-4); /* 16px on mobile */
+  padding: 16px; /* xs: mobile */
+}
+
+@media (min-width: 480px) {
+  .content-wrapper {
+    padding: 20px; /* sm: large phone */
+  }
+}
+
+@media (min-width: 640px) {
+  .content-wrapper {
+    padding: 24px; /* md: small tablet */
+  }
 }
 
 @media (min-width: 768px) {
   .content-wrapper {
-    padding: var(--spacing-8); /* 32px on tablet */
+    padding: 24px; /* lg: tablet */
   }
 }
 
 @media (min-width: 1024px) {
   .content-wrapper {
-    padding: var(--spacing-12); /* 48px on desktop */
+    padding: 32px; /* xl: small desktop */
+  }
+}
+
+@media (min-width: 1280px) {
+  .content-wrapper {
+    padding: 40px; /* 2xl: desktop */
+  }
+}
+
+@media (min-width: 1536px) {
+  .content-wrapper {
+    padding: 48px; /* 3xl: large desktop */
+  }
+}
+
+@media (min-width: 1920px) {
+  .content-wrapper {
+    padding: 64px; /* 4xl: ultra-wide */
+  }
+}
+```
+
+### Container Max-Widths
+
+Use the `.container` class for centered, max-width constrained content:
+
+```css
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+  max-width: 100%; /* xs-sm: full width */
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px; /* md */
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px; /* lg */
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px; /* xl */
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px; /* 2xl */
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1536px; /* 3xl */
+  }
+}
+
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1920px; /* 4xl */
+    padding: 0 32px;
   }
 }
 ```
 
 ## 🔄 Responsive Utilities
 
-Use utility classes for show/hide patterns:
+Use utility classes for show/hide patterns across all breakpoints:
 
 ```html
-<!-- Show only on mobile -->
-<div class="show-mobile hide-tablet">...</div>
+<!-- Show only on extra small mobile -->
+<div class="show-xs hide-sm">Visible only on phones < 480px</div>
 
-<!-- Show on tablet and desktop -->
-<div class="hide-mobile show-tablet">...</div>
+<!-- Show only on small mobile -->
+<div class="hide-xs show-sm hide-md">Visible only on phones 480-639px</div>
+
+<!-- Show only on small tablets -->
+<div class="hide-sm show-md hide-lg">Visible only on 640-767px</div>
+
+<!-- Show on tablets and up -->
+<div class="hide-xs hide-sm show-lg">Visible on tablets and larger</div>
 
 <!-- Show only on desktop -->
-<div class="hide-mobile hide-tablet show-desktop">...</div>
+<div class="hide-mobile show-desktop">Desktop only (1024px+)</div>
+
+<!-- Show on large desktops only -->
+<div class="hide-xl show-2xl">Visible on 1280px+ screens</div>
+
+<!-- Show on ultra-wide only -->
+<div class="hide-3xl show-4xl">Ultra-wide only (1920px+)</div>
 ```
+
+### Available Utility Classes
+
+| Class | Breakpoint | Behavior |
+|-------|------------|----------|
+| `.show-xs` / `.hide-xs` | < 480px | Extra small mobile |
+| `.show-sm` / `.hide-sm` | 480px+ | Small mobile and up |
+| `.show-md` / `.hide-md` | 640px+ | Small tablets and up |
+| `.show-lg` / `.hide-lg` | 768px+ | Tablets and up |
+| `.show-xl` / `.hide-xl` | 1024px+ | Small desktops and up |
+| `.show-2xl` / `.hide-2xl` | 1280px+ | Standard desktops and up |
+| `.show-3xl` / `.hide-3xl` | 1536px+ | Large desktops and up |
+| `.show-4xl` / `.hide-4xl` | 1920px+ | Ultra-wide and up |
+| `.show-mobile` / `.hide-mobile` | Legacy (< 768px) | Mobile devices |
+| `.show-tablet` / `.hide-tablet` | Legacy (768-1023px) | Tablets |
+| `.show-desktop` / `.hide-desktop` | Legacy (1024px+) | Desktops |
 
 ## ⚡ Performance Considerations
 

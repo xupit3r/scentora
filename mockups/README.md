@@ -92,15 +92,20 @@ Simple, flat SVG icons replace emojis for a professional look:
 
 ### Mobile Responsive Design
 
-The design system is mobile-first and fully responsive:
-- **Breakpoints**: Mobile (< 768px), Tablet (768-1023px), Desktop (1024px+)
+The design system includes comprehensive mobile support with **8 granular breakpoints**:
+
+- **Mobile-first approach**: Progressive enhancement from 320px to 1920px+
+- **8 breakpoints**: xs (320px), sm (480px), md (640px), lg (768px), xl (1024px), 2xl (1280px), 3xl (1536px), 4xl (1920px+)
+- **Fluid grid system**: Automatically scales from 1 to 6 columns based on viewport
 - **Touch-friendly**: Minimum 44x44px touch targets
 - **Navigation drawer**: Slide-out sidebar on mobile devices
-- **Responsive grid**: Adapts from single column to multi-column layouts
 - **FAB button**: Floating action button for primary mobile actions
+- **Container widths**: Max-width constraints at each breakpoint for optimal readability
 - **Full guidelines**: See `MOBILE_RESPONSIVE.md` for complete documentation
 
-**Demo**: View `high-fidelity/06-mobile-layout.html` to see the mobile drawer navigation, card stacking, and touch-optimized interface in action.
+**Demos**: 
+- `high-fidelity/06-mobile-layout.html` - Mobile drawer navigation and touch interface
+- `high-fidelity/07-responsive-breakpoints.html` - Interactive breakpoint demo (resize to see all 8 breakpoints)
 
 ### Color Palette
 

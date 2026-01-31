@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Breakpoints Demo - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      font-family: var(--font-family);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: var(--spacing-6);
+      min-height: 100vh;
+    }
+    
+    .demo-container {
+      max-width: 100%;
+      margin: 0 auto;
+      background-color: var(--color-bg-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-6);
+      box-shadow: var(--shadow-xl);
+    }
+    
+    .demo-header {
+      text-align: center;
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .demo-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .demo-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-4);
+    }
+    
+    .current-breakpoint {
+      display: inline-block;
+      padding: var(--spacing-2) var(--spacing-4);
+      background-color: var(--color-accent);
+      color: white;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+    }
+    
+    .breakpoint-indicator {
+      background-color: var(--color-bg-tertiary);
+      border: 2px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-4);
+      margin-bottom: var(--spacing-4);
+      text-align: center;
+    }
+    
+    .indicator-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .indicator-value {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .grid-demo {
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-4);
+    }
+    
+    .demo-grid {
+      display: grid;
+      gap: var(--spacing-4);
+      margin-bottom: var(--spacing-4);
+    }
+    
+    .grid-item {
+      background-color: var(--color-accent-light);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-4);
+      text-align: center;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-accent);
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .breakpoint-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: var(--spacing-8);
+      font-size: var(--font-size-sm);
+    }
+    
+    .breakpoint-table th,
+    .breakpoint-table td {
+      padding: var(--spacing-3);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .breakpoint-table th {
+      background-color: var(--color-bg-tertiary);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .breakpoint-table td {
+      color: var(--color-text-secondary);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: var(--spacing-1) var(--spacing-2);
+      background-color: var(--color-bg-tertiary);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .badge-active {
+      background-color: var(--color-accent);
+      color: white;
+    }
+    
+    /* Responsive grid demos */
+    .demo-grid {
+      grid-template-columns: 1fr; /* xs: 1 col */
+    }
+    
+    @media (min-width: 480px) {
+      .demo-grid {
+        gap: var(--spacing-5); /* sm: better spacing */
+      }
+    }
+    
+    @media (min-width: 640px) {
+      .demo-grid {
+        grid-template-columns: repeat(2, 1fr); /* md: 2 cols */
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .demo-grid {
+        gap: var(--spacing-6); /* lg: expanded spacing */
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .demo-grid {
+        grid-template-columns: repeat(3, 1fr); /* xl: 3 cols */
+      }
+    }
+    
+    @media (min-width: 1280px) {
+      .demo-grid {
+        grid-template-columns: repeat(4, 1fr); /* 2xl: 4 cols */
+      }
+    }
+    
+    @media (min-width: 1536px) {
+      .demo-grid {
+        grid-template-columns: repeat(5, 1fr); /* 3xl: 5 cols */
+      }
+    }
+    
+    @media (min-width: 1920px) {
+      .demo-grid {
+        grid-template-columns: repeat(6, 1fr); /* 4xl: 6 cols */
+        gap: var(--spacing-8);
+      }
+    }
+    
+    /* Responsive container */
+    @media (min-width: 640px) {
+      .demo-container {
+        padding: var(--spacing-8);
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .demo-container {
+        padding: var(--spacing-10);
+      }
+    }
+    
+    @media (min-width: 1920px) {
+      .demo-container {
+        padding: var(--spacing-12);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <div class="demo-header">
+      <h1 class="demo-title">Responsive Breakpoint System</h1>
+      <p class="demo-subtitle">Resize your browser window to see how the layout adapts</p>
+      <div class="current-breakpoint" id="breakpoint-display">Loading...</div>
+    </div>
+    
+    <div class="breakpoint-indicator">
+      <div class="indicator-label">Current Viewport Width</div>
+      <div class="indicator-value" id="viewport-width">---px</div>
+    </div>
+    
+    <h2 class="section-title">📏 Breakpoint Reference</h2>
+    <table class="breakpoint-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Range</th>
+          <th>Devices</th>
+          <th>Grid Columns</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>xs</strong></td>
+          <td>320px - 479px</td>
+          <td>Small mobile phones</td>
+          <td>1 column</td>
+          <td><span class="badge" id="badge-xs">-</span></td>
+        </tr>
+        <tr>
+          <td><strong>sm</strong></td>
+          <td>480px - 639px</td>
+          <td>Large mobile phones</td>
+          <td>1 column</td>
+          <td><span class="badge" id="badge-sm">-</span></td>
+        </tr>
+        <tr>
+          <td><strong>md</strong></td>
+          <td>640px - 767px</td>
+          <td>Small tablets (portrait)</td>
+          <td>2 columns</td>
+          <td><span class="badge" id="badge-md">-</span></td>
+        </tr>
+        <tr>
+          <td><strong>lg</strong></td>
+          <td>768px - 1023px</td>
+          <td>Tablets</td>
+          <td>2 columns</td>
+          <td><span class="badge" id="badge-lg">-</span></td>
+        </tr>
+        <tr>
+          <td><strong>xl</strong></td>
+          <td>1024px - 1279px</td>
+          <td>Small desktops/laptops</td>
+          <td>3 columns</td>
+          <td><span class="badge" id="badge-xl">-</span></td>
+        </tr>
+        <tr>
+          <td><strong>2xl</strong></td>
+          <td>1280px - 1535px</td>
+          <td>Standard desktops</td>
+          <td>4 columns</td>
+          <td><span class="badge" id="badge-2xl">-</span></td>
+        </tr>
+        <tr>
+          <td><strong>3xl</strong></td>
+          <td>1536px - 1919px</td>
+          <td>Large desktops</td>
+          <td>5 columns</td>
+          <td><span class="badge" id="badge-3xl">-</span></td>
+        </tr>
+        <tr>
+          <td><strong>4xl</strong></td>
+          <td>1920px+</td>
+          <td>Ultra-wide / 4K displays</td>
+          <td>6 columns</td>
+          <td><span class="badge" id="badge-4xl">-</span></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="grid-demo">
+      <h2 class="section-title">🎯 Responsive Grid Demo</h2>
+      <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-4); font-size: var(--font-size-sm);">
+        The grid automatically adjusts column count based on viewport width
+      </p>
+      
+      <div class="demo-grid">
+        <div class="grid-item">Item 1</div>
+        <div class="grid-item">Item 2</div>
+        <div class="grid-item">Item 3</div>
+        <div class="grid-item">Item 4</div>
+        <div class="grid-item">Item 5</div>
+        <div class="grid-item">Item 6</div>
+        <div class="grid-item">Item 7</div>
+        <div class="grid-item">Item 8</div>
+        <div class="grid-item">Item 9</div>
+        <div class="grid-item">Item 10</div>
+        <div class="grid-item">Item 11</div>
+        <div class="grid-item">Item 12</div>
+      </div>
+    </div>
+    
+    <div style="background-color: var(--color-bg-tertiary); border-radius: var(--radius-md); padding: var(--spacing-4); font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+      <strong>💡 Tip:</strong> Open your browser's developer tools (F12) and use the responsive design mode to test different device sizes quickly.
+    </div>
+  </div>
+  
+  <script>
+    function updateBreakpoint() {
+      const width = window.innerWidth;
+      const display = document.getElementById('breakpoint-display');
+      const widthDisplay = document.getElementById('viewport-width');
+      
+      // Update width
+      widthDisplay.textContent = width + 'px';
+      
+      // Reset all badges
+      ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'].forEach(bp => {
+        const badge = document.getElementById(`badge-${bp}`);
+        badge.textContent = '-';
+        badge.className = 'badge';
+      });
+      
+      // Determine current breakpoint
+      let breakpoint, label, badge;
+      
+      if (width < 480) {
+        breakpoint = 'xs';
+        label = 'Extra Small (xs)';
+      } else if (width < 640) {
+        breakpoint = 'sm';
+        label = 'Small (sm)';
+      } else if (width < 768) {
+        breakpoint = 'md';
+        label = 'Medium (md)';
+      } else if (width < 1024) {
+        breakpoint = 'lg';
+        label = 'Large (lg)';
+      } else if (width < 1280) {
+        breakpoint = 'xl';
+        label = 'Extra Large (xl)';
+      } else if (width < 1536) {
+        breakpoint = '2xl';
+        label = '2X Large (2xl)';
+      } else if (width < 1920) {
+        breakpoint = '3xl';
+        label = '3X Large (3xl)';
+      } else {
+        breakpoint = '4xl';
+        label = '4X Large (4xl)';
+      }
+      
+      display.textContent = label;
+      badge = document.getElementById(`badge-${breakpoint}`);
+      badge.textContent = 'Active';
+      badge.className = 'badge badge-active';
+    }
+    
+    // Update on load and resize
+    updateBreakpoint();
+    window.addEventListener('resize', updateBreakpoint);
+    
+    // Update every 100ms for smooth updates during resize
+    setInterval(updateBreakpoint, 100);
+  </script>
+</body>
+</html>
