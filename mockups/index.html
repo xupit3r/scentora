@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scentora Design Mockups - Phase 8.9</title>
+  <link rel="stylesheet" href="assets/design-system.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #F7F6F3 0%, #FAFAFA 100%);
+      padding: var(--spacing-8);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: var(--spacing-12);
+      padding-bottom: var(--spacing-8);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .logo {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-accent);
+      margin-bottom: var(--spacing-2);
+      letter-spacing: -0.02em;
+    }
+    
+    .subtitle {
+      font-size: var(--font-size-lg);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .description {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .section {
+      margin-bottom: var(--spacing-12);
+    }
+    
+    .section-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .section-description {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: var(--spacing-6);
+    }
+    
+    .mockup-card {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: all var(--transition-normal);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    
+    .mockup-card:hover {
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-4px);
+      border-color: var(--color-accent);
+    }
+    
+    .mockup-preview {
+      width: 100%;
+      height: 240px;
+      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mockup-preview::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 50%, rgba(15, 118, 110, 0.1) 0%, transparent 50%);
+    }
+    
+    .mockup-info {
+      padding: var(--spacing-5);
+    }
+    
+    .mockup-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .mockup-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-normal);
+      margin-bottom: var(--spacing-3);
+    }
+    
+    .mockup-meta {
+      display: flex;
+      gap: var(--spacing-2);
+      flex-wrap: wrap;
+    }
+    
+    .meta-badge {
+      padding: var(--spacing-1) var(--spacing-2);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      border-radius: var(--radius-sm);
+    }
+    
+    .badge-wireframe {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-secondary);
+      border: 1px solid var(--color-border-medium);
+    }
+    
+    .badge-hifi {
+      background-color: var(--color-accent-light);
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+    }
+    
+    .design-system-section {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-8);
+      margin-bottom: var(--spacing-12);
+    }
+    
+    .color-palette {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--spacing-4);
+      margin-top: var(--spacing-6);
+    }
+    
+    .color-swatch {
+      text-align: center;
+    }
+    
+    .color-box {
+      width: 100%;
+      height: 80px;
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-2);
+      border: 1px solid var(--color-border-light);
+    }
+    
+    .color-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .color-value {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      font-family: var(--font-family-mono);
+    }
+    
+    footer {
+      text-align: center;
+      padding-top: var(--spacing-8);
+      margin-top: var(--spacing-12);
+      border-top: 1px solid var(--color-border-light);
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 class="logo">Scentora</h1>
+      <div class="subtitle">Phase 8.9 — Notion-Inspired UI/UX Redesign</div>
+      <p class="description">
+        A comprehensive collection of mockups and wireframes showcasing the proposed 
+        clean, minimalist interface design for Scentora's accord management system.
+      </p>
+    </header>
+    
+    <!-- Wireframes Section -->
+    <section class="section">
+      <h2 class="section-title">📐 Low-Fidelity Wireframes</h2>
+      <p class="section-description">
+        Simple layout sketches showing structure and content hierarchy without detailed styling.
+      </p>
+      
+      <div class="mockup-grid">
+        <a href="wireframes/01-login.html" class="mockup-card">
+          <div class="mockup-preview">🔐</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Login Page</h3>
+            <p class="mockup-description">
+              Clean authentication screen with email and password fields.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-wireframe">Wireframe</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="wireframes/02-register.html" class="mockup-card">
+          <div class="mockup-preview">📝</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Register Page</h3>
+            <p class="mockup-description">
+              Account creation with invitation code requirement.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-wireframe">Wireframe</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="wireframes/03-layout-sidebar.html" class="mockup-card">
+          <div class="mockup-preview">📱</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Main Layout with Sidebar</h3>
+            <p class="mockup-description">
+              Application shell with sidebar navigation and main content area.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-wireframe">Wireframe</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="wireframes/04-accord-grid.html" class="mockup-card">
+          <div class="mockup-preview">📦</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Accord Inventory Grid</h3>
+            <p class="mockup-description">
+              Card grid layout with filters for browsing accords.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-wireframe">Wireframe</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="wireframes/05-accord-detail.html" class="mockup-card">
+          <div class="mockup-preview">🔍</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Accord Detail View</h3>
+            <p class="mockup-description">
+              Detailed information panel for individual accords.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-wireframe">Wireframe</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="wireframes/06-create-modal.html" class="mockup-card">
+          <div class="mockup-preview">➕</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Create Accord Modal</h3>
+            <p class="mockup-description">
+              Form modal for adding new accords to inventory.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-wireframe">Wireframe</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="wireframes/07-empty-state.html" class="mockup-card">
+          <div class="mockup-preview">🫙</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Empty State</h3>
+            <p class="mockup-description">
+              Welcoming screen when no accords exist yet.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-wireframe">Wireframe</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="wireframes/08-statistics.html" class="mockup-card">
+          <div class="mockup-preview">📊</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Statistics Dashboard</h3>
+            <p class="mockup-description">
+              Analytics and insights about accord collection.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-wireframe">Wireframe</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+    
+    <!-- High-Fidelity Mockups Section -->
+    <section class="section">
+      <h2 class="section-title">✨ High-Fidelity Mockups</h2>
+      <p class="section-description">
+        Polished designs with full styling, colors, typography, and the complete design system applied.
+      </p>
+      
+      <div class="mockup-grid">
+        <a href="high-fidelity/01-login.html" class="mockup-card">
+          <div class="mockup-preview">🔐</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Login Page</h3>
+            <p class="mockup-description">
+              Polished authentication screen with gradient background.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-hifi">High-Fidelity</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="high-fidelity/02-register.html" class="mockup-card">
+          <div class="mockup-preview">📝</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Register Page</h3>
+            <p class="mockup-description">
+              Complete registration form with invitation system.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-hifi">High-Fidelity</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="high-fidelity/03-main-layout.html" class="mockup-card">
+          <div class="mockup-preview">📱</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Main Layout</h3>
+            <p class="mockup-description">
+              Full application shell with polished sidebar and header.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-hifi">High-Fidelity</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="high-fidelity/04-accord-cards.html" class="mockup-card">
+          <div class="mockup-preview">🎴</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Accord Cards</h3>
+            <p class="mockup-description">
+              Card components with position indicators and hover effects.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-hifi">High-Fidelity</span>
+            </div>
+          </div>
+        </a>
+        
+        <a href="high-fidelity/05-empty-state.html" class="mockup-card">
+          <div class="mockup-preview">🫙</div>
+          <div class="mockup-info">
+            <h3 class="mockup-title">Empty State</h3>
+            <p class="mockup-description">
+              Beautiful empty state with feature highlights.
+            </p>
+            <div class="mockup-meta">
+              <span class="meta-badge badge-hifi">High-Fidelity</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+    
+    <!-- Design System Section -->
+    <section class="design-system-section">
+      <h2 class="section-title">🎨 Design System</h2>
+      <p class="section-description">
+        Notion-inspired color palette, typography, and design tokens used throughout the mockups.
+      </p>
+      
+      <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); margin-top: var(--spacing-6); margin-bottom: var(--spacing-4);">Color Palette</h3>
+      
+      <div class="color-palette">
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: #37352F;"></div>
+          <div class="color-label">Primary Text</div>
+          <div class="color-value">#37352F</div>
+        </div>
+        
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: #0F766E;"></div>
+          <div class="color-label">Accent</div>
+          <div class="color-value">#0F766E</div>
+        </div>
+        
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: #FEF3C7; border: 2px solid #92400E;"></div>
+          <div class="color-label">Top Note</div>
+          <div class="color-value">#FEF3C7</div>
+        </div>
+        
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: #E9D5FF; border: 2px solid #6B21A8;"></div>
+          <div class="color-label">Middle Note</div>
+          <div class="color-value">#E9D5FF</div>
+        </div>
+        
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: #F5E6D3; border: 2px solid #78350F;"></div>
+          <div class="color-label">Base Note</div>
+          <div class="color-value">#F5E6D3</div>
+        </div>
+        
+        <div class="color-swatch">
+          <div class="color-box" style="background-color: #FAFAFA;"></div>
+          <div class="color-label">Background</div>
+          <div class="color-value">#FAFAFA</div>
+        </div>
+      </div>
+      
+      <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); margin-top: var(--spacing-8); margin-bottom: var(--spacing-4);">Key Features</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li style="padding: var(--spacing-2) 0; color: var(--color-text-secondary);">✓ Clean, minimal aesthetic inspired by Notion</li>
+        <li style="padding: var(--spacing-2) 0; color: var(--color-text-secondary);">✓ 8px spacing grid system for consistency</li>
+        <li style="padding: var(--spacing-2) 0; color: var(--color-text-secondary);">✓ System font stack for optimal readability</li>
+        <li style="padding: var(--spacing-2) 0; color: var(--color-text-secondary);">✓ Subtle position indicators (top/middle/base notes)</li>
+        <li style="padding: var(--spacing-2) 0; color: var(--color-text-secondary);">✓ Smooth transitions and hover effects</li>
+        <li style="padding: var(--spacing-2) 0; color: var(--color-text-secondary);">✓ Responsive and accessible design patterns</li>
+      </ul>
+      
+      <div style="margin-top: var(--spacing-6); padding: var(--spacing-4); background-color: var(--color-bg-tertiary); border-radius: var(--radius-md); border: 1px solid var(--color-border-light);">
+        <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--spacing-2);">
+          <strong style="color: var(--color-text-primary);">Design System File:</strong>
+        </p>
+        <code style="font-family: var(--font-family-mono); font-size: var(--font-size-xs); color: var(--color-accent);">
+          mockups/assets/design-system.css
+        </code>
+      </div>
+    </section>
+    
+    <footer>
+      <p>Scentora Phase 8.9 Design Mockups • 2026</p>
+      <p style="margin-top: var(--spacing-2);">View the full project on GitHub: <a href="https://github.com/xupit3r/scentora" style="color: var(--color-accent); text-decoration: none;">xupit3r/scentora</a></p>
+    </footer>
+  </div>
+</body>
+</html>

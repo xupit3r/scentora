@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Accord Modal Wireframe - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    
+    .modal {
+      width: 600px;
+      max-height: 90vh;
+      background-color: var(--color-bg-primary);
+      border: 2px solid var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .modal-header {
+      padding: var(--spacing-6);
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .modal-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      background-color: transparent;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-lg);
+    }
+    
+    .close-btn:hover {
+      background-color: var(--color-bg-hover);
+    }
+    
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--spacing-6);
+    }
+    
+    .form-group {
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: var(--spacing-2);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+    
+    .form-label.required::after {
+      content: " *";
+      color: var(--color-error);
+    }
+    
+    .form-input {
+      width: 100%;
+      height: 40px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      padding: 0 var(--spacing-3);
+      font-size: var(--font-size-sm);
+      font-family: var(--font-family);
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px var(--color-accent-light);
+    }
+    
+    .form-textarea {
+      width: 100%;
+      min-height: 100px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-3);
+      font-size: var(--font-size-sm);
+      font-family: var(--font-family);
+      resize: vertical;
+    }
+    
+    .form-select {
+      width: 100%;
+      height: 40px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      padding: 0 var(--spacing-3);
+      font-size: var(--font-size-sm);
+      font-family: var(--font-family);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-4);
+    }
+    
+    .tag-selector {
+      min-height: 100px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+      align-content: flex-start;
+    }
+    
+    .tag-item {
+      padding: var(--spacing-1) var(--spacing-2);
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+    }
+    
+    .tag-remove {
+      width: 14px;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-tertiary);
+    }
+    
+    .helper-text {
+      margin-top: var(--spacing-2);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+    
+    .modal-footer {
+      padding: var(--spacing-6);
+      border-top: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--spacing-3);
+    }
+    
+    .btn {
+      padding: var(--spacing-2) var(--spacing-4);
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+    }
+    
+    .btn-secondary {
+      background-color: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+      border-color: var(--color-border-medium);
+    }
+    
+    .btn-primary {
+      background-color: var(--color-accent);
+      color: white;
+    }
+    
+    .wireframe-note {
+      position: fixed;
+      top: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-top-bg);
+      color: var(--color-top-text);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      max-width: 250px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-note">
+    📐 WIREFRAME<br>
+    Create accord modal form
+  </div>
+  
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Create New Accord</h2>
+      <button class="close-btn">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <form>
+        <div class="form-group">
+          <label class="form-label required">Accord Name</label>
+          <input type="text" class="form-input" placeholder="e.g., Bergamot Essential Oil">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label required">Position</label>
+          <select class="form-select">
+            <option value="">Select position...</option>
+            <option value="top">Top Note</option>
+            <option value="middle">Middle Note</option>
+            <option value="base">Base Note</option>
+          </select>
+          <p class="helper-text">Where this accord appears in the scent pyramid</p>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label required">Volume (ml)</label>
+            <input type="number" class="form-input" placeholder="50">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Drops</label>
+            <input type="number" class="form-input" placeholder="1000">
+            <p class="helper-text">Auto-calculated at 20 drops/ml</p>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Supplier</label>
+          <input type="text" class="form-input" placeholder="e.g., Essential Oils Co.">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Cost per ml</label>
+            <input type="number" class="form-input" placeholder="2.50" step="0.01">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Purchase Date</label>
+            <input type="date" class="form-input">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <div class="tag-selector">
+            <div class="tag-item">
+              Citrus
+              <span class="tag-remove">✕</span>
+            </div>
+            <div class="tag-item">
+              Fresh
+              <span class="tag-remove">✕</span>
+            </div>
+            <div class="tag-item">
+              Uplifting
+              <span class="tag-remove">✕</span>
+            </div>
+            <input type="text" placeholder="Add tag..." style="border: none; background: transparent; outline: none; flex: 1; min-width: 100px;">
+          </div>
+          <p class="helper-text">Add descriptive tags to categorize this accord</p>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Notes & Description</label>
+          <textarea class="form-textarea" placeholder="Add any notes about scent profile, usage recommendations, or blending suggestions..."></textarea>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary">Cancel</button>
+      <button type="submit" class="btn btn-primary">Create Accord</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accord Cards - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      background-color: var(--color-bg-secondary);
+      padding: var(--spacing-8);
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--spacing-4);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-5);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      transition: width var(--transition-fast);
+    }
+    
+    .card.position-top::before {
+      background-color: var(--color-top-text);
+    }
+    
+    .card.position-middle::before {
+      background-color: var(--color-middle-text);
+    }
+    
+    .card.position-base::before {
+      background-color: var(--color-base-text);
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+      border-color: var(--color-border-medium);
+    }
+    
+    .card:hover::before {
+      width: 4px;
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-4);
+      gap: var(--spacing-3);
+    }
+    
+    .card-title-section {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .card-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-1);
+      line-height: var(--line-height-tight);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .card-position-badge {
+      display: inline-block;
+      padding: var(--spacing-1) var(--spacing-2);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .badge-top {
+      background-color: var(--color-top-bg);
+      color: var(--color-top-text);
+    }
+    
+    .badge-middle {
+      background-color: var(--color-middle-bg);
+      color: var(--color-middle-text);
+    }
+    
+    .badge-base {
+      background-color: var(--color-base-bg);
+      color: var(--color-base-text);
+    }
+    
+    .card-actions {
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      display: flex;
+      gap: var(--spacing-1);
+    }
+    
+    .card:hover .card-actions {
+      opacity: 1;
+    }
+    
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      background-color: var(--color-bg-hover);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: var(--font-size-sm);
+    }
+    
+    .action-btn:hover {
+      background-color: var(--color-bg-primary);
+      border-color: var(--color-border-medium);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .card-info {
+      margin-bottom: var(--spacing-4);
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-2);
+      font-size: var(--font-size-sm);
+    }
+    
+    .info-label {
+      color: var(--color-text-secondary);
+    }
+    
+    .info-value {
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .info-value.low-stock {
+      color: var(--color-warning);
+    }
+    
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+    }
+    
+    .tag {
+      padding: var(--spacing-1) var(--spacing-2);
+      background-color: var(--color-bg-tertiary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      transition: all var(--transition-fast);
+    }
+    
+    .tag:hover {
+      background-color: var(--color-bg-hover);
+      color: var(--color-text-primary);
+      border-color: var(--color-border-medium);
+    }
+    
+    .mockup-badge {
+      position: fixed;
+      bottom: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-accent);
+      color: white;
+      padding: var(--spacing-2) var(--spacing-3);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-6);
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-badge">High-Fidelity Mockup</div>
+  
+  <h1 class="page-title">Accord Cards</h1>
+  
+  <div class="grid">
+    <!-- Top Note Card -->
+    <div class="card position-top">
+      <div class="card-header">
+        <div class="card-title-section">
+          <h3 class="card-title">Bergamot Essential Oil</h3>
+          <span class="card-position-badge badge-top">Top</span>
+        </div>
+        <div class="card-actions">
+          <button class="action-btn" title="Edit">✎</button>
+          <button class="action-btn" title="More">⋮</button>
+        </div>
+      </div>
+      
+      <div class="card-info">
+        <div class="info-row">
+          <span class="info-label">Volume:</span>
+          <span class="info-value">50 ml • 1,000 drops</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Supplier:</span>
+          <span class="info-value">Essential Oils Co.</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cost:</span>
+          <span class="info-value">$2.50/ml</span>
+        </div>
+      </div>
+      
+      <div class="card-tags">
+        <span class="tag">Citrus</span>
+        <span class="tag">Fresh</span>
+        <span class="tag">Uplifting</span>
+        <span class="tag">Bright</span>
+      </div>
+    </div>
+    
+    <!-- Middle Note Card -->
+    <div class="card position-middle">
+      <div class="card-header">
+        <div class="card-title-section">
+          <h3 class="card-title">Rose Absolute</h3>
+          <span class="card-position-badge badge-middle">Middle</span>
+        </div>
+        <div class="card-actions">
+          <button class="action-btn" title="Edit">✎</button>
+          <button class="action-btn" title="More">⋮</button>
+        </div>
+      </div>
+      
+      <div class="card-info">
+        <div class="info-row">
+          <span class="info-label">Volume:</span>
+          <span class="info-value low-stock">15 ml • 300 drops</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Supplier:</span>
+          <span class="info-value">Fragrance Supply</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cost:</span>
+          <span class="info-value">$8.50/ml</span>
+        </div>
+      </div>
+      
+      <div class="card-tags">
+        <span class="tag">Floral</span>
+        <span class="tag">Romantic</span>
+        <span class="tag">Classic</span>
+        <span class="tag">Luxurious</span>
+      </div>
+    </div>
+    
+    <!-- Base Note Card -->
+    <div class="card position-base">
+      <div class="card-header">
+        <div class="card-title-section">
+          <h3 class="card-title">Sandalwood Essential Oil</h3>
+          <span class="card-position-badge badge-base">Base</span>
+        </div>
+        <div class="card-actions">
+          <button class="action-btn" title="Edit">✎</button>
+          <button class="action-btn" title="More">⋮</button>
+        </div>
+      </div>
+      
+      <div class="card-info">
+        <div class="info-row">
+          <span class="info-label">Volume:</span>
+          <span class="info-value">100 ml • 2,000 drops</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Supplier:</span>
+          <span class="info-value">Nature's Best</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cost:</span>
+          <span class="info-value">$4.25/ml</span>
+        </div>
+      </div>
+      
+      <div class="card-tags">
+        <span class="tag">Woody</span>
+        <span class="tag">Warm</span>
+        <span class="tag">Grounding</span>
+        <span class="tag">Meditative</span>
+      </div>
+    </div>
+    
+    <!-- Another Top Note -->
+    <div class="card position-top">
+      <div class="card-header">
+        <div class="card-title-section">
+          <h3 class="card-title">Lemon Essential Oil</h3>
+          <span class="card-position-badge badge-top">Top</span>
+        </div>
+        <div class="card-actions">
+          <button class="action-btn" title="Edit">✎</button>
+          <button class="action-btn" title="More">⋮</button>
+        </div>
+      </div>
+      
+      <div class="card-info">
+        <div class="info-row">
+          <span class="info-label">Volume:</span>
+          <span class="info-value">75 ml • 1,500 drops</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Supplier:</span>
+          <span class="info-value">Citrus World</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cost:</span>
+          <span class="info-value">$1.75/ml</span>
+        </div>
+      </div>
+      
+      <div class="card-tags">
+        <span class="tag">Citrus</span>
+        <span class="tag">Clean</span>
+        <span class="tag">Energizing</span>
+      </div>
+    </div>
+    
+    <!-- Another Middle Note -->
+    <div class="card position-middle">
+      <div class="card-header">
+        <div class="card-title-section">
+          <h3 class="card-title">Lavender Essential Oil</h3>
+          <span class="card-position-badge badge-middle">Middle</span>
+        </div>
+        <div class="card-actions">
+          <button class="action-btn" title="Edit">✎</button>
+          <button class="action-btn" title="More">⋮</button>
+        </div>
+      </div>
+      
+      <div class="card-info">
+        <div class="info-row">
+          <span class="info-label">Volume:</span>
+          <span class="info-value">60 ml • 1,200 drops</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Supplier:</span>
+          <span class="info-value">Herbal Essences</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cost:</span>
+          <span class="info-value">$3.00/ml</span>
+        </div>
+      </div>
+      
+      <div class="card-tags">
+        <span class="tag">Herbal</span>
+        <span class="tag">Calming</span>
+        <span class="tag">Versatile</span>
+        <span class="tag">Classic</span>
+      </div>
+    </div>
+    
+    <!-- Another Base Note -->
+    <div class="card position-base">
+      <div class="card-header">
+        <div class="card-title-section">
+          <h3 class="card-title">Vanilla Absolute</h3>
+          <span class="card-position-badge badge-base">Base</span>
+        </div>
+        <div class="card-actions">
+          <button class="action-btn" title="Edit">✎</button>
+          <button class="action-btn" title="More">⋮</button>
+        </div>
+      </div>
+      
+      <div class="card-info">
+        <div class="info-row">
+          <span class="info-label">Volume:</span>
+          <span class="info-value">40 ml • 800 drops</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Supplier:</span>
+          <span class="info-value">Madagascar Extracts</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cost:</span>
+          <span class="info-value">$6.00/ml</span>
+        </div>
+      </div>
+      
+      <div class="card-tags">
+        <span class="tag">Sweet</span>
+        <span class="tag">Warm</span>
+        <span class="tag">Comforting</span>
+        <span class="tag">Gourmet</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

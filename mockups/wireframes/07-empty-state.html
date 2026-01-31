@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empty State Wireframe - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: var(--color-bg-secondary);
+      padding: var(--spacing-8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    
+    .empty-state {
+      max-width: 500px;
+      text-align: center;
+      background-color: var(--color-bg-primary);
+      border: 2px dashed var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-16);
+    }
+    
+    .empty-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto var(--spacing-6);
+      background-color: var(--color-bg-tertiary);
+      border: 2px dashed var(--color-border-medium);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+    
+    .empty-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-3);
+    }
+    
+    .empty-description {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .empty-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-3);
+      align-items: center;
+    }
+    
+    .btn-primary {
+      padding: var(--spacing-3) var(--spacing-6);
+      background-color: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+    }
+    
+    .btn-link {
+      color: var(--color-accent);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+    }
+    
+    .wireframe-note {
+      position: fixed;
+      top: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-top-bg);
+      color: var(--color-top-text);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      max-width: 250px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-note">
+    📐 WIREFRAME<br>
+    Empty state - No accords
+  </div>
+  
+  <div class="empty-state">
+    <div class="empty-icon">
+      🫙
+    </div>
+    
+    <h2 class="empty-title">No accords yet</h2>
+    
+    <p class="empty-description">
+      Start building your perfume collection by adding your first accord. 
+      Track essential oils, absolutes, and other ingredients in your inventory.
+    </p>
+    
+    <div class="empty-actions">
+      <button class="btn-primary">+ Create Your First Accord</button>
+      <a href="#" class="btn-link">Learn about accord management</a>
+    </div>
+  </div>
+</body>
+</html>

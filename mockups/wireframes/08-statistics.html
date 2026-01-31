@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistics Dashboard Wireframe - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: var(--color-bg-secondary);
+      padding: var(--spacing-8);
+    }
+    
+    .page-header {
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .page-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--spacing-4);
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .stat-card {
+      background-color: var(--color-bg-primary);
+      border: 2px solid var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-6);
+    }
+    
+    .stat-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .stat-value {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .stat-change {
+      font-size: var(--font-size-xs);
+      color: var(--color-success);
+    }
+    
+    .charts-section {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--spacing-4);
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .chart-card {
+      background-color: var(--color-bg-primary);
+      border: 2px solid var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-6);
+    }
+    
+    .chart-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .chart-placeholder {
+      height: 300px;
+      background-color: var(--color-bg-secondary);
+      border: 2px dashed var(--color-border-medium);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+    
+    .list-section {
+      background-color: var(--color-bg-primary);
+      border: 2px solid var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-6);
+    }
+    
+    .list-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-4);
+    }
+    
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-3);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .list-item:last-child {
+      border-bottom: none;
+    }
+    
+    .list-item-name {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .list-item-value {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .wireframe-note {
+      position: fixed;
+      top: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-top-bg);
+      color: var(--color-top-text);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      max-width: 250px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-note">
+    📐 WIREFRAME<br>
+    Statistics dashboard
+  </div>
+  
+  <div class="page-header">
+    <h1 class="page-title">Statistics</h1>
+    <p class="page-subtitle">Overview of your accord collection</p>
+  </div>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Accords</div>
+      <div class="stat-value">47</div>
+      <div class="stat-change">+5 this month</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-label">Total Volume</div>
+      <div class="stat-value">2,450 ml</div>
+      <div class="stat-change">+200ml this month</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-label">Low Stock Items</div>
+      <div class="stat-value">8</div>
+      <div class="stat-change">Needs attention</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-label">Total Value</div>
+      <div class="stat-value">$1,247</div>
+      <div class="stat-change">+$150 this month</div>
+    </div>
+  </div>
+  
+  <div class="charts-section">
+    <div class="chart-card">
+      <h2 class="chart-title">Accords by Position</h2>
+      <div class="chart-placeholder">
+        [Bar Chart: Top Notes, Middle Notes, Base Notes]
+      </div>
+    </div>
+    
+    <div class="chart-card">
+      <h2 class="chart-title">Volume Distribution</h2>
+      <div class="chart-placeholder">
+        [Pie Chart: Position breakdown]
+      </div>
+    </div>
+  </div>
+  
+  <div class="list-section">
+    <h2 class="list-title">Most Used Accords</h2>
+    
+    <div class="list-item">
+      <span class="list-item-name">Bergamot Essential Oil</span>
+      <span class="list-item-value">24 uses</span>
+    </div>
+    
+    <div class="list-item">
+      <span class="list-item-name">Rose Absolute</span>
+      <span class="list-item-value">18 uses</span>
+    </div>
+    
+    <div class="list-item">
+      <span class="list-item-name">Sandalwood Essential Oil</span>
+      <span class="list-item-value">16 uses</span>
+    </div>
+    
+    <div class="list-item">
+      <span class="list-item-name">Vanilla Absolute</span>
+      <span class="list-item-value">14 uses</span>
+    </div>
+    
+    <div class="list-item">
+      <span class="list-item-name">Jasmine Absolute</span>
+      <span class="list-item-value">12 uses</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Wireframe - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: var(--color-bg-secondary);
+    }
+    
+    .login-container {
+      width: 400px;
+      background-color: var(--color-bg-primary);
+      border: 2px solid var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-12);
+    }
+    
+    .logo-placeholder {
+      width: 100%;
+      height: 60px;
+      margin-bottom: var(--spacing-8);
+      background-color: var(--color-bg-tertiary);
+      border: 2px dashed var(--color-border-medium);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      text-transform: uppercase;
+    }
+    
+    .form-group {
+      margin-bottom: var(--spacing-4);
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: var(--spacing-2);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+    
+    .wireframe-input {
+      width: 100%;
+      height: 40px;
+      background-color: var(--color-bg-secondary);
+      border: 2px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-2) var(--spacing-3);
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+    
+    .wireframe-button {
+      width: 100%;
+      height: 44px;
+      background-color: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      margin-top: var(--spacing-6);
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: var(--spacing-6) 0;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .divider::before {
+      margin-right: var(--spacing-3);
+    }
+    
+    .divider::after {
+      margin-left: var(--spacing-3);
+    }
+    
+    .link {
+      color: var(--color-accent);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+      text-align: center;
+      display: block;
+    }
+    
+    .wireframe-note {
+      position: fixed;
+      top: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-top-bg);
+      color: var(--color-top-text);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      max-width: 250px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-note">
+    📐 WIREFRAME<br>
+    Low-fidelity layout sketch
+  </div>
+  
+  <div class="login-container">
+    <div class="logo-placeholder">
+      [SCENTORA LOGO]
+    </div>
+    
+    <h1 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-2);">Welcome back</h1>
+    <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-8); font-size: var(--font-size-sm);">Sign in to your account</p>
+    
+    <form>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="wireframe-input" placeholder="you@example.com">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="wireframe-input" placeholder="••••••••">
+      </div>
+      
+      <button type="submit" class="wireframe-button">Sign In</button>
+    </form>
+    
+    <div class="divider">or</div>
+    
+    <a href="#" class="link">Don't have an account? Register</a>
+  </div>
+</body>
+</html>

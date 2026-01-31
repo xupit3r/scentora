@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Layout Wireframe - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: var(--color-bg-primary);
+    }
+    
+    .layout {
+      display: flex;
+      height: 100vh;
+    }
+    
+    .sidebar {
+      width: 280px;
+      background-color: var(--color-bg-tertiary);
+      border-right: 2px solid var(--color-border-medium);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar-header {
+      padding: var(--spacing-4);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .sidebar-logo {
+      height: 40px;
+      background-color: var(--color-bg-secondary);
+      border: 2px dashed var(--color-border-medium);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .sidebar-nav {
+      flex: 1;
+      padding: var(--spacing-4);
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      padding: var(--spacing-2) var(--spacing-3);
+      margin-bottom: var(--spacing-2);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      background-color: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    
+    .nav-item.active {
+      background-color: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+      border-color: var(--color-border-light);
+    }
+    
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-sm);
+    }
+    
+    .sidebar-footer {
+      padding: var(--spacing-4);
+      border-top: 1px solid var(--color-border-light);
+    }
+    
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      padding: var(--spacing-2);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      background-color: var(--color-accent);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+    
+    .user-info {
+      flex: 1;
+    }
+    
+    .user-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+    
+    .user-email {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+    
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .header {
+      height: 64px;
+      background-color: var(--color-bg-primary);
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing-6);
+    }
+    
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .search-bar {
+      width: 400px;
+      height: 36px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      padding: 0 var(--spacing-3);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+    }
+    
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      background-color: var(--color-bg-secondary);
+      padding: var(--spacing-8);
+    }
+    
+    .content-placeholder {
+      background-color: var(--color-bg-primary);
+      border: 2px dashed var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-16);
+      text-align: center;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+    
+    .wireframe-note {
+      position: fixed;
+      top: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-top-bg);
+      color: var(--color-top-text);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      max-width: 250px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-note">
+    📐 WIREFRAME<br>
+    Main layout with sidebar navigation
+  </div>
+  
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">[LOGO]</div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-item active">
+          <div class="nav-icon"></div>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon"></div>
+          <span>Accord Inventory</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon"></div>
+          <span>Formulations</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon"></div>
+          <span>Statistics</span>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon"></div>
+          <span>Settings</span>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar">JD</div>
+          <div class="user-info">
+            <div class="user-name">John Doe</div>
+            <div class="user-email">john@example.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main">
+      <header class="header">
+        <div class="breadcrumbs">
+          <span>Home</span>
+          <span>/</span>
+          <span>Accord Inventory</span>
+        </div>
+        
+        <div class="search-bar">
+          🔍 Search accords...
+        </div>
+      </header>
+      
+      <div class="content">
+        <div class="content-placeholder">
+          [MAIN CONTENT AREA]<br><br>
+          Accord grid, filters, and details will appear here
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

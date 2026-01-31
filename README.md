@@ -37,13 +37,14 @@ A perfume formulation and accord management system for DIY perfumers and enthusi
 - ⚠️ Low stock warnings
 - 📊 Tag-based organization and discovery
 
-### UI/UX (Phase 8.9 - Planned)
+### UI/UX (Phase 8.9 - In Progress)
 - 🎨 Notion-inspired clean, minimalist interface
 - 📱 Responsive design (desktop, tablet, mobile)
 - ⌨️ Keyboard shortcuts for power users
 - ✏️ Inline editing for quick updates
 - 🎯 Sidebar navigation with collapsible sections
 - 🌙 Dark mode support (future)
+- 🖼️ **[View Design Mockups](mockups/)** - Interactive gallery of wireframes and high-fidelity designs
 
 ### Analytics & Export (Future)
 - 📈 Collection statistics dashboard
@@ -237,17 +238,27 @@ scentora/
 
 ## Documentation
 
+### Design & Planning
+- **[Design Mockups](mockups/)** - Interactive gallery of wireframes and high-fidelity designs for Phase 8.9
+- [PLAN.md](PLAN.md) - Complete project roadmap and phase planning
+- [PHASE8_9_PLAN_SUMMARY.md](PHASE8_9_PLAN_SUMMARY.md) - Notion-inspired UI/UX redesign plan
+
+### Technical Documentation
 - [QUICKSTART.md](QUICKSTART.md) - Quick start guide
 - [AUTH_IMPLEMENTATION.md](docs/AUTH_IMPLEMENTATION.md) - Authentication details
 - [REFRESH_TOKENS_RATE_LIMITING.md](docs/REFRESH_TOKENS_RATE_LIMITING.md) - Refresh tokens & rate limiting
 - [LAUNCHER_GUIDE.md](docs/LAUNCHER_GUIDE.md) - Launcher script usage
-- [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) - Project overview
+- [TESTING_IMPLEMENTATION.md](TESTING_IMPLEMENTATION.md) - Testing framework and guidelines
+
+### Phase History
 - [PHASE1_COMPLETE.md](PHASE1_COMPLETE.md) - Foundation phase
 - [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md) - CRUD operations phase
 - [PHASE3_COMPLETE.md](PHASE3_COMPLETE.md) - Advanced features phase
 - [PHASE4_COMPLETE.md](PHASE4_COMPLETE.md) - Analytics phase
 - [PHASE5_COMPLETE.md](PHASE5_COMPLETE.md) - Authentication phase
 - [PHASE5B_COMPLETE.md](PHASE5B_COMPLETE.md) - Refresh tokens & rate limiting phase
+- [PHASE8_1_COMPLETE.md](PHASE8_1_COMPLETE.md) - Database migration to accord system
+- [PHASE8_2_COMPLETE.md](PHASE8_2_COMPLETE.md) - Accord core features backend
 
 ## Security Features
 

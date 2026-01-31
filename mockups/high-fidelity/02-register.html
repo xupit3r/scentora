@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #F7F6F3 0%, #FAFAFA 100%);
+      padding: var(--spacing-8) 0;
+    }
+    
+    .register-container {
+      width: 420px;
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-12);
+      box-shadow: var(--shadow-xl);
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .logo-text {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-accent);
+      letter-spacing: -0.02em;
+    }
+    
+    .logo-tagline {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: var(--spacing-2);
+    }
+    
+    .welcome-text {
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .welcome-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+      line-height: var(--line-height-tight);
+    }
+    
+    .welcome-subtitle {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-normal);
+    }
+    
+    .info-banner {
+      background: linear-gradient(135deg, var(--color-accent-light) 0%, #E0F2FE 100%);
+      border: 1px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-3);
+      margin-bottom: var(--spacing-6);
+      display: flex;
+      align-items: start;
+      gap: var(--spacing-2);
+    }
+    
+    .info-banner-icon {
+      font-size: var(--font-size-lg);
+      flex-shrink: 0;
+    }
+    
+    .info-banner-text {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-primary);
+      line-height: var(--line-height-relaxed);
+    }
+    
+    .form-group {
+      margin-bottom: var(--spacing-5);
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: var(--spacing-2);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+    
+    .form-label.required::after {
+      content: " *";
+      color: var(--color-error);
+    }
+    
+    .form-input {
+      width: 100%;
+      height: 44px;
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      padding: 0 var(--spacing-3);
+      font-size: var(--font-size-sm);
+      font-family: var(--font-family);
+      color: var(--color-text-primary);
+      transition: all var(--transition-fast);
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px var(--color-accent-light);
+    }
+    
+    .form-input::placeholder {
+      color: var(--color-text-tertiary);
+    }
+    
+    .helper-text {
+      margin-top: var(--spacing-2);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-tertiary);
+    }
+    
+    .submit-btn {
+      width: 100%;
+      height: 48px;
+      background-color: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin-top: var(--spacing-6);
+    }
+    
+    .submit-btn:hover {
+      background-color: var(--color-accent-hover);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(1px);
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: var(--spacing-6) 0;
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    
+    .divider::before {
+      margin-right: var(--spacing-3);
+    }
+    
+    .divider::after {
+      margin-left: var(--spacing-3);
+    }
+    
+    .login-link {
+      text-align: center;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .login-link a {
+      color: var(--color-accent);
+      text-decoration: none;
+      font-weight: var(--font-weight-medium);
+      transition: color var(--transition-fast);
+    }
+    
+    .login-link a:hover {
+      color: var(--color-accent-hover);
+    }
+    
+    .mockup-badge {
+      position: fixed;
+      top: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-accent);
+      color: white;
+      padding: var(--spacing-2) var(--spacing-3);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-badge">High-Fidelity Mockup</div>
+  
+  <div class="register-container">
+    <div class="logo">
+      <div class="logo-text">Scentora</div>
+      <div class="logo-tagline">Accord Management</div>
+    </div>
+    
+    <div class="welcome-text">
+      <h1 class="welcome-title">Create your account</h1>
+      <p class="welcome-subtitle">Join Scentora and start managing your perfume collection</p>
+    </div>
+    
+    <div class="info-banner">
+      <div class="info-banner-icon">ℹ️</div>
+      <div class="info-banner-text">
+        Scentora is invitation-only. You'll need a valid invitation code to create an account.
+      </div>
+    </div>
+    
+    <form>
+      <div class="form-group">
+        <label class="form-label required" for="invitation">Invitation Code</label>
+        <input 
+          type="text" 
+          id="invitation"
+          class="form-input" 
+          placeholder="Enter your invitation code"
+          autocomplete="off"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label required" for="email">Email address</label>
+        <input 
+          type="email" 
+          id="email"
+          class="form-input" 
+          placeholder="you@example.com"
+          autocomplete="email"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label required" for="username">Username</label>
+        <input 
+          type="text" 
+          id="username"
+          class="form-input" 
+          placeholder="Choose a username"
+          autocomplete="username"
+        >
+        <p class="helper-text">This will be your display name throughout Scentora</p>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label required" for="password">Password</label>
+        <input 
+          type="password" 
+          id="password"
+          class="form-input" 
+          placeholder="Create a strong password"
+          autocomplete="new-password"
+        >
+        <p class="helper-text">At least 8 characters with letters and numbers</p>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label required" for="confirm-password">Confirm Password</label>
+        <input 
+          type="password" 
+          id="confirm-password"
+          class="form-input" 
+          placeholder="Re-enter your password"
+          autocomplete="new-password"
+        >
+      </div>
+      
+      <button type="submit" class="submit-btn">Create Account</button>
+    </form>
+    
+    <div class="divider">or</div>
+    
+    <div class="login-link">
+      Already have an account? <a href="#">Sign in</a>
+    </div>
+  </div>
+</body>
+</html>

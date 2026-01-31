@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accord Inventory Grid Wireframe - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: var(--color-bg-secondary);
+      padding: var(--spacing-8);
+    }
+    
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .btn-wireframe {
+      padding: var(--spacing-2) var(--spacing-4);
+      background-color: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+    }
+    
+    .filters-section {
+      background-color: var(--color-bg-primary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-4);
+      margin-bottom: var(--spacing-6);
+      display: flex;
+      gap: var(--spacing-4);
+      flex-wrap: wrap;
+    }
+    
+    .filter-item {
+      flex: 1;
+      min-width: 150px;
+    }
+    
+    .filter-label {
+      display: block;
+      margin-bottom: var(--spacing-2);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .filter-input {
+      width: 100%;
+      height: 36px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      padding: 0 var(--spacing-3);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-tertiary);
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--spacing-4);
+    }
+    
+    .card-wireframe {
+      background-color: var(--color-bg-primary);
+      border: 2px solid var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-4);
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .card-wireframe.position-top {
+      border-left: 4px solid var(--color-top-text);
+    }
+    
+    .card-wireframe.position-middle {
+      border-left: 4px solid var(--color-middle-text);
+    }
+    
+    .card-wireframe.position-base {
+      border-left: 4px solid var(--color-base-text);
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-3);
+    }
+    
+    .card-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .card-actions {
+      width: 24px;
+      height: 24px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-sm);
+    }
+    
+    .card-content {
+      margin-bottom: var(--spacing-3);
+    }
+    
+    .card-field {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-2);
+      font-size: var(--font-size-sm);
+    }
+    
+    .card-field-label {
+      color: var(--color-text-secondary);
+    }
+    
+    .card-field-value {
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-medium);
+    }
+    
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+    }
+    
+    .tag-wireframe {
+      padding: var(--spacing-1) var(--spacing-2);
+      background-color: var(--color-bg-tertiary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+    
+    .wireframe-note {
+      position: fixed;
+      top: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-top-bg);
+      color: var(--color-top-text);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      max-width: 250px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-note">
+    📐 WIREFRAME<br>
+    Accord inventory grid with filters
+  </div>
+  
+  <div class="page-header">
+    <h1 class="page-title">Accord Inventory</h1>
+    <button class="btn-wireframe">+ New Accord</button>
+  </div>
+  
+  <div class="filters-section">
+    <div class="filter-item">
+      <label class="filter-label">Search</label>
+      <input type="text" class="filter-input" placeholder="Search by name...">
+    </div>
+    <div class="filter-item">
+      <label class="filter-label">Position</label>
+      <select class="filter-input">
+        <option>All Positions</option>
+      </select>
+    </div>
+    <div class="filter-item">
+      <label class="filter-label">Tags</label>
+      <select class="filter-input">
+        <option>All Tags</option>
+      </select>
+    </div>
+    <div class="filter-item">
+      <label class="filter-label">Stock</label>
+      <select class="filter-input">
+        <option>All Stock Levels</option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="grid">
+    <!-- Card 1 - Top Note -->
+    <div class="card-wireframe position-top">
+      <div class="card-header">
+        <h3 class="card-title">Bergamot Essential Oil</h3>
+        <div class="card-actions"></div>
+      </div>
+      <div class="card-content">
+        <div class="card-field">
+          <span class="card-field-label">Position:</span>
+          <span class="card-field-value">Top</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Volume:</span>
+          <span class="card-field-value">50ml (1000 drops)</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Supplier:</span>
+          <span class="card-field-value">Essential Oils Co.</span>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag-wireframe">Citrus</span>
+        <span class="tag-wireframe">Fresh</span>
+        <span class="tag-wireframe">Uplifting</span>
+      </div>
+    </div>
+    
+    <!-- Card 2 - Middle Note -->
+    <div class="card-wireframe position-middle">
+      <div class="card-header">
+        <h3 class="card-title">Rose Absolute</h3>
+        <div class="card-actions"></div>
+      </div>
+      <div class="card-content">
+        <div class="card-field">
+          <span class="card-field-label">Position:</span>
+          <span class="card-field-value">Middle</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Volume:</span>
+          <span class="card-field-value">30ml (600 drops)</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Supplier:</span>
+          <span class="card-field-value">Fragrance Supply</span>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag-wireframe">Floral</span>
+        <span class="tag-wireframe">Romantic</span>
+        <span class="tag-wireframe">Classic</span>
+      </div>
+    </div>
+    
+    <!-- Card 3 - Base Note -->
+    <div class="card-wireframe position-base">
+      <div class="card-header">
+        <h3 class="card-title">Sandalwood Essential Oil</h3>
+        <div class="card-actions"></div>
+      </div>
+      <div class="card-content">
+        <div class="card-field">
+          <span class="card-field-label">Position:</span>
+          <span class="card-field-value">Base</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Volume:</span>
+          <span class="card-field-value">100ml (2000 drops)</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Supplier:</span>
+          <span class="card-field-value">Nature's Best</span>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag-wireframe">Woody</span>
+        <span class="tag-wireframe">Warm</span>
+        <span class="tag-wireframe">Grounding</span>
+      </div>
+    </div>
+    
+    <!-- Placeholder Cards -->
+    <div class="card-wireframe position-top">
+      <div class="card-header">
+        <h3 class="card-title">[Accord Name]</h3>
+        <div class="card-actions"></div>
+      </div>
+      <div class="card-content">
+        <div class="card-field">
+          <span class="card-field-label">Position:</span>
+          <span class="card-field-value">[Position]</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Volume:</span>
+          <span class="card-field-value">[Volume]</span>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag-wireframe">[Tag]</span>
+      </div>
+    </div>
+    
+    <div class="card-wireframe position-middle">
+      <div class="card-header">
+        <h3 class="card-title">[Accord Name]</h3>
+        <div class="card-actions"></div>
+      </div>
+      <div class="card-content">
+        <div class="card-field">
+          <span class="card-field-label">Position:</span>
+          <span class="card-field-value">[Position]</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Volume:</span>
+          <span class="card-field-value">[Volume]</span>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag-wireframe">[Tag]</span>
+      </div>
+    </div>
+    
+    <div class="card-wireframe position-base">
+      <div class="card-header">
+        <h3 class="card-title">[Accord Name]</h3>
+        <div class="card-actions"></div>
+      </div>
+      <div class="card-content">
+        <div class="card-field">
+          <span class="card-field-label">Position:</span>
+          <span class="card-field-value">[Position]</span>
+        </div>
+        <div class="card-field">
+          <span class="card-field-label">Volume:</span>
+          <span class="card-field-value">[Volume]</span>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag-wireframe">[Tag]</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

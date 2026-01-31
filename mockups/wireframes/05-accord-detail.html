@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accord Detail Wireframe - Scentora</title>
+  <link rel="stylesheet" href="../assets/design-system.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: var(--color-bg-secondary);
+      padding: var(--spacing-8);
+    }
+    
+    .detail-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      padding: var(--spacing-2) var(--spacing-3);
+      background-color: transparent;
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      margin-bottom: var(--spacing-6);
+    }
+    
+    .detail-card {
+      background-color: var(--color-bg-primary);
+      border: 2px solid var(--color-border-medium);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-8);
+    }
+    
+    .detail-card.position-top {
+      border-left: 4px solid var(--color-top-text);
+    }
+    
+    .detail-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .detail-title-section {
+      flex: 1;
+    }
+    
+    .detail-title {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .detail-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-text-secondary);
+    }
+    
+    .detail-actions {
+      display: flex;
+      gap: var(--spacing-2);
+    }
+    
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-medium);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+    }
+    
+    .detail-section {
+      margin-bottom: var(--spacing-8);
+    }
+    
+    .section-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--spacing-4);
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-4);
+    }
+    
+    .info-item {
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-4);
+    }
+    
+    .info-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .info-value {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+    
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+    }
+    
+    .tag {
+      padding: var(--spacing-2) var(--spacing-3);
+      background-color: var(--color-bg-tertiary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+    }
+    
+    .notes-area {
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-4);
+      min-height: 150px;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .wireframe-note {
+      position: fixed;
+      top: var(--spacing-4);
+      right: var(--spacing-4);
+      background-color: var(--color-top-bg);
+      color: var(--color-top-text);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      max-width: 250px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-note">
+    📐 WIREFRAME<br>
+    Accord detail/edit view
+  </div>
+  
+  <div class="detail-container">
+    <button class="back-button">← Back to Inventory</button>
+    
+    <div class="detail-card position-top">
+      <div class="detail-header">
+        <div class="detail-title-section">
+          <h1 class="detail-title">Bergamot Essential Oil</h1>
+          <p class="detail-subtitle">Top note • Last updated 2 days ago</p>
+        </div>
+        <div class="detail-actions">
+          <div class="action-btn" title="Edit">✎</div>
+          <div class="action-btn" title="Delete">🗑</div>
+          <div class="action-btn" title="More">⋮</div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h2 class="section-title">Inventory Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Volume</div>
+            <div class="info-value">50 ml</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Drops Remaining</div>
+            <div class="info-value">1,000</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Position</div>
+            <div class="info-value">Top</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Supplier</div>
+            <div class="info-value">Essential Oils Co.</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Cost per ml</div>
+            <div class="info-value">$2.50</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Purchase Date</div>
+            <div class="info-value">Jan 15, 2026</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h2 class="section-title">Tags & Characteristics</h2>
+        <div class="tags-container">
+          <div class="tag">Citrus</div>
+          <div class="tag">Fresh</div>
+          <div class="tag">Uplifting</div>
+          <div class="tag">Bright</div>
+          <div class="tag">Energizing</div>
+          <div class="tag">Versatile</div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h2 class="section-title">Notes & Description</h2>
+        <div class="notes-area">
+          [Click to add notes about this accord...]<br><br>
+          • Scent profile<br>
+          • Usage notes<br>
+          • Blending suggestions<br>
+          • Personal observations
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h2 class="section-title">Usage History</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Times Used</div>
+            <div class="info-value">12</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Total Drops Used</div>
+            <div class="info-value">240</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Last Used</div>
+            <div class="info-value">3 days ago</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Avg. per Formula</div>
+            <div class="info-value">20 drops</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
