@@ -8,7 +8,13 @@ This directory contains design mockups and wireframes for **Phase 8.9** - the No
 mockups/
 ├── index.html                  # Interactive mockup gallery (START HERE!)
 ├── assets/
-│   └── design-system.css      # Design tokens and reusable styles
+│   ├── design-system.css      # Design tokens and reusable styles
+│   ├── icons.css              # Icon system styles
+│   └── icons/                 # SVG icon library
+│       ├── README.md          # Icon documentation
+│       ├── home.svg
+│       ├── inventory.svg
+│       └── ... (26 icons total)
 ├── wireframes/                # Low-fidelity layout sketches
 │   ├── 01-login.html
 │   ├── 02-register.html
@@ -72,6 +78,15 @@ mockups/
 ## 🎨 Design System
 
 The mockups implement the **Notion-inspired design system** defined in Phase 8.9 planning:
+
+### Icon System
+
+Simple, flat SVG icons replace emojis for a professional look:
+- **26 icons** covering navigation, UI actions, and features
+- **Stroke-based design** (not fills) for clean, scalable appearance
+- **Consistent style**: 24x24 viewBox, stroke-width=2, rounded caps
+- **Color-flexible**: Icons inherit `currentColor` for easy theming
+- **Documentation**: See `assets/icons/README.md` for full icon list and usage
 
 ### Color Palette
 
