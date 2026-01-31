@@ -25,6 +25,7 @@ type Accord struct {
 	PurchaseDate       *time.Time `json:"purchaseDate,omitempty" db:"purchase_date"`
 	DilutionPercentage *float64   `json:"dilutionPercentage,omitempty" db:"dilution_percentage"`
 	Notes              *string    `json:"notes,omitempty" db:"notes"`
+	Tags               []string   `json:"tags" db:"-"`
 	CreatedAt          time.Time  `json:"createdAt" db:"created_at"`
 	UpdatedAt          time.Time  `json:"updatedAt" db:"updated_at"`
 }
@@ -103,7 +104,7 @@ type UpdateAccordRequest struct {
 	PurchaseDate       *time.Time `json:"purchaseDate"`
 	DilutionPercentage *float64   `json:"dilutionPercentage" validate:"omitempty,gte=0,lte=100"`
 	Notes              *string    `json:"notes"`
-	Tags               []string   `json:"tags"`
+	Tags               *[]string  `json:"tags"`
 }
 
 type AddTagRequest struct {

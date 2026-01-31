@@ -15,14 +15,20 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	userRepo := repository.NewUserRepository(db)
 	tokenRepo := repository.NewRefreshTokenRepository(db)
 	invitationRepo := repository.NewInvitationRepository(db)
+	accordRepo := repository.NewAccordRepository(db)
+	tagRepo := repository.NewPredefinedTagRepository(db)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepo, tokenRepo, invitationRepo, cfg)
 	invitationService := services.NewInvitationService(invitationRepo)
+	accordService := services.NewAccordService(accordRepo, tagRepo)
+	tagService := services.NewTagService(tagRepo)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
 	invitationHandler := handlers.NewInvitationHandler(invitationService)
+	accordHandler := handlers.NewAccordHandler(accordService)
+	tagHandler := handlers.NewTagHandler(tagService)
 
 	// API group
 	api := e.Group("/api")
@@ -49,13 +55,24 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	invitations.GET("", invitationHandler.List)
 	invitations.DELETE("/:code", invitationHandler.Revoke)
 
-	// TODO: Add accord routes in Phase 8.2
-	// accords := api.Group("/accords")
-	// accords.Use(middleware.JWTAuth(cfg))
+	// Accord routes (protected)
+	accords := api.Group("/accords")
+	accords.Use(middleware.JWTAuth(cfg))
+	accords.POST("", accordHandler.Create)
+	accords.GET("", accordHandler.List)
+	accords.GET("/:id", accordHandler.Get)
+	accords.PUT("/:id", accordHandler.Update)
+	accords.DELETE("/:id", accordHandler.Delete)
+	accords.POST("/:id/tags", accordHandler.AddTag)
+	accords.DELETE("/:id/tags/:tag", accordHandler.RemoveTag)
 
-	// TODO: Add tag routes in Phase 8.2
-	// tags := api.Group("/tags")
-	// tags.Use(middleware.JWTAuth(cfg))
+	// Tag routes (public - no auth required to view tags)
+	tags := api.Group("/tags")
+	tags.GET("", tagHandler.GetAll)
+	tags.GET("/search", tagHandler.Search)
+	tags.GET("/categories", tagHandler.GetCategories)
+	tags.GET("/grouped", tagHandler.GetGrouped)
+	tags.GET("/category/:category", tagHandler.GetByCategory)
 
 	// TODO: Add stats/export routes in Phase 8.4
 	// stats := api.Group("/stats")

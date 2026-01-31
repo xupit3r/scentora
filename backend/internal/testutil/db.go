@@ -169,7 +169,119 @@ if err != nil {
 return fmt.Errorf("failed to create invitations table: %w", err)
 }
 
+// Seed predefined tags if not already seeded
+var count int
+err = db.QueryRow(`SELECT COUNT(*) FROM predefined_tags`).Scan(&count)
+if err != nil {
+return fmt.Errorf("failed to count predefined tags: %w", err)
+}
+
+if count == 0 {
+err = seedPredefinedTags(db)
+if err != nil {
+return fmt.Errorf("failed to seed predefined tags: %w", err)
+}
+}
+
 log.Println("✅ Test database migrations completed")
+return nil
+}
+
+// seedPredefinedTags seeds the predefined tags for testing
+func seedPredefinedTags(db *sql.DB) error {
+tags := []struct {
+category string
+tag      string
+}{
+// Scent families
+{"scent_family", "citrus"},
+{"scent_family", "floral"},
+{"scent_family", "woody"},
+{"scent_family", "oriental"},
+{"scent_family", "fruity"},
+{"scent_family", "aquatic"},
+{"scent_family", "gourmand"},
+{"scent_family", "chypre"},
+{"scent_family", "fougere"},
+
+// Character
+{"character", "fresh"},
+{"character", "warm"},
+{"character", "sweet"},
+{"character", "spicy"},
+{"character", "earthy"},
+{"character", "powdery"},
+{"character", "clean"},
+{"character", "rich"},
+{"character", "smoky"},
+
+// Mood
+{"mood", "uplifting"},
+{"mood", "calming"},
+{"mood", "sensual"},
+{"mood", "energizing"},
+{"mood", "mysterious"},
+{"mood", "comforting"},
+{"mood", "elegant"},
+{"mood", "playful"},
+
+// Season
+{"season", "spring"},
+{"season", "summer"},
+{"season", "fall"},
+{"season", "winter"},
+{"season", "all-season"},
+
+// Occasion
+{"occasion", "casual"},
+{"occasion", "formal"},
+{"occasion", "office"},
+{"occasion", "evening"},
+{"occasion", "date-night"},
+{"occasion", "special-occasion"},
+
+// Time of day
+{"time_of_day", "morning"},
+{"time_of_day", "afternoon"},
+{"time_of_day", "evening"},
+{"time_of_day", "night"},
+
+// Longevity
+{"longevity", "very-weak"},
+{"longevity", "weak"},
+{"longevity", "moderate"},
+{"longevity", "long-lasting"},
+{"longevity", "eternal"},
+
+// Sillage (projection)
+{"sillage", "intimate"},
+{"sillage", "moderate"},
+{"sillage", "strong"},
+{"sillage", "enormous"},
+
+// Common ingredients
+{"ingredients", "bergamot"},
+{"ingredients", "lavender"},
+{"ingredients", "sandalwood"},
+{"ingredients", "vanilla"},
+{"ingredients", "rose"},
+{"ingredients", "jasmine"},
+{"ingredients", "patchouli"},
+{"ingredients", "musk"},
+{"ingredients", "amber"},
+}
+
+for _, t := range tags {
+_, err := db.Exec(`
+INSERT INTO predefined_tags (category, tag)
+VALUES ($1, $2)
+ON CONFLICT (tag) DO NOTHING
+`, t.category, t.tag)
+if err != nil {
+return fmt.Errorf("failed to insert tag %s: %w", t.tag, err)
+}
+}
+
 return nil
 }
 
