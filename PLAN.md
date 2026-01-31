@@ -8,11 +8,12 @@
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
-2. [Past Work Summary](#past-work-summary)
-3. [Current State](#current-state)
-4. [Planned Work](#planned-work)
-5. [Technical Specifications](#technical-specifications)
-6. [Development Phases](#development-phases)
+2. [Testing & Quality Assurance](#testing--quality-assurance) ⚠️ **CRITICAL**
+3. [Past Work Summary](#past-work-summary)
+4. [Current State](#current-state)
+5. [Planned Work](#planned-work)
+6. [Technical Specifications](#technical-specifications)
+7. [Development Phases](#development-phases)
 
 ---
 
@@ -30,6 +31,162 @@ Enable perfumers and enthusiasts to:
 ### Current Transition
 - **From**: Perfume catalog tracking (commercial perfumes with notes)
 - **To**: Accord inventory and recipe management (DIY perfume creation)
+
+---
+
+## Testing & Quality Assurance
+
+### ⚠️ CRITICAL: Testing Philosophy
+
+**Testing is mandatory and non-negotiable.** All code must be tested before committing and pushing.
+
+### Testing Guidelines
+
+#### 🔴 ALWAYS Test Before:
+1. **Committing code** - Run relevant test suite
+2. **Completing a phase** - Run full test suite
+3. **Creating pull requests** - Verify all tests pass
+4. **Deploying to production** - Full integration test suite
+5. **Making breaking changes** - Update and run affected tests
+
+#### 📋 Test Coverage Requirements
+
+**Minimum Coverage Targets**:
+- **Overall**: 80%+ code coverage
+- **Repositories**: 90%+ coverage (data layer is critical)
+- **Services**: 85%+ coverage (business logic must be solid)
+- **Handlers**: 80%+ coverage (API endpoints)
+- **Models**: 100% validation tests
+
+**What to Test**:
+- ✅ All database operations (CRUD)
+- ✅ All business logic in services
+- ✅ All API endpoints (happy path + error cases)
+- ✅ All validation rules
+- ✅ All authentication/authorization flows
+- ✅ Database migrations and schema
+- ✅ Error handling and edge cases
+- ✅ Integration between layers
+
+#### 🧪 Test Types
+
+1. **Unit Tests** (`*_test.go`)
+   - Test individual functions in isolation
+   - Mock external dependencies
+   - Fast execution (<100ms per test)
+   - Examples: Model validation, utility functions
+
+2. **Repository Tests** (`repository/*_test.go`)
+   - Test database operations
+   - Use test database (not production)
+   - Test transactions and rollbacks
+   - Examples: Create, Read, Update, Delete operations
+
+3. **Service Tests** (`services/*_test.go`)
+   - Test business logic
+   - Mock repositories
+   - Test error conditions
+   - Examples: Auth flows, invitation validation
+
+4. **Handler Tests** (`handlers/*_test.go`)
+   - Test HTTP endpoints
+   - Mock services
+   - Test request/response formats
+   - Examples: API endpoint behavior
+
+5. **Integration Tests** (`integration/*_test.go`)
+   - Test full request flow
+   - Use test database
+   - Test multi-layer interactions
+   - Examples: Full auth flow, data persistence
+
+#### 🏃 Running Tests
+
+**Backend (Go)**:
+```bash
+# Run all tests
+go test ./...
+
+# Run with coverage
+go test -cover ./...
+
+# Run with verbose output
+go test -v ./...
+
+# Run specific package
+go test ./internal/repository
+
+# Run with race detection
+go test -race ./...
+
+# Generate coverage report
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
+```
+
+**Frontend (Vue/Vitest)**:
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run in watch mode
+npm run test:watch
+
+# Run specific test file
+npm test -- PerfumeCard.spec.ts
+```
+
+#### 📝 Test Documentation
+
+Every test file should include:
+- Clear test names describing what is being tested
+- Setup/teardown for test fixtures
+- Comments explaining complex test scenarios
+- Examples of expected behavior
+
+#### 🔄 Test Maintenance
+
+**Keep Tests Updated**:
+- Update tests when changing functionality
+- Remove tests for deleted features
+- Refactor tests when refactoring code
+- Never skip failing tests - fix them or fix the code
+
+**Red Flags** 🚩:
+- Commented-out tests
+- Skipped tests (`t.Skip()`)
+- Tests that only pass sometimes (flaky tests)
+- Tests with no assertions
+- Tests that take too long (>5s for unit tests)
+
+#### 📊 Test Reporting
+
+After running tests, verify:
+- ✅ All tests pass
+- ✅ Coverage meets minimum thresholds
+- ✅ No race conditions detected
+- ✅ No memory leaks
+- ✅ Performance benchmarks met
+
+#### 🎯 Phase-Specific Testing
+
+**Before Completing Each Phase**:
+1. Write tests for all new code
+2. Run full test suite
+3. Verify coverage meets targets
+4. Fix any failing tests
+5. Document test approach in phase completion doc
+6. Commit tests alongside implementation
+
+**Phase 8 Testing Requirements**:
+- Phase 8.1: Test database migrations, schema, seed data
+- Phase 8.2: Test accord repositories and services
+- Phase 8.3: Test search and filtering logic
+- Phase 8.4: Test statistics and export/import
+- Phase 8.5-8.8: Test frontend components and integration
 
 ---
 
