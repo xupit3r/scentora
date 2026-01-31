@@ -1,7 +1,41 @@
 # Scentora - Comprehensive Development Plan
 
 **Last Updated**: January 31, 2026  
-**Status**: Active Development - Transitioning to Accord Management System
+**Status**: Phase 8 Complete - Accord Management System Operational
+
+---
+
+## 📁 Documentation Conventions
+
+### Phase Completion Documents
+
+**IMPORTANT for AI Agents:** All phase completion documents MUST be stored in the `docs/phases/` directory to keep the root directory clean.
+
+**Location:** `/docs/phases/`
+
+**Naming Convention:**
+- `PHASE{X}_{Y}_COMPLETE.md` - Main phase completion summary
+- `PHASE{X}_{Y}_IMPLEMENTATION_SUMMARY.md` - Detailed implementation notes
+- `PHASE{X}_{Y}_TESTING_GUIDE.md` - Testing documentation
+- `PHASE{X}_{Y}_PLAN_SUMMARY.md` - Planning documentation
+
+**Example:**
+```
+docs/phases/PHASE8_1_COMPLETE.md
+docs/phases/PHASE8_9_COMPLETE.md
+docs/phases/PHASE8_9_1_COMPLETE.md
+```
+
+**When Creating Phase Documentation:**
+1. Always create phase documents in `docs/phases/` directory
+2. Use the naming convention above
+3. Include comprehensive summaries of work completed
+4. Document code changes, features added, and testing results
+5. Link to related documentation in other directories
+
+**Current Phase Documents:**
+- Phase 8.1-8.9 completion documents are in `docs/phases/`
+- See `docs/phases/` for all historical phase documentation
 
 ---
 
