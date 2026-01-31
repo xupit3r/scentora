@@ -1,7 +1,7 @@
 # Scentora - Comprehensive Development Plan
 
 **Last Updated**: January 31, 2026  
-**Status**: Phase 8 Complete - Accord Management System Operational
+**Status**: Phase 9 Complete - Testing Infrastructure | Phase 10 Planned - Recipe System
 
 ---
 
@@ -60,11 +60,14 @@ Enable perfumers and enthusiasts to:
 - Manage their accord inventory (scent building blocks)
 - Track volumes, suppliers, and characteristics
 - Organize accords with rich metadata and tagging
-- Eventually create and manage perfume recipes using their accords
+- **Create and manage perfume recipes/formulas** using their accords (Phase 10)
+- Version control recipes and track iterations
+- Export and share formulas with the community
 
-### Current Transition
-- **From**: Perfume catalog tracking (commercial perfumes with notes)
-- **To**: Accord inventory and recipe management (DIY perfume creation)
+### Current State
+- **✅ Phase 8 Complete**: Accord inventory management system fully operational
+- **✅ Phase 9 Complete**: Comprehensive backend testing infrastructure (136 tests)
+- **🎯 Phase 10 Next**: Recipe/formula creation system for combining accords
 
 ---
 
@@ -1014,31 +1017,70 @@ All previous phases are complete and documented in historical files:
 - IMPLEMENTATION_COMPLETE.md
 - FINAL_MIGRATION_STATUS.md
 
-### Active Phase (8): Accord System
+### Completed Phase (8): Accord System ✅
+**Status**: Complete  
+**Completion Date**: January 2026
+
+**Sub-phases Completed**:
+1. ✅ Database cleanup & migration
+2. ✅ Backend core (repos, services, handlers)
+3. ✅ Backend features (search, filter, stats)
+4. ✅ Frontend cleanup
+5. ✅ Frontend components
+6. ✅ Frontend views
+7. ✅ Integration testing
+8. ✅ Notion-inspired UI redesign
+9. ✅ Statistics & export features
+
+### Completed Phase (9): Testing & Quality Assurance ✅
+**Status**: Complete  
+**Completion Date**: January 31, 2026  
+**Achievement**: 136 passing tests with 59% backend coverage
+
+**Sub-phases Completed**:
+1. ✅ Backend Repository Tests (40 tests, 59.9% coverage)
+2. ✅ Backend Service Tests (70 tests, 59.6% coverage)
+3. ✅ Backend Handler Tests (24 tests, ~75% coverage)
+4. ⏭️ Frontend Testing Setup (deferred to future)
+5. ⏭️ E2E Testing (deferred to future)
+
+### Active Phase (10): Recipe/Formula System 📋
 **Status**: Planning Complete  
 **Start Date**: TBD  
-**Estimated Completion**: TBD
+**Estimated Duration**: 25-35 days
 
-**Sub-phases**:
-1. Database cleanup & migration
-2. Backend core (repos, services, handlers)
-3. Backend features (search, filter, stats)
-4. Frontend cleanup
-5. Frontend components
-6. Frontend views
-7. Integration testing
+**Overview**: 
+Enable users to create perfume recipes/formulas by combining their accords with version control, notes, and organization features.
 
-### Future Phases (9+)
+**Core Features**:
+- ✨ Create recipes with target volumes
+- 🔄 Version control (immutable versions)
+- 📊 Ingredients with quantities (ml, drops, percentages)
+- ⚙️ Configurable volume validation (global user preference)
+- 📝 Recipe notes and journaling
+- 🏷️ Tags and collections for organization
+- 📤 Export/import recipes as JSON
+- 🛡️ Protect accords in use from deletion
 
-**Phase 9: Recipe Management** (Future)
-- Create/edit/delete recipes
-- Recipe uses accords as ingredients
-- Track quantities per accord in recipe
-- Calculate total recipe volume
-- Recipe notes and formulation diary
-- Recipe statistics
+**Sub-phases** (12 phases):
+1. Backend - Data Models & Database Schema
+2. Backend - Repository Layer
+3. Backend - Service Layer
+4. Backend - Handler Layer
+5. Backend - Routes & Middleware
+6. Frontend - Data Models & Types
+7. Frontend - State Management
+8. Frontend - UI Components
+9. Frontend - Views & Pages
+10. Frontend - Features & Polish
+11. Testing (Backend + Frontend + E2E)
+12. Documentation & Deployment
 
-**Phase 10: Advanced Features** (Future)
+**Detailed Plan**: See [specs/recipe-system.md](specs/recipe-system.md)
+
+### Future Phases (11+)
+
+**Phase 11: Advanced Recipe Features** (Future)
 - Batch creation tracking
 - Cost tracking per accord/recipe
 - Ingredient sourcing database

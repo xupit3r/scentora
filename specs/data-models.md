@@ -291,7 +291,7 @@ interface UpdateAccordRequest {
 
 ### User
 
-User accounts (unchanged from previous phases).
+User accounts with authentication and preferences.
 
 ```sql
 CREATE TABLE users (
@@ -299,10 +299,17 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(100) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    validate_recipe_volumes BOOLEAN DEFAULT FALSE,  -- Phase 10: Volume validation preference
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 ```
+
+**New in Phase 10:**
+- `validate_recipe_volumes` - Global user preference for recipe volume validation
+  - When `true`: Validates accord availability before saving recipe versions
+  - When `false`: Allows theoretical/planning recipes without inventory checks
+  - Default: `false`
 
 ### RefreshToken
 
@@ -399,9 +406,13 @@ The following models were removed during the transition to accord system:
 
 ---
 
-## Future Models (Phase 9+)
+## Planned Models (Phase 10)
 
-### Recipe (Planned)
+### Recipe
+
+Complete perfume formulas created by combining multiple accords.
+
+#### Database Schema
 
 ```sql
 CREATE TABLE recipes (
@@ -409,28 +420,271 @@ CREATE TABLE recipes (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    total_volume_ml DECIMAL(10,2),
-    notes TEXT,
+    target_volume_ml DECIMAL(10,2) NOT NULL CHECK (target_volume_ml > 0),
+    status VARCHAR(20) NOT NULL DEFAULT 'draft' 
+        CHECK (status IN ('draft', 'tested', 'finalized', 'archived')),
+    active_version_id UUID,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, name)
 );
+
+CREATE INDEX idx_recipes_user_id ON recipes(user_id);
+CREATE INDEX idx_recipes_status ON recipes(status);
+CREATE INDEX idx_recipes_created_at ON recipes(created_at DESC);
 ```
 
-### RecipeIngredient (Planned)
+#### Go Struct
+
+```go
+type Recipe struct {
+    ID              string    `json:"_id" db:"id"`
+    UserID          string    `json:"userId" db:"user_id"`
+    Name            string    `json:"name" db:"name"`
+    Description     *string   `json:"description,omitempty" db:"description"`
+    TargetVolumeMl  float64   `json:"targetVolumeMl" db:"target_volume_ml"`
+    Status          string    `json:"status" db:"status"`
+    ActiveVersionID *string   `json:"activeVersionId,omitempty" db:"active_version_id"`
+    Tags            []string  `json:"tags" db:"-"`
+    CreatedAt       time.Time `json:"createdAt" db:"created_at"`
+    UpdatedAt       time.Time `json:"updatedAt" db:"updated_at"`
+}
+```
+
+#### TypeScript Interface
+
+```typescript
+interface Recipe {
+  _id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  targetVolumeMl: number;
+  status: 'draft' | 'tested' | 'finalized' | 'archived';
+  activeVersionId?: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+#### Field Descriptions
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | UUID | Yes | Unique identifier |
+| `user_id` | UUID | Yes | Owner of the recipe |
+| `name` | string(255) | Yes | Recipe name (unique per user) |
+| `description` | text | No | Recipe description/inspiration |
+| `target_volume_ml` | decimal(10,2) | Yes | Target volume for recipe |
+| `status` | enum | Yes | Recipe status (draft, tested, finalized, archived) |
+| `active_version_id` | UUID | No | Currently active version |
+| `created_at` | timestamp | Yes | Creation timestamp |
+| `updated_at` | timestamp | Yes | Last update timestamp |
+
+---
+
+### RecipeVersion
+
+Immutable versions of recipes for iteration and version control.
+
+#### Database Schema
+
+```sql
+CREATE TABLE recipe_versions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    version_number INTEGER NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    notes TEXT,
+    is_active BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(recipe_id, version_number)
+);
+
+CREATE INDEX idx_recipe_versions_recipe_id ON recipe_versions(recipe_id);
+CREATE INDEX idx_recipe_versions_is_active ON recipe_versions(is_active);
+
+-- Add foreign key after both tables exist
+ALTER TABLE recipes 
+    ADD CONSTRAINT fk_recipes_active_version 
+    FOREIGN KEY (active_version_id) 
+    REFERENCES recipe_versions(id) ON DELETE SET NULL;
+```
+
+#### Go Struct
+
+```go
+type RecipeVersion struct {
+    ID            string    `json:"_id" db:"id"`
+    RecipeID      string    `json:"recipeId" db:"recipe_id"`
+    VersionNumber int       `json:"versionNumber" db:"version_number"`
+    Name          string    `json:"name" db:"name"`
+    Notes         *string   `json:"notes,omitempty" db:"notes"`
+    IsActive      bool      `json:"isActive" db:"is_active"`
+    CreatedAt     time.Time `json:"createdAt" db:"created_at"`
+}
+```
+
+#### TypeScript Interface
+
+```typescript
+interface RecipeVersion {
+  _id: string;
+  recipeId: string;
+  versionNumber: number;
+  name: string;
+  notes?: string;
+  isActive: boolean;
+  createdAt: string;
+}
+```
+
+---
+
+### RecipeIngredient
+
+Links accords to recipe versions with quantities.
+
+#### Database Schema
 
 ```sql
 CREATE TABLE recipe_ingredients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    version_id UUID NOT NULL REFERENCES recipe_versions(id) ON DELETE CASCADE,
     accord_id UUID NOT NULL REFERENCES accords(id) ON DELETE RESTRICT,
-    quantity_ml DECIMAL(10,2) NOT NULL,
-    quantity_drops INTEGER,
+    quantity_ml DECIMAL(10,2) NOT NULL CHECK (quantity_ml > 0),
+    quantity_drops INTEGER GENERATED ALWAYS AS (ROUND(quantity_ml * 20)) STORED,
+    percentage DECIMAL(5,2) CHECK (percentage >= 0 AND percentage <= 100),
     notes TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(version_id, accord_id)
 );
+
+CREATE INDEX idx_recipe_ingredients_version_id ON recipe_ingredients(version_id);
+CREATE INDEX idx_recipe_ingredients_accord_id ON recipe_ingredients(accord_id);
+```
+
+#### Go Struct
+
+```go
+type RecipeIngredient struct {
+    ID            string    `json:"_id" db:"id"`
+    VersionID     string    `json:"versionId" db:"version_id"`
+    AccordID      string    `json:"accordId" db:"accord_id"`
+    QuantityMl    float64   `json:"quantityMl" db:"quantity_ml"`
+    QuantityDrops int       `json:"quantityDrops" db:"quantity_drops"`
+    Percentage    float64   `json:"percentage" db:"percentage"`
+    Notes         *string   `json:"notes,omitempty" db:"notes"`
+    CreatedAt     time.Time `json:"createdAt" db:"created_at"`
+}
+```
+
+#### TypeScript Interface
+
+```typescript
+interface RecipeIngredient {
+  _id: string;
+  versionId: string;
+  accordId: string;
+  quantityMl: number;
+  quantityDrops: number;
+  percentage: number;
+  notes?: string;
+  createdAt: string;
+}
 ```
 
 ---
+
+### RecipeNote
+
+Notes and journal entries for recipes.
+
+#### Database Schema
+
+```sql
+CREATE TABLE recipe_notes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    version_id UUID REFERENCES recipe_versions(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    note_type VARCHAR(20) DEFAULT 'general' 
+        CHECK (note_type IN ('general', 'testing', 'observation')),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_recipe_notes_recipe_id ON recipe_notes(recipe_id);
+CREATE INDEX idx_recipe_notes_version_id ON recipe_notes(version_id);
+```
+
+#### Go Struct
+
+```go
+type RecipeNote struct {
+    ID        string     `json:"_id" db:"id"`
+    RecipeID  string     `json:"recipeId" db:"recipe_id"`
+    VersionID *string    `json:"versionId,omitempty" db:"version_id"`
+    Content   string     `json:"content" db:"content"`
+    NoteType  string     `json:"noteType" db:"note_type"`
+    CreatedAt time.Time  `json:"createdAt" db:"created_at"`
+    UpdatedAt time.Time  `json:"updatedAt" db:"updated_at"`
+}
+```
+
+---
+
+### RecipeCollection
+
+Group recipes into collections/folders.
+
+#### Database Schema
+
+```sql
+CREATE TABLE recipe_collections (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, name)
+);
+
+CREATE INDEX idx_recipe_collections_user_id ON recipe_collections(user_id);
+
+CREATE TABLE recipe_collection_members (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    collection_id UUID NOT NULL REFERENCES recipe_collections(id) ON DELETE CASCADE,
+    recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    added_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(collection_id, recipe_id)
+);
+
+CREATE INDEX idx_recipe_collection_members_collection_id 
+    ON recipe_collection_members(collection_id);
+CREATE INDEX idx_recipe_collection_members_recipe_id 
+    ON recipe_collection_members(recipe_id);
+```
+
+#### Go Struct
+
+```go
+type RecipeCollection struct {
+    ID          string    `json:"_id" db:"id"`
+    UserID      string    `json:"userId" db:"user_id"`
+    Name        string    `json:"name" db:"name"`
+    Description *string   `json:"description,omitempty" db:"description"`
+    Tags        []string  `json:"tags" db:"-"`
+    CreatedAt   time.Time `json:"createdAt" db:"created_at"`
+    UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
+}
+```
+
+---
+
+## Future Models (Phase 11+)
 
 ## Migration Strategy
 
