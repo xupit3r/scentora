@@ -1,90 +1,79 @@
 <template>
   <div class="auth-container">
     <div class="auth-card">
-      <h1>Join Scentora</h1>
-      <p class="subtitle">Create your perfume collection account</p>
+      <div class="auth-header">
+        <h1>🌸</h1>
+        <h2>Join Scentora</h2>
+        <p class="subtitle">Create your accord inventory account</p>
+      </div>
 
-      <form @submit.prevent="handleRegister" class="auth-form">
-        <div class="form-group">
-          <label for="invitationCode">Invitation Code</label>
-          <input
-            id="invitationCode"
-            v-model="invitationCode"
+      <n-form @submit.prevent="handleRegister" class="auth-form">
+        <n-form-item label="Invitation Code" required>
+          <n-input
+            v-model:value="invitationCode"
             type="text"
-            required
             placeholder="Enter your invitation code"
-            autocomplete="off"
+            size="large"
           />
-        </div>
+        </n-form-item>
 
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            id="username"
-            v-model="username"
+        <n-form-item label="Username" required>
+          <n-input
+            v-model:value="username"
             type="text"
-            required
-            minlength="3"
             placeholder="Your display name"
-            autocomplete="username"
+            size="large"
           />
-        </div>
+        </n-form-item>
 
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            v-model="email"
+        <n-form-item label="Email" required>
+          <n-input
+            v-model:value="email"
             type="email"
-            required
             placeholder="your@email.com"
-            autocomplete="email"
+            size="large"
           />
-        </div>
+        </n-form-item>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            v-model="password"
+        <n-form-item label="Password" required>
+          <n-input
+            v-model:value="password"
             type="password"
-            required
-            minlength="6"
             placeholder="••••••••"
-            autocomplete="new-password"
+            size="large"
+            show-password-on="click"
           />
-        </div>
+        </n-form-item>
 
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input
-            id="confirmPassword"
-            v-model="confirmPassword"
+        <n-form-item label="Confirm Password" required>
+          <n-input
+            v-model:value="confirmPassword"
             type="password"
-            required
-            minlength="6"
             placeholder="••••••••"
-            autocomplete="new-password"
+            size="large"
+            show-password-on="click"
           />
-        </div>
+        </n-form-item>
 
-        <div v-if="validationError" class="error-message">
-          {{ validationError }}
-        </div>
+        <n-button
+          type="primary"
+          attr-type="submit"
+          :loading="authStore.isLoading"
+          block
+          size="large"
+        >
+          {{ authStore.isLoading ? 'Creating Account...' : 'Create Account' }}
+        </n-button>
 
         <div v-if="authStore.error" class="error-message">
           {{ authStore.error }}
         </div>
-
-        <button type="submit" :disabled="authStore.isLoading" class="btn-primary">
-          {{ authStore.isLoading ? 'Creating account...' : 'Register' }}
-        </button>
-      </form>
+      </n-form>
 
       <div class="auth-footer">
-        <p>
+        <p class="info-text">
           Already have an account?
-          <router-link to="/login">Login here</router-link>
+          <router-link to="/login" class="link">Login</router-link>
         </p>
       </div>
     </div>
@@ -92,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
@@ -100,28 +89,29 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 const invitationCode = ref('');
-const email = ref('');
 const username = ref('');
+const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 
-const validationError = computed(() => {
-  if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
-    return 'Passwords do not match';
-  }
-  if (username.value && username.value.length < 3) {
-    return 'Username must be at least 3 characters';
-  }
-  if (password.value && password.value.length < 6) {
-    return 'Password must be at least 6 characters';
-  }
-  return null;
-});
-
 async function handleRegister() {
-  if (validationError.value) return;
+  if (password.value !== confirmPassword.value) {
+    authStore.error = 'Passwords do not match';
+    return;
+  }
 
-  const success = await authStore.register(invitationCode.value, email.value, username.value, password.value);
+  if (password.value.length < 4) {
+    authStore.error = 'Password must be at least 4 characters';
+    return;
+  }
+
+  const success = await authStore.register(
+    email.value,
+    username.value,
+    password.value,
+    invitationCode.value
+  );
+
   if (success) {
     router.push('/');
   }
@@ -134,110 +124,91 @@ async function handleRegister() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #FAFAFA;
   padding: 20px;
 }
 
 .auth-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 40px;
+  border-radius: 16px;
+  padding: 48px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #E9E9E7;
 }
 
-h1 {
-  margin: 0 0 8px 0;
-  color: #333;
-  font-size: 28px;
+.auth-header {
   text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-header h1 {
+  font-size: 48px;
+  margin: 0 0 16px 0;
+}
+
+.auth-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #37352F;
+  margin: 0 0 8px 0;
 }
 
 .subtitle {
-  margin: 0 0 32px 0;
-  color: #666;
-  text-align: center;
+  color: #787774;
+  margin: 0;
   font-size: 14px;
 }
 
 .auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-group label {
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-}
-
-.form-group input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 15px;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  margin-bottom: 24px;
 }
 
 .error-message {
-  background: #fee;
-  color: #c33;
+  margin-top: 16px;
   padding: 12px;
-  border-radius: 6px;
+  background: #FEE2E2;
+  color: #991B1B;
+  border-radius: 8px;
   font-size: 14px;
-  border-left: 4px solid #c33;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  text-align: center;
 }
 
 .auth-footer {
-  margin-top: 24px;
   text-align: center;
-  font-size: 14px;
-  color: #666;
+  padding-top: 24px;
+  border-top: 1px solid #E9E9E7;
 }
 
-.auth-footer a {
-  color: #667eea;
+.info-text {
+  color: #787774;
+  font-size: 14px;
+  margin: 0;
+}
+
+.link {
+  color: #0F766E;
   text-decoration: none;
   font-weight: 600;
+  margin-left: 4px;
 }
 
-.auth-footer a:hover {
+.link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 32px 24px;
+  }
+
+  .auth-header h1 {
+    font-size: 40px;
+  }
+
+  .auth-header h2 {
+    font-size: 20px;
+  }
 }
 </style>
