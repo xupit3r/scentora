@@ -4,9 +4,9 @@ A perfume formulation and accord management system for DIY perfumers and enthusi
 
 ## 🎯 Project Status
 
-**Current Phase**: Accord Inventory System Enhancement  
-**Latest**: Phase 8.9 (UI/UX Redesign) + Phase 8.4 (Statistics & Export) Complete  
-**Next**: Phase 8.5-8.8 (Frontend Cleanup & Polish)
+**Current Phase**: Testing & Quality Assurance (Phase 9)  
+**Latest**: Phase 9.1 (Backend Repository Tests) Complete - 40 tests passing ✅  
+**Next**: Phase 9.2 (Backend Service Tests)
 
 ## Tech Stack
 
@@ -252,7 +252,7 @@ scentora/
 ### Design & Planning
 - **[Design Mockups](mockups/)** - Interactive gallery of wireframes and high-fidelity designs for Phase 8.9
 - [PLAN.md](PLAN.md) - Complete project roadmap and phase planning
-- [PHASE8_9_PLAN_SUMMARY.md](PHASE8_9_PLAN_SUMMARY.md) - Notion-inspired UI/UX redesign plan
+- [TESTING_PLAN.md](docs/TESTING_PLAN.md) - Comprehensive testing strategy and timeline
 
 ### Technical Documentation
 - [QUICKSTART.md](QUICKSTART.md) - Quick start guide
@@ -261,15 +261,21 @@ scentora/
 - [LAUNCHER_GUIDE.md](docs/LAUNCHER_GUIDE.md) - Launcher script usage
 - [TESTING_IMPLEMENTATION.md](TESTING_IMPLEMENTATION.md) - Testing framework and guidelines
 
+### Testing
+- [TESTING_PLAN.md](docs/TESTING_PLAN.md) - Comprehensive testing plan (Phase 9)
+- **Backend Tests:** 40 tests passing ✅
+  - Repository layer: 59.9% coverage
+  - Run: `cd backend && go test ./...`
+- **Frontend Tests:** Setup in progress
+
 ### Phase History
-- [PHASE1_COMPLETE.md](PHASE1_COMPLETE.md) - Foundation phase
-- [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md) - CRUD operations phase
-- [PHASE3_COMPLETE.md](PHASE3_COMPLETE.md) - Advanced features phase
-- [PHASE4_COMPLETE.md](PHASE4_COMPLETE.md) - Analytics phase
-- [PHASE5_COMPLETE.md](PHASE5_COMPLETE.md) - Authentication phase
-- [PHASE5B_COMPLETE.md](PHASE5B_COMPLETE.md) - Refresh tokens & rate limiting phase
-- [PHASE8_1_COMPLETE.md](PHASE8_1_COMPLETE.md) - Database migration to accord system
-- [PHASE8_2_COMPLETE.md](PHASE8_2_COMPLETE.md) - Accord core features backend
+All phase completion documents are in [docs/phases/](docs/phases/):
+- [PHASE9_1_COMPLETE.md](docs/phases/PHASE9_1_COMPLETE.md) - Backend repository tests (40 tests) ✅
+- [PHASE8_9_COMPLETE.md](docs/phases/PHASE8_9_COMPLETE.md) - Notion-inspired UI redesign
+- [PHASE8_8_COMPLETE.md](docs/phases/PHASE8_8_COMPLETE.md) - Features & Polish
+- [PHASE8_5_COMPLETE.md](docs/phases/PHASE8_5_COMPLETE.md) - Frontend cleanup
+- [PHASE8_4_COMPLETE.md](docs/phases/PHASE8_4_COMPLETE.md) - Statistics & Export
+- See [docs/phases/README.md](docs/phases/README.md) for complete list
 
 ## Security Features
 
