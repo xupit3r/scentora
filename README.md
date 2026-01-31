@@ -5,8 +5,9 @@ A perfume formulation and accord management system for DIY perfumers and enthusi
 ## 🎯 Project Status
 
 **Current Phase**: Testing & Quality Assurance (Phase 9)  
-**Latest**: Phase 9.1 (Backend Repository Tests) Complete - 40 tests passing ✅  
-**Next**: Phase 9.2 (Backend Service Tests)
+**Latest**: Phase 9.2 (Backend Service Tests) Complete - 116 tests passing ✅  
+**Coverage**: Repository 59.9% | Services 59.6%  
+**Next**: Phase 9.3 (Backend Handler/Integration Tests)
 
 ## Tech Stack
 
@@ -263,13 +264,19 @@ scentora/
 
 ### Testing
 - [TESTING_PLAN.md](docs/TESTING_PLAN.md) - Comprehensive testing plan (Phase 9)
-- **Backend Tests:** 40 tests passing ✅
-  - Repository layer: 59.9% coverage
+- **Backend Tests:** 116 tests passing ✅
+  - Repository layer: 59.9% coverage (40 tests)
+  - Service layer: 59.6% coverage (70 tests)
+    - AuthService: 20 tests (registration, login, tokens)
+    - InvitationService: 16 tests (creation, validation)
+    - TagService: 11 tests (search, categorization)
+    - AccordService: 23 tests (CRUD, validation)
   - Run: `cd backend && go test ./...`
 - **Frontend Tests:** Setup in progress
 
 ### Phase History
 All phase completion documents are in [docs/phases/](docs/phases/):
+- [PHASE9_2_COMPLETE.md](docs/phases/PHASE9_2_COMPLETE.md) - Backend service tests (70 tests) ✅
 - [PHASE9_1_COMPLETE.md](docs/phases/PHASE9_1_COMPLETE.md) - Backend repository tests (40 tests) ✅
 - [PHASE8_9_COMPLETE.md](docs/phases/PHASE8_9_COMPLETE.md) - Notion-inspired UI redesign
 - [PHASE8_8_COMPLETE.md](docs/phases/PHASE8_8_COMPLETE.md) - Features & Polish
