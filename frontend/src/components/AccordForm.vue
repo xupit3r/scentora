@@ -104,7 +104,8 @@
         <div class="form-section">
           <h3 class="section-title">Tags</h3>
           <TagSelector
-            v-model="form.tags"
+            :model-value="form.tags || []"
+            @update:model-value="(tags) => form.tags = tags"
             placeholder="Add tags to categorize this accord..."
           />
         </div>
@@ -175,7 +176,7 @@ watch(() => props.accord, (accord) => {
       purchaseDate: accord.purchaseDate || '',
       dilutionPercentage: accord.dilutionPercentage,
       notes: accord.notes || '',
-      tags: [...accord.tags],
+      tags: accord.tags ? [...accord.tags] : [],
     };
   }
 }, { immediate: true });

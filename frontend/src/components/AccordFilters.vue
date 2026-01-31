@@ -102,8 +102,8 @@
       <div class="filter-group">
         <label class="filter-label">Tags</label>
         <TagSelector
-          v-model="localFilters.tags"
-          @update:modelValue="emitFilters"
+          :model-value="localFilters.tags || []"
+          @update:model-value="(tags) => { localFilters.tags = tags; emitFilters(); }"
           placeholder="Filter by tags..."
           :show-suggestions="false"
         />
@@ -148,11 +148,17 @@ const emit = defineEmits<{
   close: [];
 }>();
 
-const localFilters = ref<AccordFilters>({ ...props.modelValue });
+const localFilters = ref<AccordFilters>({ 
+  ...props.modelValue,
+  tags: props.modelValue.tags || []
+});
 const showLowStock = ref(false);
 
 watch(() => props.modelValue, (newVal) => {
-  localFilters.value = { ...newVal };
+  localFilters.value = { 
+    ...newVal,
+    tags: newVal.tags || []
+  };
   // Check if low stock filter is active
   showLowStock.value = newVal.maxVolume === 5;
 }, { deep: true });
