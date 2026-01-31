@@ -1,14 +1,21 @@
 <template>
-  <div class="accord-card" :class="`position-${accord.pyramidPosition}`">
+  <n-card
+    :bordered="true"
+    class="accord-card card-hover"
+    :class="`position-indicator-${accord.pyramidPosition}`"
+  >
+    <!-- Header -->
     <div class="card-header">
       <h3 class="accord-name">{{ accord.name }}</h3>
-      <span class="position-badge" :class="`badge-${accord.pyramidPosition}`">
+      <n-tag :type="positionTagType" size="small" round>
         {{ positionLabel }}
-      </span>
+      </n-tag>
     </div>
 
+    <!-- Body -->
     <div class="card-body">
-      <div class="volume-info">
+      <!-- Volume Info -->
+      <div class="volume-section">
         <div class="volume-primary">
           <span class="volume-value">{{ accord.volumeMl }}</span>
           <span class="volume-unit">ml</span>
@@ -17,52 +24,80 @@
           <span class="drops-value">{{ accord.volumeDrops }}</span>
           <span class="drops-unit">drops</span>
         </div>
-        <div v-if="isLowStock" class="low-stock-badge" :class="stockLevel">
+        <n-tag
+          v-if="isLowStock"
+          :type="stockLevel === 'critical' ? 'error' : 'warning'"
+          size="small"
+          class="stock-badge"
+        >
           {{ stockWarning }}
-        </div>
+        </n-tag>
       </div>
 
-      <div v-if="accord.supplier" class="supplier-info">
-        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-        <span>{{ accord.supplier }}</span>
+      <!-- Supplier -->
+      <div v-if="accord.supplier" class="info-row">
+        <span class="info-icon">🏢</span>
+        <span class="info-text">{{ accord.supplier }}</span>
       </div>
 
-      <div v-if="accord.dilutionPercentage" class="dilution-info">
-        <span class="dilution-label">Dilution:</span>
-        <span class="dilution-value">{{ accord.dilutionPercentage }}%</span>
+      <!-- Dilution -->
+      <div v-if="accord.dilutionPercentage" class="info-row">
+        <span class="info-label">Dilution:</span>
+        <span class="info-value">{{ accord.dilutionPercentage }}%</span>
       </div>
 
-      <div v-if="accord.tags.length" class="tags">
-        <span v-for="tag in accord.tags.slice(0, 3)" :key="tag" class="tag">
+      <!-- Tags -->
+      <div v-if="accord.tags.length" class="tags-section">
+        <n-tag
+          v-for="tag in accord.tags.slice(0, 3)"
+          :key="tag"
+          size="small"
+          :bordered="false"
+        >
           {{ tag }}
-        </span>
-        <span v-if="accord.tags.length > 3" class="tag-more">
+        </n-tag>
+        <n-tag
+          v-if="accord.tags.length > 3"
+          size="small"
+          :bordered="false"
+          class="tag-more"
+        >
           +{{ accord.tags.length - 3 }}
-        </span>
+        </n-tag>
       </div>
     </div>
 
+    <!-- Actions -->
     <div class="card-actions">
-      <button @click="$emit('view', accord)" class="btn-icon" title="View Details">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-      </button>
-      <button @click="$emit('edit', accord)" class="btn-icon" title="Edit">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-        </svg>
-      </button>
-      <button @click="$emit('delete', accord)" class="btn-icon btn-danger" title="Delete">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-        </svg>
-      </button>
+      <n-button
+        text
+        @click="$emit('view', accord)"
+        class="action-btn"
+      >
+        <template #icon>
+          <span class="action-icon">👁️</span>
+        </template>
+      </n-button>
+      <n-button
+        text
+        @click="$emit('edit', accord)"
+        class="action-btn"
+      >
+        <template #icon>
+          <span class="action-icon">✏️</span>
+        </template>
+      </n-button>
+      <n-button
+        text
+        @click="$emit('delete', accord)"
+        class="action-btn action-danger"
+      >
+        <template #icon>
+          <span class="action-icon">🗑️</span>
+        </template>
+      </n-button>
     </div>
-  </div>
+  </n-card>
 </template>
 
 <script setup lang="ts">
@@ -88,6 +123,15 @@ const positionLabel = computed(() => {
   return labels[props.accord.pyramidPosition] || props.accord.pyramidPosition;
 });
 
+const positionTagType = computed(() => {
+  const types: Record<string, 'warning' | 'info' | 'default'> = {
+    top: 'warning',
+    middle: 'info',
+    base: 'default',
+  };
+  return types[props.accord.pyramidPosition] || 'default';
+});
+
 const isLowStock = computed(() => props.accord.volumeMl < 5);
 
 const stockLevel = computed(() => {
@@ -105,222 +149,156 @@ const stockWarning = computed(() => {
 
 <style scoped>
 .accord-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border-left: 4px solid;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.accord-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+/* Position indicators - subtle left border */
+.position-indicator-top {
+  border-left: 3px solid #FDE68A;
 }
 
-.accord-card.position-top {
-  border-left-color: #FFD93D;
+.position-indicator-middle {
+  border-left: 3px solid #D8B4FE;
 }
 
-.accord-card.position-middle {
-  border-left-color: #B565D8;
+.position-indicator-base {
+  border-left: 3px solid #E4C9A0;
 }
 
-.accord-card.position-base {
-  border-left-color: #A0826D;
-}
-
+/* Header */
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: start;
-  margin-bottom: 1rem;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .accord-name {
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: #37352F;
   margin: 0;
   flex: 1;
+  line-height: 1.3;
 }
 
-.position-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-
-.badge-top {
-  background: linear-gradient(135deg, #FFD93D, #FFA800);
-  color: #4a2800;
-}
-
-.badge-middle {
-  background: linear-gradient(135deg, #B565D8, #8B5CF6);
-  color: white;
-}
-
-.badge-base {
-  background: linear-gradient(135deg, #A0826D, #6B4423);
-  color: white;
-}
-
+/* Body */
 .card-body {
-  margin-bottom: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.volume-info {
+/* Volume Section */
+.volume-section {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .volume-primary {
   display: flex;
   align-items: baseline;
-  gap: 0.25rem;
+  gap: 4px;
 }
 
 .volume-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
+  font-size: 28px;
+  font-weight: 600;
+  color: #37352F;
+  line-height: 1;
 }
 
 .volume-unit {
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: 14px;
+  color: #787774;
 }
 
 .volume-secondary {
   display: flex;
   align-items: baseline;
-  gap: 0.25rem;
-  color: #6b7280;
-  font-size: 0.875rem;
+  gap: 4px;
+  color: #9B9A97;
+  font-size: 14px;
 }
 
 .drops-value {
-  font-weight: 600;
+  font-weight: 500;
+  color: #787774;
 }
 
-.low-stock-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
+.stock-badge {
   margin-left: auto;
 }
 
-.low-stock-badge.low {
-  background: #FEF3C7;
-  color: #92400E;
-}
-
-.low-stock-badge.critical {
-  background: #FEE2E2;
-  color: #991B1B;
-}
-
-.supplier-info {
+/* Info Rows */
+.info-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
+  gap: 8px;
+  font-size: 14px;
+  color: #787774;
 }
 
-.supplier-info .icon {
-  width: 1rem;
-  height: 1rem;
+.info-icon {
+  font-size: 16px;
 }
 
-.dilution-info {
-  display: flex;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
+.info-text {
+  color: #787774;
 }
 
-.dilution-value {
-  font-weight: 600;
-  color: #1f2937;
+.info-label {
+  color: #9B9A97;
 }
 
-.tags {
+.info-value {
+  font-weight: 500;
+  color: #37352F;
+}
+
+/* Tags Section */
+.tags-section {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.tag {
-  padding: 0.25rem 0.625rem;
-  background: #f3f4f6;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  color: #4b5563;
-  font-weight: 500;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
 }
 
 .tag-more {
-  padding: 0.25rem 0.625rem;
-  background: #e5e7eb;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 600;
+  background: #E9E9E7 !important;
+  color: #787774 !important;
 }
 
+/* Actions */
 .card-actions {
   display: flex;
-  gap: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  gap: 8px;
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid #E9E9E7;
 }
 
-.btn-icon {
-  padding: 0.5rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.action-btn {
+  opacity: 0;
+  transition: opacity 200ms ease, background 200ms ease;
 }
 
-.btn-icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #6b7280;
+.accord-card:hover .action-btn {
+  opacity: 1;
 }
 
-.btn-icon:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
+.action-icon {
+  font-size: 16px;
 }
 
-.btn-icon:hover svg {
-  color: #1f2937;
-}
-
-.btn-icon.btn-danger:hover {
-  background: #FEE2E2;
-  border-color: #FCA5A5;
-}
-
-.btn-icon.btn-danger:hover svg {
-  color: #DC2626;
+.action-danger:hover {
+  color: #991B1B !important;
 }
 </style>
