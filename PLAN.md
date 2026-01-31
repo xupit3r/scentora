@@ -631,15 +631,18 @@ All previous phases are complete and documented in historical files:
 ### Key Documents
 - **PLAN.md** (this file) - Comprehensive development plan
 - **README.md** - Project overview and quick start
-- **API_REFERENCE.md** - Complete API documentation
-- **LAUNCHER_GUIDE.md** - Launcher script usage
+- **QUICKSTART.md** - Quick start guide
+- **docs/AUTH_IMPLEMENTATION.md** - Authentication system
+- **docs/REFRESH_TOKENS_RATE_LIMITING.md** - Security features
+- **docs/LAUNCHER_GUIDE.md** - Launcher script usage
 - **specs/** - Detailed technical specifications
 
 ### Historical Documents
-- PHASE*.md files - Completed phase documentation
-- MIGRATION_TO_GO.md - Backend migration details
-- AUTH_IMPLEMENTATION.md - Authentication system
-- REFRESH_TOKENS_RATE_LIMITING.md - Security features
+- specs/archives/PHASE*.md files - Completed phase documentation
+- specs/archives/MIGRATION_TO_GO.md - Backend migration details
+- specs/archives/API_REFERENCE.md - Old perfume API documentation
+- docs/AUTH_IMPLEMENTATION.md - Authentication system
+- docs/REFRESH_TOKENS_RATE_LIMITING.md - Security features
 
 ### Developer Resources
 - `backend/README.md` - Go backend documentation

@@ -65,7 +65,7 @@ That's it! The launcher will:
 
 Access the app at http://localhost:5173
 
-See [LAUNCHER_GUIDE.md](LAUNCHER_GUIDE.md) for more launcher options.
+See [LAUNCHER_GUIDE.md](docs/LAUNCHER_GUIDE.md) for more launcher options.
 
 ### Manual Setup
 
@@ -221,9 +221,9 @@ scentora/
 ## Documentation
 
 - [QUICKSTART.md](QUICKSTART.md) - Quick start guide
-- [API_REFERENCE.md](API_REFERENCE.md) - Complete API documentation
-- [AUTH_IMPLEMENTATION.md](AUTH_IMPLEMENTATION.md) - Authentication details
-- [REFRESH_TOKENS_RATE_LIMITING.md](REFRESH_TOKENS_RATE_LIMITING.md) - Refresh tokens & rate limiting
+- [AUTH_IMPLEMENTATION.md](docs/AUTH_IMPLEMENTATION.md) - Authentication details
+- [REFRESH_TOKENS_RATE_LIMITING.md](docs/REFRESH_TOKENS_RATE_LIMITING.md) - Refresh tokens & rate limiting
+- [LAUNCHER_GUIDE.md](docs/LAUNCHER_GUIDE.md) - Launcher script usage
 - [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) - Project overview
 - [PHASE1_COMPLETE.md](PHASE1_COMPLETE.md) - Foundation phase
 - [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md) - CRUD operations phase

@@ -227,7 +227,7 @@ cd frontend && npm install && npm run dev
 1. Create controller function in `backend/src/controllers/`
 2. Add route in `backend/src/routes/`
 3. Add authentication middleware if protected
-4. Update API_REFERENCE.md
+4. Update specs/api-spec.md
 
 ### Adding a New Feature
 1. Backend: Create controller, model, and route
@@ -235,6 +235,7 @@ cd frontend && npm install && npm run dev
 3. Add Pinia store if managing state
 4. Create/update Vue components and views
 5. Update router if adding new pages
+6. Update specs/api-spec.md
 
 ### Database Migration
 1. CouchDB is schema-less; no migrations needed
@@ -255,7 +256,7 @@ cd frontend && npm install && npm run dev
 - Change `JWT_SECRET` in production
 - Enable HTTPS
 - Configure production-grade rate limiting (consider Redis)
-- Review security checklist in AUTH_IMPLEMENTATION.md
+- Review security checklist in docs/AUTH_IMPLEMENTATION.md
 
 ## Tips for Copilot
 
