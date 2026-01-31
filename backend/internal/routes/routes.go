@@ -29,6 +29,8 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	invitationHandler := handlers.NewInvitationHandler(invitationService)
 	accordHandler := handlers.NewAccordHandler(accordService)
 	tagHandler := handlers.NewTagHandler(tagService)
+	statsHandler := handlers.NewStatsHandler(accordService)
+	exportHandler := handlers.NewExportHandler(accordService)
 
 	// API group
 	api := e.Group("/api")
@@ -74,10 +76,12 @@ func SetupRoutes(e *echo.Echo, db *sqlx.DB, cfg *config.Config) {
 	tags.GET("/grouped", tagHandler.GetGrouped)
 	tags.GET("/category/:category", tagHandler.GetByCategory)
 
-	// TODO: Add stats/export routes in Phase 8.4
-	// stats := api.Group("/stats")
-	// stats.Use(middleware.JWTAuth(cfg))
+	// Statistics routes (protected)
+	api.GET("/stats", statsHandler.GetStats, middleware.JWTAuth(cfg))
 	
-	// export := api.Group("/export")
-	// export.Use(middleware.JWTAuth(cfg))
+	// Export/Import routes (protected)
+	exportRoutes := api.Group("/export")
+	exportRoutes.Use(middleware.JWTAuth(cfg))
+	exportRoutes.GET("", exportHandler.Export)
+	exportRoutes.POST("/import", exportHandler.Import)
 }

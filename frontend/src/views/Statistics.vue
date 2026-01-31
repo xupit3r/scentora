@@ -1,568 +1,506 @@
 <template>
-  <div class="statistics">
-    <h2>Collection Statistics</h2>
+  <div class="statistics-page">
+    <div class="page-header">
+      <h1>Collection Statistics</h1>
+      <p class="subtitle">Insights into your accord inventory</p>
+    </div>
 
-    <div v-if="loading" class="loading">Loading statistics...</div>
+    <div v-if="loading" class="loading-state">
+      <n-spin size="large" />
+      <p>Loading statistics...</p>
+    </div>
 
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="error" class="error-state">
+      <n-result status="error" title="Failed to Load" :description="error">
+        <template #footer>
+          <n-button @click="fetchStats">Retry</n-button>
+        </template>
+      </n-result>
+    </div>
 
     <div v-else-if="stats" class="stats-content">
       <!-- Overview Cards -->
       <div class="overview-grid">
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.overview.totalPerfumes }}</div>
-          <div class="stat-label">Perfumes</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.overview.uniqueDesigners }}</div>
-          <div class="stat-label">Designers</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.overview.uniqueNotes }}</div>
-          <div class="stat-label">Unique Notes</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.overview.totalJournalEntries }}</div>
-          <div class="stat-label">Journal Entries</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.overview.averageRating }}</div>
-          <div class="stat-label">Average Rating</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ stats.pyramidStats.avgNotesPerPerfume }}</div>
-          <div class="stat-label">Avg Notes/Perfume</div>
-        </div>
+        <n-card class="stat-card" :bordered="false">
+          <n-statistic label="Total Accords" :value="stats.overview.totalAccords" />
+        </n-card>
+        <n-card class="stat-card" :bordered="false">
+          <n-statistic label="Total Volume" :value="`${stats.overview.totalVolume.toFixed(1)} ml`" />
+        </n-card>
+        <n-card class="stat-card" :bordered="false">
+          <n-statistic label="Suppliers" :value="stats.overview.totalSuppliers" />
+        </n-card>
+        <n-card class="stat-card" :bordered="false">
+          <n-statistic label="Unique Tags" :value="stats.overview.totalTags" />
+        </n-card>
       </div>
 
-      <!-- Charts Section -->
-      <div class="charts-grid">
-        <!-- Top Designers -->
-        <div class="chart-card">
-          <h3>Top Designers</h3>
-          <div class="bar-chart">
-            <div
-              v-for="item in stats.topDesigners.slice(0, 5)"
-              :key="item.designer"
-              class="bar-item"
-            >
-              <div class="bar-label">{{ item.designer }}</div>
-              <div class="bar-container">
-                <div
-                  class="bar"
-                  :style="{ width: `${(item.count / maxDesignerCount) * 100}%` }"
-                >
-                  <span class="bar-value">{{ item.count }}</span>
-                </div>
+      <!-- Pyramid Distribution -->
+      <n-card title="Pyramid Position Distribution" class="chart-card" :bordered="false">
+        <div class="pyramid-stats">
+          <div class="pyramid-row">
+            <div class="pyramid-label">Top Notes</div>
+            <div class="pyramid-bar">
+              <div 
+                class="bar-fill top" 
+                :style="{ width: `${pyramidPercentage('top')}%` }"
+              >
+                <span class="bar-value">{{ stats.pyramidStats.topCount }} ({{ stats.pyramidStats.topVolume.toFixed(1) }}ml)</span>
+              </div>
+            </div>
+          </div>
+          <div class="pyramid-row">
+            <div class="pyramid-label">Middle Notes</div>
+            <div class="pyramid-bar">
+              <div 
+                class="bar-fill middle" 
+                :style="{ width: `${pyramidPercentage('middle')}%` }"
+              >
+                <span class="bar-value">{{ stats.pyramidStats.middleCount }} ({{ stats.pyramidStats.middleVolume.toFixed(1) }}ml)</span>
+              </div>
+            </div>
+          </div>
+          <div class="pyramid-row">
+            <div class="pyramid-label">Base Notes</div>
+            <div class="pyramid-bar">
+              <div 
+                class="bar-fill base" 
+                :style="{ width: `${pyramidPercentage('base')}%` }"
+              >
+                <span class="bar-value">{{ stats.pyramidStats.baseCount }} ({{ stats.pyramidStats.baseVolume.toFixed(1) }}ml)</span>
               </div>
             </div>
           </div>
         </div>
+      </n-card>
 
-        <!-- Top Notes -->
-        <div class="chart-card">
-          <h3>Most Used Notes</h3>
-          <div class="bar-chart">
-            <div
-              v-for="item in stats.topNotes.slice(0, 8)"
-              :key="item.note"
-              class="bar-item"
-            >
-              <div class="bar-label">{{ item.note }}</div>
-              <div class="bar-container">
-                <div
-                  class="bar"
-                  :style="{ width: `${(item.count / maxNoteCount) * 100}%` }"
-                >
-                  <span class="bar-value">{{ item.count }}</span>
-                </div>
-              </div>
+      <!-- Two Column Layout -->
+      <div class="two-column-grid">
+        <!-- Top Tags -->
+        <n-card title="Top Tags" class="chart-card" :bordered="false">
+          <div v-if="stats.tagStats.length > 0" class="tag-list">
+            <div v-for="item in topTags" :key="item.tag" class="tag-item">
+              <n-tag :bordered="false">{{ item.tag }}</n-tag>
+              <span class="tag-count">{{ item.count }}</span>
             </div>
           </div>
-        </div>
+          <n-empty v-else description="No tags yet" />
+        </n-card>
 
-        <!-- Concentration Distribution -->
-        <div class="chart-card">
-          <h3>Concentration Types</h3>
-          <div class="pie-chart-legend">
-            <div
-              v-for="(count, concentration) in stats.concentrationDistribution"
-              :key="concentration"
-              class="legend-item"
-            >
-              <div class="legend-color" :style="{ background: getConcentrationColor(concentration) }"></div>
-              <div class="legend-label">{{ concentration }}</div>
-              <div class="legend-value">{{ count }}</div>
-            </div>
-            <div v-if="Object.keys(stats.concentrationDistribution).length === 0" class="empty-state">
-              No concentration data
+        <!-- Top Suppliers -->
+        <n-card title="Top Suppliers" class="chart-card" :bordered="false">
+          <div v-if="stats.supplierStats.length > 0" class="supplier-list">
+            <div v-for="item in topSuppliers" :key="item.supplier" class="supplier-item">
+              <span class="supplier-name">{{ item.supplier }}</span>
+              <span class="supplier-count">{{ item.count }} accords</span>
             </div>
           </div>
-        </div>
-
-        <!-- Pyramid Distribution -->
-        <div class="chart-card">
-          <h3>Notes by Pyramid Level</h3>
-          <div class="pyramid-viz">
-            <div class="pyramid-level top-level">
-              <div class="level-label">Top</div>
-              <div class="level-value">{{ stats.pyramidStats.topNotes }}</div>
-            </div>
-            <div class="pyramid-level middle-level">
-              <div class="level-label">Middle</div>
-              <div class="level-value">{{ stats.pyramidStats.middleNotes }}</div>
-            </div>
-            <div class="pyramid-level base-level">
-              <div class="level-label">Base</div>
-              <div class="level-value">{{ stats.pyramidStats.baseNotes }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Year Distribution -->
-        <div v-if="stats.yearDistribution.length > 0" class="chart-card full-width">
-          <h3>Collection by Year</h3>
-          <div class="timeline-chart">
-            <div
-              v-for="item in stats.yearDistribution"
-              :key="item.year"
-              class="timeline-item"
-            >
-              <div class="timeline-year">{{ item.year }}</div>
-              <div class="timeline-bar-container">
-                <div
-                  class="timeline-bar"
-                  :style="{ height: `${(item.count / maxYearCount) * 100}%` }"
-                >
-                  <span class="timeline-value">{{ item.count }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <n-empty v-else description="No suppliers recorded" />
+        </n-card>
       </div>
 
-      <!-- Export Section -->
-      <div class="export-section">
-        <h3>Export & Import</h3>
-        <div class="export-buttons">
-          <button class="btn-primary" @click="handleExport">
-            📥 Export Collection
-          </button>
-          <button class="btn-secondary" @click="triggerImport">
-            📤 Import Collection
-          </button>
-          <input
-            ref="fileInput"
-            type="file"
-            accept=".json"
-            style="display: none"
-            @change="handleImport"
-          />
+      <!-- Volume Stats -->
+      <n-card title="Volume Statistics" class="chart-card" :bordered="false">
+        <div class="volume-stats">
+          <div class="volume-item">
+            <div class="volume-label">Average Volume</div>
+            <div class="volume-value">{{ stats.volumeStats.averageVolume.toFixed(1) }} ml</div>
+          </div>
+          <div class="volume-item">
+            <div class="volume-label">Minimum</div>
+            <div class="volume-value">{{ stats.volumeStats.minVolume.toFixed(1) }} ml</div>
+          </div>
+          <div class="volume-item">
+            <div class="volume-label">Maximum</div>
+            <div class="volume-value">{{ stats.volumeStats.maxVolume.toFixed(1) }} ml</div>
+          </div>
         </div>
-        <p class="export-note">
-          Export your collection as JSON for backup or sharing. Import will add perfumes to your existing collection.
-        </p>
-      </div>
+      </n-card>
+
+      <!-- Low Inventory Alert -->
+      <n-card v-if="stats.lowInventory.length > 0" title="Low Inventory Alert" class="alert-card" :bordered="false">
+        <n-alert type="warning" :bordered="false">
+          {{ stats.lowInventory.length }} accord(s) running low on volume
+        </n-alert>
+        <div class="low-inventory-list">
+          <div v-for="item in stats.lowInventory" :key="item.accordId" class="low-inventory-item">
+            <span class="accord-name">{{ item.name }}</span>
+            <span class="accord-volume">{{ item.volumeMl.toFixed(1) }} ml</span>
+            <span v-if="item.supplier" class="accord-supplier">{{ item.supplier }}</span>
+          </div>
+        </div>
+      </n-card>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { statsService, exportService, type CollectionStats } from '@/services/api';
+import { NCard, NStatistic, NSpin, NResult, NButton, NTag, NEmpty, NAlert } from 'naive-ui';
+import api from '../services/api';
 
-const stats = ref<CollectionStats | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
-const fileInput = ref<HTMLInputElement>();
-
-const maxDesignerCount = computed(() => {
-  if (!stats.value) return 1;
-  return Math.max(...stats.value.topDesigners.map(d => d.count));
-});
-
-const maxNoteCount = computed(() => {
-  if (!stats.value) return 1;
-  return Math.max(...stats.value.topNotes.map(n => n.count));
-});
-
-const maxYearCount = computed(() => {
-  if (!stats.value) return 1;
-  return Math.max(...stats.value.yearDistribution.map(y => y.count));
-});
-
-function getConcentrationColor(concentration: string): string {
-  const colors: Record<string, string> = {
-    'Parfum': '#8b5cf6',
-    'EDP': '#6b4f9e',
-    'EDT': '#a78bfa',
-    'EDC': '#c4b5fd',
-  };
-  return colors[concentration] || '#d1d5db';
+interface OverviewStats {
+  totalAccords: number;
+  totalVolume: number;
+  totalSuppliers: number;
+  totalTags: number;
 }
 
-async function loadStats() {
+interface PyramidStats {
+  topCount: number;
+  middleCount: number;
+  baseCount: number;
+  topVolume: number;
+  middleVolume: number;
+  baseVolume: number;
+}
+
+interface TagStat {
+  tag: string;
+  count: number;
+}
+
+interface SupplierStat {
+  supplier: string;
+  count: number;
+}
+
+interface VolumeStats {
+  averageVolume: number;
+  minVolume: number;
+  maxVolume: number;
+}
+
+interface LowInventoryItem {
+  accordId: string;
+  name: string;
+  volumeMl: number;
+  supplier?: string;
+}
+
+interface AccordStatistics {
+  overview: OverviewStats;
+  pyramidStats: PyramidStats;
+  tagStats: TagStat[];
+  supplierStats: SupplierStat[];
+  volumeStats: VolumeStats;
+  lowInventory: LowInventoryItem[];
+}
+
+const loading = ref(true);
+const error = ref('');
+const stats = ref<AccordStatistics | null>(null);
+
+const topTags = computed(() => {
+  if (!stats.value) return [];
+  return stats.value.tagStats
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+});
+
+const topSuppliers = computed(() => {
+  if (!stats.value) return [];
+  return stats.value.supplierStats
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+});
+
+function pyramidPercentage(position: 'top' | 'middle' | 'base'): number {
+  if (!stats.value) return 0;
+  const total = stats.value.pyramidStats.topCount + 
+                stats.value.pyramidStats.middleCount + 
+                stats.value.pyramidStats.baseCount;
+  if (total === 0) return 0;
+  
+  const count = position === 'top' ? stats.value.pyramidStats.topCount :
+                position === 'middle' ? stats.value.pyramidStats.middleCount :
+                stats.value.pyramidStats.baseCount;
+  
+  return (count / total) * 100;
+}
+
+async function fetchStats() {
+  loading.value = true;
+  error.value = '';
   try {
-    loading.value = true;
-    stats.value = await statsService.getCollectionStats();
+    const response = await api.get('/api/stats');
+    stats.value = response.data;
   } catch (err: any) {
-    error.value = err.message || 'Failed to load statistics';
+    error.value = err.response?.data?.error?.message || 'Failed to load statistics';
   } finally {
     loading.value = false;
   }
 }
 
-async function handleExport() {
-  try {
-    const blob = await exportService.exportCollection();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `scentora-collection-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  } catch (err: any) {
-    error.value = err.message || 'Failed to export collection';
-  }
-}
-
-function triggerImport() {
-  fileInput.value?.click();
-}
-
-async function handleImport(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  
-  if (!file) return;
-
-  try {
-    const result = await exportService.importCollection(file);
-    alert(`Import complete!\nPerfumes: ${result.perfumesImported}\nJournal Entries: ${result.journalEntriesImported}\nErrors: ${result.errors.length}`);
-    
-    // Reload stats
-    await loadStats();
-    
-    // Reset file input
-    target.value = '';
-  } catch (err: any) {
-    error.value = err.message || 'Failed to import collection';
-  }
-}
-
 onMounted(() => {
-  loadStats();
+  fetchStats();
 });
 </script>
 
 <style scoped>
-.statistics {
-  width: 100%;
+.statistics-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
 }
 
-h2 {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 2rem;
+.page-header {
+  margin-bottom: 32px;
 }
 
-h3 {
-  font-size: 1.2rem;
-  color: #6b4f9e;
-  margin-bottom: 1rem;
+.page-header h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #37352F;
+  margin: 0 0 8px 0;
 }
 
-.loading,
-.error {
-  text-align: center;
-  padding: 3rem;
-  color: #666;
+.subtitle {
+  color: #787774;
+  font-size: 16px;
+  margin: 0;
 }
 
-.error {
-  color: #d32f2f;
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+}
+
+.loading-state p {
+  color: #787774;
+}
+
+.error-state {
+  padding: 40px 20px;
 }
 
 .stats-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 24px;
 }
 
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
 }
 
 .stat-card {
   background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #6b4f9e;
-  margin-bottom: 0.5rem;
+.chart-card,
+.alert-card {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-.stat-label {
-  font-size: 0.9rem;
-  color: #666;
+.two-column-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* Pyramid Stats */
+.pyramid-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pyramid-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pyramid-label {
+  min-width: 100px;
+  color: #37352F;
   font-weight: 500;
 }
 
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
-.chart-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.chart-card.full-width {
-  grid-column: 1 / -1;
-}
-
-.bar-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.bar-item {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.bar-label {
-  font-size: 0.9rem;
-  color: #555;
-  white-space: nowrap;
+.pyramid-bar {
+  flex: 1;
+  height: 40px;
+  background: #F7F6F3;
+  border-radius: 8px;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bar-container {
-  background: #f0f0f0;
-  border-radius: 4px;
-  height: 24px;
   position: relative;
 }
 
-.bar {
-  background: linear-gradient(90deg, #6b4f9e, #8b5cf6);
+.bar-fill {
   height: 100%;
-  border-radius: 4px;
-  min-width: 30px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding-right: 0.5rem;
+  padding: 0 12px;
   transition: width 0.3s ease;
+  border-radius: 8px;
+}
+
+.bar-fill.top {
+  background: #FEF3C7;
+}
+
+.bar-fill.middle {
+  background: #E9D5FF;
+}
+
+.bar-fill.base {
+  background: #F5E6D3;
 }
 
 .bar-value {
-  color: white;
-  font-size: 0.8rem;
-  font-weight: 600;
+  color: #37352F;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.pie-chart-legend {
+/* Tag List */
+.tag-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
-.legend-item {
+.tag-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.legend-color {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-}
-
-.legend-label {
-  flex: 1;
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.legend-value {
-  font-weight: 600;
-  color: #333;
-}
-
-.pyramid-viz {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.pyramid-level {
-  padding: 1rem;
-  border-radius: 8px;
-  display: flex;
   justify-content: space-between;
-  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #F0F0EE;
 }
 
-.top-level {
-  background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
-  width: 100%;
+.tag-item:last-child {
+  border-bottom: none;
 }
 
-.middle-level {
-  background: linear-gradient(135deg, #ffe6f0 0%, #ffcce0 100%);
-  width: 90%;
-  margin: 0 auto;
+.tag-count {
+  color: #787774;
+  font-size: 14px;
 }
 
-.base-level {
-  background: linear-gradient(135deg, #e6f0ff 0%, #cce0ff 100%);
-  width: 80%;
-  margin: 0 auto;
-}
-
-.level-label {
-  font-weight: 600;
-  color: #555;
-}
-
-.level-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #6b4f9e;
-}
-
-.timeline-chart {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  height: 200px;
-  padding: 1rem 0;
-}
-
-.timeline-item {
-  flex: 1;
+/* Supplier List */
+.supplier-list {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+.supplier-item {
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
+  padding: 12px;
+  background: #FAFAFA;
+  border-radius: 8px;
 }
 
-.timeline-bar-container {
-  width: 100%;
-  height: 150px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.timeline-bar {
-  width: 60%;
-  background: linear-gradient(180deg, #8b5cf6, #6b4f9e);
-  border-radius: 4px 4px 0 0;
-  min-height: 20px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 0.25rem;
-  transition: height 0.3s ease;
-}
-
-.timeline-value {
-  color: white;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.timeline-year {
-  font-size: 0.85rem;
-  color: #666;
+.supplier-name {
+  color: #37352F;
   font-weight: 500;
 }
 
-.export-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.supplier-count {
+  color: #787774;
+  font-size: 14px;
 }
 
-.export-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+/* Volume Stats */
+.volume-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 24px;
 }
 
-.btn-primary,
-.btn-secondary {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-primary {
-  background: #6b4f9e;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #5a3f8d;
-}
-
-.btn-secondary {
-  background: #e0e0e0;
-  color: #666;
-}
-
-.btn-secondary:hover {
-  background: #d0d0d0;
-}
-
-.export-note {
-  color: #666;
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-.empty-state {
+.volume-item {
   text-align: center;
-  color: #999;
-  padding: 1rem;
-  font-style: italic;
+  padding: 16px;
+  background: #FAFAFA;
+  border-radius: 8px;
+}
+
+.volume-label {
+  color: #787774;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.volume-value {
+  color: #37352F;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Low Inventory */
+.low-inventory-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.low-inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #FEF3C7;
+  border-radius: 8px;
+  border-left: 4px solid #F59E0B;
+}
+
+.accord-name {
+  flex: 1;
+  color: #37352F;
+  font-weight: 500;
+}
+
+.accord-volume {
+  color: #92400E;
+  font-weight: 600;
+}
+
+.accord-supplier {
+  color: #787774;
+  font-size: 14px;
 }
 
 @media (max-width: 768px) {
-  .bar-item {
-    grid-template-columns: 80px 1fr;
+  .statistics-page {
+    padding: 20px;
   }
 
-  .export-buttons {
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .overview-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .two-column-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pyramid-row {
     flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pyramid-label {
+    min-width: auto;
+  }
+
+  .pyramid-bar {
+    width: 100%;
   }
 }
 </style>

@@ -175,3 +175,71 @@ type ImportResult struct {
 	AccordsImported int      `json:"accordsImported"`
 	Errors          []string `json:"errors"`
 }
+
+// Statistics models
+type AccordStatistics struct {
+	Overview       OverviewStats       `json:"overview"`
+	PyramidStats   PyramidStats        `json:"pyramidStats"`
+	TagStats       []TagStat           `json:"tagStats"`
+	SupplierStats  []SupplierStat      `json:"supplierStats"`
+	VolumeStats    VolumeStats         `json:"volumeStats"`
+	LowInventory   []LowInventoryItem  `json:"lowInventory"`
+}
+
+type OverviewStats struct {
+	TotalAccords   int     `json:"totalAccords"`
+	TotalVolume    float64 `json:"totalVolume"`
+	TotalSuppliers int     `json:"totalSuppliers"`
+	TotalTags      int     `json:"totalTags"`
+}
+
+type PyramidStats struct {
+	TopCount    int     `json:"topCount"`
+	MiddleCount int     `json:"middleCount"`
+	BaseCount   int     `json:"baseCount"`
+	TopVolume   float64 `json:"topVolume"`
+	MiddleVolume float64 `json:"middleVolume"`
+	BaseVolume  float64 `json:"baseVolume"`
+}
+
+type TagStat struct {
+	Tag   string `json:"tag"`
+	Count int    `json:"count"`
+}
+
+type SupplierStat struct {
+	Supplier string `json:"supplier"`
+	Count    int    `json:"count"`
+}
+
+type VolumeStats struct {
+	AverageVolume float64 `json:"averageVolume"`
+	MinVolume     float64 `json:"minVolume"`
+	MaxVolume     float64 `json:"maxVolume"`
+}
+
+type LowInventoryItem struct {
+	AccordID   string  `json:"accordId"`
+	Name       string  `json:"name"`
+	VolumeML   float64 `json:"volumeMl"`
+	Supplier   *string `json:"supplier,omitempty"`
+}
+
+// Export/Import additional types
+type ExportData struct {
+	Version    string            `json:"version"`
+	ExportedAt time.Time         `json:"exportedAt"`
+	Accords    []*AccordResponse `json:"accords"`
+}
+
+type ImportData struct {
+	Version string         `json:"version"`
+	Accords []ImportAccord `json:"accords"`
+}
+
+type ImportResult2 struct {
+	TotalRecords    int      `json:"totalRecords"`
+	ImportedRecords int      `json:"importedRecords"`
+	FailedRecords   int      `json:"failedRecords"`
+	Errors          []string `json:"errors,omitempty"`
+}

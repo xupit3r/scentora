@@ -237,3 +237,158 @@ func (s *AccordService) SearchAccords(userID string, position *string, minVolume
 
 	return accords, nil
 }
+
+// GetStatistics returns statistics about the user's accord collection
+func (s *AccordService) GetStatistics(userID string) (*models.AccordStatistics, error) {
+	// Get all accords for the user
+	accords, err := s.accordRepo.List(userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get accords: %w", err)
+	}
+
+	// Load tags for each accord
+	for _, accord := range accords {
+		tags, err := s.accordRepo.GetTagsForAccord(accord.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load tags: %w", err)
+		}
+		accord.Tags = tags
+	}
+
+	stats := &models.AccordStatistics{
+		Overview:     calculateOverviewStats(accords),
+		PyramidStats: calculatePyramidStats(accords),
+		TagStats:     calculateTagStats(accords),
+		SupplierStats: calculateSupplierStats(accords),
+		VolumeStats:  calculateVolumeStats(accords),
+		LowInventory: calculateLowInventory(accords, 10.0), // Alert when < 10ml
+	}
+
+	return stats, nil
+}
+
+func calculateOverviewStats(accords []*models.Accord) models.OverviewStats {
+	totalVolume := 0.0
+	suppliers := make(map[string]bool)
+	tags := make(map[string]bool)
+
+	for _, accord := range accords {
+		totalVolume += accord.VolumeMl
+		if accord.Supplier != nil && *accord.Supplier != "" {
+			suppliers[*accord.Supplier] = true
+		}
+		for _, tag := range accord.Tags {
+			tags[tag] = true
+		}
+	}
+
+	return models.OverviewStats{
+		TotalAccords:   len(accords),
+		TotalVolume:    totalVolume,
+		TotalSuppliers: len(suppliers),
+		TotalTags:      len(tags),
+	}
+}
+
+func calculatePyramidStats(accords []*models.Accord) models.PyramidStats {
+	stats := models.PyramidStats{}
+
+	for _, accord := range accords {
+		switch accord.PyramidPosition {
+		case "top":
+			stats.TopCount++
+			stats.TopVolume += accord.VolumeMl
+		case "middle":
+			stats.MiddleCount++
+			stats.MiddleVolume += accord.VolumeMl
+		case "base":
+			stats.BaseCount++
+			stats.BaseVolume += accord.VolumeMl
+		}
+	}
+
+	return stats
+}
+
+func calculateTagStats(accords []*models.Accord) []models.TagStat {
+	tagCounts := make(map[string]int)
+
+	for _, accord := range accords {
+		for _, tag := range accord.Tags {
+			tagCounts[tag]++
+		}
+	}
+
+	stats := make([]models.TagStat, 0, len(tagCounts))
+	for tag, count := range tagCounts {
+		stats = append(stats, models.TagStat{
+			Tag:   tag,
+			Count: count,
+		})
+	}
+
+	return stats
+}
+
+func calculateSupplierStats(accords []*models.Accord) []models.SupplierStat {
+	supplierCounts := make(map[string]int)
+
+	for _, accord := range accords {
+		if accord.Supplier != nil && *accord.Supplier != "" {
+			supplierCounts[*accord.Supplier]++
+		}
+	}
+
+	stats := make([]models.SupplierStat, 0, len(supplierCounts))
+	for supplier, count := range supplierCounts {
+		stats = append(stats, models.SupplierStat{
+			Supplier: supplier,
+			Count:    count,
+		})
+	}
+
+	return stats
+}
+
+func calculateVolumeStats(accords []*models.Accord) models.VolumeStats {
+	if len(accords) == 0 {
+		return models.VolumeStats{}
+	}
+
+	totalVolume := 0.0
+	minVolume := accords[0].VolumeMl
+	maxVolume := accords[0].VolumeMl
+
+	for _, accord := range accords {
+		totalVolume += accord.VolumeMl
+		if accord.VolumeMl < minVolume {
+			minVolume = accord.VolumeMl
+		}
+		if accord.VolumeMl > maxVolume {
+			maxVolume = accord.VolumeMl
+		}
+	}
+
+	return models.VolumeStats{
+		AverageVolume: totalVolume / float64(len(accords)),
+		MinVolume:     minVolume,
+		MaxVolume:     maxVolume,
+	}
+}
+
+func calculateLowInventory(accords []*models.Accord, threshold float64) []models.LowInventoryItem {
+	lowItems := make([]models.LowInventoryItem, 0)
+
+	for _, accord := range accords {
+		if accord.VolumeMl < threshold {
+			lowItems = append(lowItems, models.LowInventoryItem{
+				AccordID: accord.ID,
+				Name:     accord.Name,
+				VolumeML: accord.VolumeMl,
+				Supplier: accord.Supplier,
+			})
+		}
+	}
+
+	return lowItems
+}
