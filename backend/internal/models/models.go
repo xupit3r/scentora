@@ -5,12 +5,13 @@ import (
 )
 
 type User struct {
-	ID           string    `json:"_id" db:"id"`
-	Email        string    `json:"email" db:"email"`
-	Username     string    `json:"username" db:"username"`
-	PasswordHash string    `json:"-" db:"password_hash"`
-	CreatedAt    time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt    time.Time `json:"updatedAt" db:"updated_at"`
+	ID                    string    `json:"_id" db:"id"`
+	Email                 string    `json:"email" db:"email"`
+	Username              string    `json:"username" db:"username"`
+	PasswordHash          string    `json:"-" db:"password_hash"`
+	ValidateRecipeVolumes bool      `json:"validateRecipeVolumes" db:"validate_recipe_volumes"`
+	CreatedAt             time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt             time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 // Accord represents a perfume ingredient/accord
@@ -242,4 +243,162 @@ type ImportResult2 struct {
 	ImportedRecords int      `json:"importedRecords"`
 	FailedRecords   int      `json:"failedRecords"`
 	Errors          []string `json:"errors,omitempty"`
+}
+
+// ========== PHASE 10: RECIPE SYSTEM MODELS ==========
+
+// Recipe represents a perfume formula/recipe
+type Recipe struct {
+	ID              string     `json:"_id" db:"id"`
+	UserID          string     `json:"userId" db:"user_id"`
+	Name            string     `json:"name" db:"name"`
+	Description     *string    `json:"description,omitempty" db:"description"`
+	TargetVolumeMl  float64    `json:"targetVolumeMl" db:"target_volume_ml"`
+	Status          string     `json:"status" db:"status"` // draft, in_progress, tested, finalized, archived
+	ActiveVersionID *string    `json:"activeVersionId,omitempty" db:"active_version_id"`
+	CreatedAt       time.Time  `json:"createdAt" db:"created_at"`
+	UpdatedAt       time.Time  `json:"updatedAt" db:"updated_at"`
+}
+
+// RecipeVersion represents a version of a recipe (immutable)
+type RecipeVersion struct {
+	ID            string    `json:"_id" db:"id"`
+	RecipeID      string    `json:"recipeId" db:"recipe_id"`
+	VersionNumber int       `json:"versionNumber" db:"version_number"`
+	Name          string    `json:"name" db:"name"`
+	Notes         *string   `json:"notes,omitempty" db:"notes"`
+	IsActive      bool      `json:"isActive" db:"is_active"`
+	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
+}
+
+// RecipeIngredient represents an accord used in a recipe version
+type RecipeIngredient struct {
+	ID            string   `json:"_id" db:"id"`
+	VersionID     string   `json:"versionId" db:"version_id"`
+	AccordID      string   `json:"accordId" db:"accord_id"`
+	QuantityMl    float64  `json:"quantityMl" db:"quantity_ml"`
+	QuantityDrops int      `json:"quantityDrops" db:"quantity_drops"`
+	Percentage    *float64 `json:"percentage,omitempty" db:"percentage"`
+	Notes         *string  `json:"notes,omitempty" db:"notes"`
+	CreatedAt     time.Time `json:"createdAt" db:"created_at"`
+}
+
+// RecipeNote represents a note attached to a recipe or version
+type RecipeNote struct {
+	ID        string     `json:"_id" db:"id"`
+	RecipeID  string     `json:"recipeId" db:"recipe_id"`
+	VersionID *string    `json:"versionId,omitempty" db:"version_id"`
+	Content   string     `json:"content" db:"content"`
+	NoteType  string     `json:"noteType" db:"note_type"` // general, testing, observation
+	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time  `json:"updatedAt" db:"updated_at"`
+}
+
+// RecipeTag represents a tag associated with a recipe
+type RecipeTag struct {
+	ID        string    `json:"_id" db:"id"`
+	RecipeID  string    `json:"recipeId" db:"recipe_id"`
+	Tag       string    `json:"tag" db:"tag"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+}
+
+// RecipeCollection represents a folder/collection of recipes
+type RecipeCollection struct {
+	ID          string    `json:"_id" db:"id"`
+	UserID      string    `json:"userId" db:"user_id"`
+	Name        string    `json:"name" db:"name"`
+	Description *string   `json:"description,omitempty" db:"description"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+// RecipeCollectionMember represents the join table between recipes and collections
+type RecipeCollectionMember struct {
+	ID           string    `json:"_id" db:"id"`
+	CollectionID string    `json:"collectionId" db:"collection_id"`
+	RecipeID     string    `json:"recipeId" db:"recipe_id"`
+	AddedAt      time.Time `json:"addedAt" db:"added_at"`
+}
+
+// Request types for Recipes
+type CreateRecipeRequest struct {
+	Name           string  `json:"name" validate:"required"`
+	Description    *string `json:"description"`
+	TargetVolumeMl float64 `json:"targetVolumeMl" validate:"required,gt=0"`
+	Status         *string `json:"status" validate:"omitempty,oneof=draft in_progress tested finalized archived"`
+}
+
+type UpdateRecipeRequest struct {
+	Name           *string  `json:"name"`
+	Description    *string  `json:"description"`
+	TargetVolumeMl *float64 `json:"targetVolumeMl" validate:"omitempty,gt=0"`
+	Status         *string  `json:"status" validate:"omitempty,oneof=draft in_progress tested finalized archived"`
+}
+
+type CreateRecipeVersionRequest struct {
+	Name  string  `json:"name" validate:"required"`
+	Notes *string `json:"notes"`
+}
+
+type AddIngredientRequest struct {
+	AccordID   string   `json:"accordId" validate:"required"`
+	QuantityMl float64  `json:"quantityMl" validate:"required,gt=0"`
+	Percentage *float64 `json:"percentage" validate:"omitempty,gte=0,lte=100"`
+	Notes      *string  `json:"notes"`
+}
+
+type UpdateIngredientRequest struct {
+	QuantityMl *float64 `json:"quantityMl" validate:"omitempty,gt=0"`
+	Percentage *float64 `json:"percentage" validate:"omitempty,gte=0,lte=100"`
+	Notes      *string  `json:"notes"`
+}
+
+type CreateRecipeNoteRequest struct {
+	VersionID *string `json:"versionId"`
+	Content   string  `json:"content" validate:"required"`
+	NoteType  *string `json:"noteType" validate:"omitempty,oneof=general testing observation"`
+}
+
+type CreateRecipeCollectionRequest struct {
+	Name        string  `json:"name" validate:"required"`
+	Description *string `json:"description"`
+}
+
+// Response types for Recipes
+type RecipeResponse struct {
+	ID              string                   `json:"_id"`
+	UserID          string                   `json:"userId"`
+	Name            string                   `json:"name"`
+	Description     *string                  `json:"description,omitempty"`
+	TargetVolumeMl  float64                  `json:"targetVolumeMl"`
+	Status          string                   `json:"status"`
+	ActiveVersionID *string                  `json:"activeVersionId,omitempty"`
+	ActiveVersion   *RecipeVersionResponse   `json:"activeVersion,omitempty"`
+	Versions        []RecipeVersionResponse  `json:"versions,omitempty"`
+	Tags            []string                 `json:"tags,omitempty"`
+	CreatedAt       time.Time                `json:"createdAt"`
+	UpdatedAt       time.Time                `json:"updatedAt"`
+}
+
+type RecipeVersionResponse struct {
+	ID            string                      `json:"_id"`
+	RecipeID      string                      `json:"recipeId"`
+	VersionNumber int                         `json:"versionNumber"`
+	Name          string                      `json:"name"`
+	Notes         *string                     `json:"notes,omitempty"`
+	IsActive      bool                        `json:"isActive"`
+	Ingredients   []RecipeIngredientResponse  `json:"ingredients,omitempty"`
+	CreatedAt     time.Time                   `json:"createdAt"`
+}
+
+type RecipeIngredientResponse struct {
+	ID            string   `json:"_id"`
+	VersionID     string   `json:"versionId"`
+	AccordID      string   `json:"accordId"`
+	AccordName    string   `json:"accordName,omitempty"` // Populated via join
+	QuantityMl    float64  `json:"quantityMl"`
+	QuantityDrops int      `json:"quantityDrops"`
+	Percentage    *float64 `json:"percentage,omitempty"`
+	Notes         *string  `json:"notes,omitempty"`
+	CreatedAt     time.Time `json:"createdAt"`
 }
