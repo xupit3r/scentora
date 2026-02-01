@@ -1107,9 +1107,73 @@ Enable users to create perfume recipes/formulas by combining their accords with 
 
 **Detailed Plan**: See [specs/recipe-system.md](specs/recipe-system.md)
 
-### Future Phases (11+)
+### Future Phase (11): Production Deployment to DigitalOcean 🚀
+**Status**: Planned  
+**Target Date**: After Phase 10 completion  
+**Estimated Duration**: 3-5 days
 
-**Phase 11: Advanced Recipe Features** (Future)
+**Overview**:
+Automated deployment pipeline to DigitalOcean droplet with Ubuntu 24.04, including infrastructure setup, GitHub Actions CI/CD, and production configuration.
+
+**Sub-phases**:
+1. ✨ **Droplet Configuration Script**
+   - Ubuntu 24.04 setup automation
+   - Install Docker, Docker Compose, Nginx
+   - Configure firewall (ufw) and security
+   - SSL certificate setup (Let's Encrypt)
+   - PostgreSQL configuration for production
+   - System monitoring setup
+
+2. ✨ **GitHub Actions CI/CD Pipeline**
+   - Automated testing on push/PR
+   - Build Docker images for backend/frontend
+   - Deploy to DigitalOcean on main branch merge
+   - Automated database migrations
+   - Health check validation
+   - Rollback capability
+
+3. ✨ **Production Configuration**
+   - Environment variable management (secrets)
+   - Nginx reverse proxy configuration
+   - HTTPS/SSL setup
+   - Database backup automation
+   - Log rotation and management
+   - Monitoring and alerting
+
+4. ✨ **Deployment Documentation**
+   - Setup guide for new droplets
+   - Deployment workflow documentation
+   - Troubleshooting guide
+   - Rollback procedures
+   - Monitoring and maintenance
+
+**Deliverables**:
+- `deploy/setup-droplet.sh` - Automated droplet configuration script
+- `.github/workflows/deploy.yml` - GitHub Actions deployment pipeline
+- `.github/workflows/test.yml` - Automated testing workflow
+- `deploy/nginx.conf` - Production Nginx configuration
+- `deploy/docker-compose.prod.yml` - Production Docker Compose
+- `docs/DEPLOYMENT.md` - Comprehensive deployment guide
+
+**Success Criteria**:
+- ✅ Single-command droplet setup from fresh Ubuntu 24.04
+- ✅ Automated deployment on main branch push
+- ✅ HTTPS enabled with auto-renewal
+- ✅ Zero-downtime deployments
+- ✅ Automated backups configured
+- ✅ Health monitoring active
+- ✅ Complete documentation
+
+**Security Considerations**:
+- SSH key-only authentication
+- Firewall configured (only 80, 443, 22)
+- Secrets managed via GitHub Actions secrets
+- Database credentials secured
+- Regular security updates automated
+
+### Future Phases (12+)
+
+**Phase 12: Advanced Recipe Features** (Future)
 - Batch creation tracking
 - Cost tracking per accord/recipe
 - Ingredient sourcing database
