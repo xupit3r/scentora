@@ -224,7 +224,8 @@ func TestRecipeIngredientRepository_ExistsInVersion(t *testing.T) {
 		t.Error("Expected ingredient to exist in version")
 	}
 
-	exists, err = repo.ExistsInVersion(version.ID, "nonexistent-accord-id")
+	nonexistentID := "00000000-0000-0000-0000-000000000000"
+	exists, err = repo.ExistsInVersion(version.ID, nonexistentID)
 	if err != nil {
 		t.Fatalf("Failed to check existence: %v", err)
 	}

@@ -437,7 +437,8 @@ func TestRecipeCollectionRepository_IsRecipeInCollection(t *testing.T) {
 		t.Error("Expected recipe to be in collection")
 	}
 
-	exists, err = collectionRepo.IsRecipeInCollection(collection.ID, "nonexistent-recipe-id")
+	nonexistentID := "00000000-0000-0000-0000-000000000000"
+	exists, err = collectionRepo.IsRecipeInCollection(collection.ID, nonexistentID)
 	if err != nil {
 		t.Fatalf("Failed to check if recipe in collection: %v", err)
 	}
