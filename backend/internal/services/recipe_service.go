@@ -76,7 +76,7 @@ func (s *RecipeService) CreateRecipe(userID string, req *models.CreateRecipeRequ
 // GetRecipe retrieves a recipe by ID with all related data
 func (s *RecipeService) GetRecipe(recipeID, userID string) (*models.RecipeResponse, error) {
 	// Get recipe
-	recipe, err := s.recipeRepo.FindByID(userID, recipeID)
+	recipe, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -157,7 +157,7 @@ func (s *RecipeService) SearchRecipes(userID, query string, limit, offset int) (
 // UpdateRecipe updates a recipe
 func (s *RecipeService) UpdateRecipe(recipeID, userID string, req *models.UpdateRecipeRequest) (*models.Recipe, error) {
 	// Get existing recipe
-	recipe, err := s.recipeRepo.FindByID(userID, recipeID)
+	recipe, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -201,13 +201,13 @@ func (s *RecipeService) UpdateRecipe(recipeID, userID string, req *models.Update
 // DeleteRecipe deletes a recipe and all related data
 func (s *RecipeService) DeleteRecipe(recipeID, userID string) error {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}
 
 	// Delete recipe (cascade will handle versions, ingredients, notes, tags)
-	err = s.recipeRepo.Delete(userID, recipeID)
+	err = s.recipeRepo.Delete(recipeID, userID)
 	if err != nil {
 		return fmt.Errorf("failed to delete recipe: %w", err)
 	}

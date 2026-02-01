@@ -26,7 +26,7 @@ func NewRecipeNoteService(
 // CreateNote creates a new note for a recipe
 func (s *RecipeNoteService) CreateNote(recipeID, userID string, req *models.CreateRecipeNoteRequest) (*models.RecipeNote, error) {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -67,7 +67,7 @@ func (s *RecipeNoteService) CreateNote(recipeID, userID string, req *models.Crea
 // GetNotes retrieves notes for a recipe
 func (s *RecipeNoteService) GetNotes(recipeID, userID string, noteType *string) ([]*models.RecipeNote, error) {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -94,7 +94,7 @@ func (s *RecipeNoteService) UpdateNote(noteID, userID string, req *models.Update
 	}
 
 	// Verify recipe exists and belongs to user
-	_, err = s.recipeRepo.FindByID(userID, note.RecipeID)
+	_, err = s.recipeRepo.FindByID(note.RecipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -123,7 +123,7 @@ func (s *RecipeNoteService) DeleteNote(noteID, userID string) error {
 	}
 
 	// Verify recipe exists and belongs to user
-	_, err = s.recipeRepo.FindByID(userID, note.RecipeID)
+	_, err = s.recipeRepo.FindByID(note.RecipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}

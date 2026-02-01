@@ -25,7 +25,7 @@ func NewRecipeTagService(
 // AddTag adds a tag to a recipe
 func (s *RecipeTagService) AddTag(recipeID, userID, tag string) error {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}
@@ -56,7 +56,7 @@ func (s *RecipeTagService) AddTag(recipeID, userID, tag string) error {
 // RemoveTag removes a tag from a recipe
 func (s *RecipeTagService) RemoveTag(recipeID, userID, tag string) error {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}
@@ -73,7 +73,7 @@ func (s *RecipeTagService) RemoveTag(recipeID, userID, tag string) error {
 // GetTags retrieves all tags for a recipe
 func (s *RecipeTagService) GetTags(recipeID, userID string) ([]string, error) {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}

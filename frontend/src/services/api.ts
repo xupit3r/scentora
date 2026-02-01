@@ -113,5 +113,8 @@ export const exportService = {
   },
 };
 
+// Re-export recipe service
+export { recipeService } from './recipe';
+
 export default api;
 

@@ -29,7 +29,7 @@ func NewRecipeVersionService(
 // CreateVersion creates a new version for a recipe
 func (s *RecipeVersionService) CreateVersion(recipeID, userID string, req *models.CreateRecipeVersionRequest) (*models.RecipeVersion, error) {
 	// Verify recipe exists and belongs to user
-	recipe, err := s.recipeRepo.FindByID(userID, recipeID)
+	recipe, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -103,7 +103,7 @@ func (s *RecipeVersionService) GetVersion(versionID string) (*models.RecipeVersi
 // ListVersions retrieves all versions for a recipe
 func (s *RecipeVersionService) ListVersions(recipeID, userID string) ([]*models.RecipeVersion, error) {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -119,7 +119,7 @@ func (s *RecipeVersionService) ListVersions(recipeID, userID string) ([]*models.
 // GetActiveVersion retrieves the active version for a recipe
 func (s *RecipeVersionService) GetActiveVersion(recipeID, userID string) (*models.RecipeVersionResponse, error) {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -168,7 +168,7 @@ func (s *RecipeVersionService) GetActiveVersion(recipeID, userID string) (*model
 // SetActiveVersion sets the active version for a recipe
 func (s *RecipeVersionService) SetActiveVersion(recipeID, versionID, userID string) error {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}
@@ -200,7 +200,7 @@ func (s *RecipeVersionService) DeleteVersion(versionID, userID string) error {
 	}
 
 	// Verify recipe exists and belongs to user
-	_, err = s.recipeRepo.FindByID(userID, version.RecipeID)
+	_, err = s.recipeRepo.FindByID(version.RecipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}
@@ -223,7 +223,7 @@ func (s *RecipeVersionService) DuplicateVersion(versionID, userID string) (*mode
 	}
 
 	// Verify recipe exists and belongs to user
-	_, err = s.recipeRepo.FindByID(userID, existingVersion.RecipeID)
+	_, err = s.recipeRepo.FindByID(existingVersion.RecipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}

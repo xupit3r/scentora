@@ -1,66 +1,117 @@
 package testutil
 
 import (
-"database/sql"
-"sync/atomic"
-"fmt"
-"log"
-"os"
-"testing"
+	"database/sql"
+	"fmt"
+	"log"
+	"os"
+	"sync"
+	"sync/atomic"
+	"testing"
 
-"github.com/jmoiron/sqlx"
-_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/jackc/pgx/v5/stdlib"
+)
+
+var (
+	migrationOnce sync.Once
+	migrationErr  error
 )
 
 // TestDB manages a test database connection
 type TestDB struct {
-DB *sqlx.DB
+	DB *sqlx.DB
 }
 
-// SetupTestDB creates a test database connection
+// SetupTestDB creates a test database connection and registers cleanup
 func SetupTestDB(t *testing.T) *TestDB {
-// Use environment variable or default to test database
-dbURL := os.Getenv("TEST_DATABASE_URL")
-if dbURL == "" {
-dbURL = "postgres://admin:password@localhost:5435/scentora_test?sslmode=disable"
-}
+	// Use environment variable or default to test database
+	dbURL := os.Getenv("TEST_DATABASE_URL")
+	if dbURL == "" {
+		dbURL = "postgres://admin:password@localhost:5435/scentora_test?sslmode=disable"
+	}
 
-db, err := sqlx.Connect("pgx", dbURL)
-if err != nil {
-t.Fatalf("Failed to connect to test database: %v", err)
-}
+	db, err := sqlx.Connect("pgx", dbURL)
+	if err != nil {
+		t.Fatalf("Failed to connect to test database: %v", err)
+	}
 
-// Run migrations
-if err := runTestMigrations(db.DB); err != nil {
-t.Fatalf("Failed to run test migrations: %v", err)
-}
+	// Run migrations once globally to avoid race conditions
+	migrationOnce.Do(func() {
+		migrationErr = runTestMigrations(db.DB)
+	})
+	if migrationErr != nil {
+		t.Fatalf("Failed to run test migrations: %v", migrationErr)
+	}
 
-return &TestDB{DB: db}
+	tdb := &TestDB{DB: db}
+
+	// Register cleanup to run in correct order (cleanup before close)
+	t.Cleanup(func() {
+		tdb.CleanupTables(t)
+		tdb.Teardown(t)
+	})
+
+	// Clean up any existing data before test runs
+	tdb.CleanupTables(t)
+
+	return tdb
 }
 
 // Teardown closes the database connection
 func (tdb *TestDB) Teardown(t *testing.T) {
-if err := tdb.DB.Close(); err != nil {
-t.Errorf("Failed to close test database: %v", err)
-}
+	if tdb.DB == nil {
+		return // Already torn down
+	}
+	if err := tdb.DB.Close(); err != nil {
+		t.Logf("Warning: Failed to close test database: %v", err)
+	}
+	tdb.DB = nil // Mark as closed
 }
 
 // CleanupTables removes all data from tables (for test isolation)
 func (tdb *TestDB) CleanupTables(t *testing.T) {
-// Order matters: delete from child tables before parent tables
-// Order matters: delete from child tables before parent tables
-tables := []string{
-"recipe_collection_members", "recipe_tags", "recipe_notes", "recipe_ingredients",
-"recipe_versions", "recipe_collections", "recipes",
-"accord_tags", "accords", "refresh_tokens", "invitations", "users",
-}
+	if tdb.DB == nil {
+		return // DB already closed, skip cleanup
+	}
 
-for _, table := range tables {
-_, err := tdb.DB.Exec(fmt.Sprintf("DELETE FROM %s", table))
-if err != nil {
-t.Errorf("Failed to cleanup table %s: %v", table, err)
-}
-}
+	// Start a transaction for atomic cleanup
+	tx, err := tdb.DB.Begin()
+	if err != nil {
+		t.Logf("Warning: Failed to start cleanup transaction: %v", err)
+		return
+	}
+	defer tx.Rollback() // Roll back if we don't commit
+
+	// Delete from tables in correct order (child tables first to avoid FK violations)
+	// Recipe system tables (most nested first)
+	tables := []string{
+		"recipe_collection_members", // References collections and recipes
+		"recipe_ingredients",         // References versions and accords (has RESTRICT!)
+		"recipe_notes",              // References recipes and versions
+		"recipe_tags",               // References recipes
+		"recipe_versions",           // References recipes
+		"recipe_collections",        // References users
+		"recipes",                   // References users
+		"accord_tags",               // References accords
+		"accords",                   // References users
+		"refresh_tokens",            // References users
+		"invitations",               // References users
+		"users",                     // Base table
+	}
+
+	for _, table := range tables {
+		_, err := tx.Exec(fmt.Sprintf("DELETE FROM %s", table))
+		if err != nil {
+			t.Logf("Warning: Failed to cleanup table %s: %v", table, err)
+			// Don't return - try to clean up other tables
+		}
+	}
+	
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		t.Logf("Warning: Failed to commit cleanup: %v", err)
+	}
 }
 
 // runTestMigrations runs database migrations for testing
@@ -299,9 +350,8 @@ if err != nil {
 return fmt.Errorf("failed to create recipe indexes: %w", err)
 }
 
+log.Println("✅ Phase 10 migrations completed")
 return nil
-	log.Println("✅ Phase 10 migrations completed")
-	return nil
 }
 
 // seedPredefinedTags seeds the predefined tags for testing

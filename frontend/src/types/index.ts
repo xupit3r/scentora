@@ -52,3 +52,6 @@ export interface AccordFilters {
   search?: string;
   tags?: string[];
 }
+
+// Recipe types
+export * from './recipe';

@@ -40,7 +40,7 @@ func (s *RecipeIngredientService) AddIngredient(versionID, userID string, req *m
 		return nil, fmt.Errorf("version not found: %w", err)
 	}
 
-	_, err = s.recipeRepo.FindByID(userID, version.RecipeID)
+	_, err = s.recipeRepo.FindByID(version.RecipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -100,7 +100,7 @@ func (s *RecipeIngredientService) GetIngredients(versionID, userID string) ([]*m
 		return nil, fmt.Errorf("version not found: %w", err)
 	}
 
-	_, err = s.recipeRepo.FindByID(userID, version.RecipeID)
+	_, err = s.recipeRepo.FindByID(version.RecipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -127,7 +127,7 @@ func (s *RecipeIngredientService) UpdateIngredient(ingredientID, userID string, 
 		return nil, fmt.Errorf("version not found: %w", err)
 	}
 
-	_, err = s.recipeRepo.FindByID(userID, version.RecipeID)
+	_, err = s.recipeRepo.FindByID(version.RecipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
@@ -175,7 +175,7 @@ func (s *RecipeIngredientService) DeleteIngredient(ingredientID, userID string) 
 		return fmt.Errorf("version not found: %w", err)
 	}
 
-	_, err = s.recipeRepo.FindByID(userID, version.RecipeID)
+	_, err = s.recipeRepo.FindByID(version.RecipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}
@@ -197,7 +197,7 @@ func (s *RecipeIngredientService) GetTotalVolume(versionID, userID string) (floa
 		return 0, fmt.Errorf("version not found: %w", err)
 	}
 
-	_, err = s.recipeRepo.FindByID(userID, version.RecipeID)
+	_, err = s.recipeRepo.FindByID(version.RecipeID, userID)
 	if err != nil {
 		return 0, fmt.Errorf("recipe not found: %w", err)
 	}

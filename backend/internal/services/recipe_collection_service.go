@@ -142,7 +142,7 @@ func (s *RecipeCollectionService) AddRecipeToCollection(collectionID, recipeID, 
 	}
 
 	// Verify recipe exists and belongs to user
-	_, err = s.recipeRepo.FindByID(userID, recipeID)
+	_, err = s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}
@@ -175,7 +175,7 @@ func (s *RecipeCollectionService) RemoveRecipeFromCollection(collectionID, recip
 	}
 
 	// Verify recipe exists and belongs to user
-	_, err = s.recipeRepo.FindByID(userID, recipeID)
+	_, err = s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return fmt.Errorf("recipe not found: %w", err)
 	}
@@ -192,7 +192,7 @@ func (s *RecipeCollectionService) RemoveRecipeFromCollection(collectionID, recip
 // GetRecipeCollections retrieves all collections containing a recipe
 func (s *RecipeCollectionService) GetRecipeCollections(recipeID, userID string) ([]*models.RecipeCollection, error) {
 	// Verify recipe exists and belongs to user
-	_, err := s.recipeRepo.FindByID(userID, recipeID)
+	_, err := s.recipeRepo.FindByID(recipeID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
