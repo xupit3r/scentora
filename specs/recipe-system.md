@@ -1,9 +1,10 @@
 # Recipe/Formula System Specification
 
 **Created**: January 31, 2026  
+**Updated**: February 1, 2026  
 **Phase**: 10  
-**Status**: Planning Complete - Ready for Implementation  
-**Version**: 1.0
+**Status**: Design Decisions Confirmed - Ready for Implementation  
+**Version**: 1.1
 
 ---
 
@@ -23,41 +24,135 @@ Enable users to:
 ### Key Design Principles
 
 1. **Non-inventory tracking** - Recipes don't deduct from accord inventory (accords remain independent)
-2. **Version control** - Multiple versions of recipes, track iterations
-3. **Configurable validation** - Optional volume validation (global user preference)
+2. **Version control** - Multiple versions of recipes, track iterations (new versions auto-activate)
+3. **Configurable validation** - Optional volume validation (disabled by default, opt-in per user)
 4. **Rich organization** - Tags, collections, search, filtering
 5. **Comprehensive notes** - Journal entries per recipe and per version
 6. **Export/share** - JSON export for sharing formulas
-7. **Accord protection** - Prevent deletion of accords used in recipes
+7. **Accord protection** - Prevent deletion of accords used in recipes (409 error with recipe list)
+
+---
+
+## ✅ Confirmed Design Decisions (February 1, 2026)
+
+These decisions have been confirmed with the project stakeholders and should be implemented as specified:
+
+### 1. Volume Validation Default
+**Decision**: ❌ **Disabled by default** (users must opt-in)
+
+**Rationale**: 
+- Allows users to create theoretical/planning recipes without worrying about current inventory
+- Users who want strict inventory tracking can enable it in their preferences
+- More flexible for experimentation and formula development
+
+**Implementation**:
+- Add `validate_recipe_volumes` boolean field to `users` table (default: `false`)
+- Provide API endpoint to toggle this preference: `PUT /api/preferences`
+- When enabled, validate accord volumes during recipe ingredient creation/update
+- When disabled, allow any quantities without validation
+
+### 2. Recipe Version Activation
+**Decision**: ✅ **New versions automatically become the active version**
+
+**Rationale**:
+- Latest version is typically the one being actively worked on
+- Reduces friction in the development workflow
+- Users can manually set a different version as active if needed
+
+**Implementation**:
+- When creating a new version, set `is_active = true` for new version
+- Set `is_active = false` for all other versions of the same recipe
+- Provide API endpoint to manually change active version: `PUT /api/recipes/:id/versions/:versionNumber/activate`
+
+### 3. Accord Deletion Protection
+**Decision**: 🛡️ **Prevent deletion with error message**
+
+**Rationale**:
+- Safer approach - prevents accidental data loss
+- Forces user to be explicit about cleanup (remove from recipes first)
+- Clear error message guides user on next steps
+
+**Implementation**:
+- Before deleting an accord, check `recipe_ingredients` table for references
+- If references exist, return `409 Conflict` with:
+  ```json
+  {
+    "error": {
+      "message": "Cannot delete accord - it is used in recipes",
+      "details": "This accord is used in 3 recipes. Remove it from recipes or delete the recipes first.",
+      "recipes": [
+        {"id": "uuid", "name": "Summer Citrus Blend"},
+        {"id": "uuid", "name": "Fresh Morning Cologne"},
+        {"id": "uuid", "name": "Experimental Mix v2"}
+      ]
+    }
+  }
+  ```
+- Add foreign key constraint on `recipe_ingredients.accord_id` with `ON DELETE RESTRICT`
+
+### 4. Recipe Status Values
+**Decision**: 📊 **Five-state workflow** (draft, in_progress, tested, finalized, archived)
+
+**Rationale**:
+- More granular than 4 states, providing better workflow tracking
+- `in_progress` distinguishes active development from initial drafts
+- Clear progression: draft → in_progress → tested → finalized → archived
+
+**Implementation**:
+- Database: `status VARCHAR(20) CHECK (status IN ('draft', 'in_progress', 'tested', 'finalized', 'archived'))`
+- Default status on creation: `draft`
+- API filtering: Support `?status=tested` query parameter
+- Frontend: Display status badges with appropriate colors
+  - draft: gray
+  - in_progress: blue
+  - tested: yellow
+  - finalized: green
+  - archived: gray (dimmed)
+
+### 5. Implementation Approach
+**Decision**: 🔄 **Backend-first** (Phases 10.1-10.5, then 10.6-10.10, then 10.11)
+
+**Rationale**:
+- Cleaner separation of concerns
+- Easier to track progress (complete backend before frontend)
+- API can be tested independently before UI development
+- Follows established pattern from Phase 8 (Accord System)
+
+**Phases**:
+1. **Backend** (Phases 10.1-10.5): Models, repos, services, handlers, routes
+2. **Frontend** (Phases 10.6-10.10): Types, stores, components, views, features
+3. **Testing** (Phase 10.11): Comprehensive test suite for both layers
 
 ---
 
 ## Feature Requirements
 
-### Must-Have Features (Phase 1)
+### Must-Have Features (Phase 10.1-10.5)
 
 ✅ **Core Recipe Model**
 - Recipe name, description, total target volume
 - Creator/owner (user_id for isolation)
-- Status (draft, tested, finalized, archived)
+- Status (draft, in_progress, tested, finalized, archived) ⭐ **UPDATED**
 - Created/updated timestamps
 
 ✅ **Recipe Versions**
 - Each recipe can have multiple versions (v1, v2, v3...)
 - Each version is immutable once created
 - Version-specific ingredients, notes, and metadata
-- Active version designation
+- Active version designation (new versions auto-activate) ⭐ **UPDATED**
 
 ✅ **Recipe Ingredients**
 - Link to accords (many-to-many)
 - Quantity (ml and drops) per accord
 - Percentage of total formula
 - Optional notes per ingredient
+- Foreign key with RESTRICT to prevent accord deletion ⭐ **UPDATED**
 
 ✅ **Volume Validation (Configurable)**
-- Optional setting to validate accord availability
-- Warning/error if accord volume insufficient
-- Can be disabled for planning/theoretical recipes
+- Optional setting to validate accord availability (disabled by default) ⭐ **UPDATED**
+- Warning/error if accord volume insufficient (when enabled)
+- Can be disabled for planning/theoretical recipes (default behavior) ⭐ **UPDATED**
+- Per-user preference stored in user_preferences table
 
 ✅ **Recipe Notes/Journaling**
 - General recipe notes (description, inspiration)
@@ -68,6 +163,11 @@ Enable users to:
 - Tag recipes (similar to accord tags)
 - Search by name, description, notes
 - Filter by tags, status, date
+
+✅ **Accord Protection**
+- Prevent deletion of accords used in recipes ⭐ **UPDATED**
+- Return 409 Conflict with list of recipes using the accord ⭐ **UPDATED**
+- User must remove from recipes first ⭐ **UPDATED**
 
 ### Should-Have Features (Phase 2)
 

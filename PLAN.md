@@ -1045,8 +1045,8 @@ All previous phases are complete and documented in historical files:
 5. ⏭️ E2E Testing (deferred to future)
 
 ### Active Phase (10): Recipe/Formula System 📋
-**Status**: Planning Complete  
-**Start Date**: TBD  
+**Status**: Planning Complete - Design Decisions Confirmed  
+**Start Date**: February 1, 2026  
 **Estimated Duration**: 25-35 days
 
 **Overview**: 
@@ -1054,13 +1054,34 @@ Enable users to create perfume recipes/formulas by combining their accords with 
 
 **Core Features**:
 - ✨ Create recipes with target volumes
-- 🔄 Version control (immutable versions)
+- 🔄 Version control (immutable versions, auto-activate new versions)
 - 📊 Ingredients with quantities (ml, drops, percentages)
-- ⚙️ Configurable volume validation (global user preference)
+- ⚙️ Configurable volume validation (disabled by default, opt-in via user preferences)
 - 📝 Recipe notes and journaling
 - 🏷️ Tags and collections for organization
 - 📤 Export/import recipes as JSON
-- 🛡️ Protect accords in use from deletion
+- 🛡️ Protect accords in use from deletion (prevent with error message)
+
+**Confirmed Design Decisions** (Feb 1, 2026):
+1. **Volume Validation**: Disabled by default (users opt-in via preferences)
+   - Allows theoretical/planning recipes without inventory concerns
+   - Can be enabled per-user in preferences
+2. **Version Activation**: New versions automatically become the active version
+   - Latest version is typically the one being worked on
+   - Can be manually changed if needed
+3. **Accord Deletion Protection**: Prevent deletion if accord used in recipes
+   - Return 409 Conflict error with list of recipes using the accord
+   - User must remove from recipes first or delete recipes
+4. **Recipe Status Values**: Five states for granular workflow tracking
+   - `draft` - Initial creation, work in progress
+   - `in_progress` - Actively developing/testing
+   - `tested` - Has been tested, results documented
+   - `finalized` - Complete, production-ready formula
+   - `archived` - No longer active, kept for reference
+5. **Implementation Approach**: Backend-first for cleaner separation
+   - Complete backend (Phases 10.1-10.5)
+   - Then frontend (Phases 10.6-10.10)
+   - Then testing (Phase 10.11)
 
 **Sub-phases** (12 phases):
 1. Backend - Data Models & Database Schema
