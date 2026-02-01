@@ -364,6 +364,38 @@ type CreateRecipeCollectionRequest struct {
 	Description *string `json:"description"`
 }
 
+type UpdateRecipeCollectionRequest struct {
+	Name        *string `json:"name"`
+	Description *string `json:"description"`
+}
+
+type CreateRecipeIngredientRequest struct {
+	AccordID   string  `json:"accordId" validate:"required"`
+	QuantityMl float64 `json:"quantityMl" validate:"required,gt=0"`
+}
+
+type UpdateRecipeIngredientRequest struct {
+	QuantityMl float64 `json:"quantityMl" validate:"required,gt=0"`
+}
+
+type UpdateRecipeNoteRequest struct {
+	Content string `json:"content" validate:"required"`
+}
+
+type RecipeStats struct {
+	TotalCount      int `json:"totalCount"`
+	DraftCount      int `json:"draftCount"`
+	InProgressCount int `json:"inProgressCount"`
+	TestedCount     int `json:"testedCount"`
+	FinalizedCount  int `json:"finalizedCount"`
+	ArchivedCount   int `json:"archivedCount"`
+}
+
+type TagCount struct {
+	Tag   string `json:"tag" db:"tag"`
+	Count int    `json:"count" db:"count"`
+}
+
 // Response types for Recipes
 type RecipeResponse struct {
 	ID              string                   `json:"_id"`

@@ -167,6 +167,31 @@ func (s *AccordService) DeleteAccord(accordID, userID string) error {
 		return fmt.Errorf("accord not found: %w", err)
 	}
 
+	// Check if accord is used in any recipes
+	isUsed, err := s.accordRepo.IsUsedInRecipes(accordID)
+	if err != nil {
+		return fmt.Errorf("failed to check recipe usage: %w", err)
+	}
+	if isUsed {
+		// Get recipe names for error message
+		recipeNames, err := s.accordRepo.GetRecipesUsingAccord(accordID, userID)
+		if err == nil && len(recipeNames) > 0 {
+			nameList := ""
+			for i, name := range recipeNames {
+				if i > 0 {
+					nameList += ", "
+				}
+				nameList += name
+				if i >= 4 { // Limit to 5 recipes in error message
+					nameList += fmt.Sprintf(", and %d more", len(recipeNames)-5)
+					break
+				}
+			}
+			return fmt.Errorf("cannot delete accord: used in recipes (%s)", nameList)
+		}
+		return errors.New("cannot delete accord: used in recipes")
+	}
+
 	err = s.accordRepo.Delete(accordID, userID)
 	if err != nil {
 		return fmt.Errorf("failed to delete accord: %w", err)
