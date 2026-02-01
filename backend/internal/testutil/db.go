@@ -47,12 +47,13 @@ t.Errorf("Failed to close test database: %v", err)
 
 // CleanupTables removes all data from tables (for test isolation)
 func (tdb *TestDB) CleanupTables(t *testing.T) {
+// Order matters: delete from child tables before parent tables
 tables := []string{
-"accord_tags",
-"accords",
-"invitations",
-"refresh_tokens",
-"users",
+"accord_tags",        // references accords
+"accords",            // references users
+"refresh_tokens",     // references users
+"invitations",        // references users
+"users",              // parent table
 }
 
 for _, table := range tables {

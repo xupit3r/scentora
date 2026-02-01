@@ -148,15 +148,15 @@ func TestAuthService_Register_UsedInvitation(t *testing.T) {
 	defer tdb.Teardown(t)
 	defer tdb.CleanupTables(t)
 	
-	// Create creator user
-	creator := createTestUser(t, tdb, "creator@example.com", "creator", "password")
+	// Create creator user with unique email
+	creator := createTestUser(t, tdb, "creator", "creator", "password")
 	
 	// Create invitation
 	invitation := createTestInvitation(t, tdb, creator.ID, nil, 7)
 	
 	// Register first user (uses the invitation)
 	_, err := authService.Register(
-		"user1@example.com",
+		testutil.UniqueEmail("user1"),
 		"user1",
 		"password123",
 		invitation.Code,
@@ -165,7 +165,7 @@ func TestAuthService_Register_UsedInvitation(t *testing.T) {
 	
 	// Try to register second user with same invitation
 	_, err = authService.Register(
-		"user2@example.com",
+		testutil.UniqueEmail("user2"),
 		"user2",
 		"password123",
 		invitation.Code,
@@ -180,11 +180,11 @@ func TestAuthService_Register_EmailSpecificInvitation(t *testing.T) {
 	defer tdb.Teardown(t)
 	defer tdb.CleanupTables(t)
 	
-	// Create creator user
-	creator := createTestUser(t, tdb, "creator@example.com", "creator", "password")
+	// Create creator user with unique email
+	creator := createTestUser(t, tdb, "creator", "creator", "password")
 	
 	// Create email-specific invitation
-	specificEmail := "specific@example.com"
+	specificEmail := testutil.UniqueEmail("specific")
 	invitation := createTestInvitation(t, tdb, creator.ID, &specificEmail, 7)
 	
 	// Try to register with correct email
@@ -203,16 +203,16 @@ func TestAuthService_Register_WrongEmailForEmailSpecificInvitation(t *testing.T)
 	defer tdb.Teardown(t)
 	defer tdb.CleanupTables(t)
 	
-	// Create creator user
-	creator := createTestUser(t, tdb, "creator@example.com", "creator", "password")
+	// Create creator user with unique email
+	creator := createTestUser(t, tdb, "creator", "creator", "password")
 	
 	// Create email-specific invitation
-	specificEmail := "specific@example.com"
+	specificEmail := testutil.UniqueEmail("specific")
 	invitation := createTestInvitation(t, tdb, creator.ID, &specificEmail, 7)
 	
 	// Try to register with wrong email
 	_, err := authService.Register(
-		"wrong@example.com",
+		testutil.UniqueEmail("wrong"),
 		"user1",
 		"password123",
 		invitation.Code,
@@ -227,11 +227,11 @@ func TestAuthService_Register_DuplicateEmail(t *testing.T) {
 	defer tdb.Teardown(t)
 	defer tdb.CleanupTables(t)
 	
-	// Create existing user
-	existingUser := createTestUser(t, tdb, "existing@example.com", "existing", "password")
+	// Create existing user with unique email
+	existingUser := createTestUser(t, tdb, "existing", "existing", "password")
 	
 	// Create creator for invitation
-	creator := createTestUser(t, tdb, "creator@example.com", "creator", "password")
+	creator := createTestUser(t, tdb, "creator", "creator", "password")
 	invitation := createTestInvitation(t, tdb, creator.ID, nil, 7)
 	
 	// Try to register with duplicate email
@@ -251,16 +251,16 @@ func TestAuthService_Register_DuplicateUsername(t *testing.T) {
 	defer tdb.Teardown(t)
 	defer tdb.CleanupTables(t)
 	
-	// Create existing user
-	existingUser := createTestUser(t, tdb, "existing@example.com", "existinguser", "password")
+	// Create existing user with unique email
+	existingUser := createTestUser(t, tdb, "existing", "existinguser", "password")
 	
 	// Create creator for invitation
-	creator := createTestUser(t, tdb, "creator@example.com", "creator", "password")
+	creator := createTestUser(t, tdb, "creator", "creator", "password")
 	invitation := createTestInvitation(t, tdb, creator.ID, nil, 7)
 	
 	// Try to register with duplicate username
 	_, err := authService.Register(
-		"newemail@example.com",
+		testutil.UniqueEmail("newemail"),
 		existingUser.Username, // Duplicate username
 		"password123",
 		invitation.Code,
