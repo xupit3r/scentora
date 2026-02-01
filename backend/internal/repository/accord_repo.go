@@ -333,3 +333,31 @@ func (r *AccordRepository) GetAccordsByTags(userID string, tags []string) ([]*mo
 	}
 	return accords, nil
 }
+
+// GetRecipesUsingAccord retrieves recipe names that use this accord
+// Returns a list of recipe names for error messages
+func (r *AccordRepository) GetRecipesUsingAccord(accordID, userID string) ([]string, error) {
+	var recipeNames []string
+	query := `
+		SELECT DISTINCT r.name
+		FROM recipes r
+		INNER JOIN recipe_versions rv ON rv.recipe_id = r.id
+		INNER JOIN recipe_ingredients ri ON ri.version_id = rv.id
+		WHERE ri.accord_id = $1 AND r.user_id = $2
+		ORDER BY r.name ASC
+	`
+	err := r.db.Select(&recipeNames, query, accordID, userID)
+	return recipeNames, err
+}
+
+// IsUsedInRecipes checks if an accord is used in any recipe
+func (r *AccordRepository) IsUsedInRecipes(accordID string) (bool, error) {
+	var count int
+	query := `
+		SELECT COUNT(DISTINCT ri.id)
+		FROM recipe_ingredients ri
+		WHERE ri.accord_id = $1
+	`
+	err := r.db.Get(&count, query, accordID)
+	return count > 0, err
+}
