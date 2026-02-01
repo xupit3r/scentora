@@ -194,6 +194,183 @@ func runMigrations(db *sql.DB) error {
 		return fmt.Errorf("failed to create invitations indexes: %w", err)
 	}
 
+	// ========== PHASE 10: RECIPE SYSTEM MIGRATIONS ==========
+	
+	// Add validate_recipe_volumes to users table
+	_, err = db.Exec(`
+		ALTER TABLE users ADD COLUMN IF NOT EXISTS validate_recipe_volumes BOOLEAN DEFAULT FALSE;
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to alter users table: %w", err)
+	}
+
+	// Create recipes table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS recipes (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			name VARCHAR(255) NOT NULL,
+			description TEXT,
+			target_volume_ml DECIMAL(10,2) NOT NULL CHECK (target_volume_ml > 0),
+			status VARCHAR(20) NOT NULL DEFAULT 'draft' 
+				CHECK (status IN ('draft', 'in_progress', 'tested', 'finalized', 'archived')),
+			active_version_id UUID,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			UNIQUE(user_id, name)
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create recipes table: %w", err)
+	}
+
+	// Create recipe_versions table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS recipe_versions (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+			version_number INTEGER NOT NULL,
+			name VARCHAR(100) NOT NULL,
+			notes TEXT,
+			is_active BOOLEAN DEFAULT FALSE,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			UNIQUE(recipe_id, version_number)
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create recipe_versions table: %w", err)
+	}
+
+	// Add foreign key constraint for active_version_id (after both tables exist)
+	_, err = db.Exec(`
+		DO $$ BEGIN
+			IF NOT EXISTS (
+				SELECT 1 FROM information_schema.table_constraints 
+				WHERE constraint_name = 'fk_recipes_active_version'
+			) THEN
+				ALTER TABLE recipes 
+					ADD CONSTRAINT fk_recipes_active_version 
+					FOREIGN KEY (active_version_id) 
+					REFERENCES recipe_versions(id) ON DELETE SET NULL;
+			END IF;
+		END $$;
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to add active_version foreign key: %w", err)
+	}
+
+	// Create recipe_ingredients table
+	// CRITICAL: ON DELETE RESTRICT prevents accord deletion if used in recipe
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS recipe_ingredients (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			version_id UUID NOT NULL REFERENCES recipe_versions(id) ON DELETE CASCADE,
+			accord_id UUID NOT NULL REFERENCES accords(id) ON DELETE RESTRICT,
+			quantity_ml DECIMAL(10,2) NOT NULL CHECK (quantity_ml > 0),
+			quantity_drops INTEGER GENERATED ALWAYS AS (ROUND(quantity_ml * 20)) STORED,
+			percentage DECIMAL(5,2) CHECK (percentage >= 0 AND percentage <= 100),
+			notes TEXT,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			UNIQUE(version_id, accord_id)
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create recipe_ingredients table: %w", err)
+	}
+
+	// Create recipe_notes table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS recipe_notes (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+			version_id UUID REFERENCES recipe_versions(id) ON DELETE CASCADE,
+			content TEXT NOT NULL,
+			note_type VARCHAR(20) DEFAULT 'general' 
+				CHECK (note_type IN ('general', 'testing', 'observation')),
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create recipe_notes table: %w", err)
+	}
+
+	// Create recipe_tags table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS recipe_tags (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+			tag VARCHAR(50) NOT NULL,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			UNIQUE(recipe_id, tag)
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create recipe_tags table: %w", err)
+	}
+
+	// Create recipe_collections table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS recipe_collections (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			name VARCHAR(255) NOT NULL,
+			description TEXT,
+			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			UNIQUE(user_id, name)
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create recipe_collections table: %w", err)
+	}
+
+	// Create recipe_collection_members table (join table)
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS recipe_collection_members (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			collection_id UUID NOT NULL REFERENCES recipe_collections(id) ON DELETE CASCADE,
+			recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+			added_at TIMESTAMP NOT NULL DEFAULT NOW(),
+			UNIQUE(collection_id, recipe_id)
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create recipe_collection_members table: %w", err)
+	}
+
+	// Create indexes for recipe tables
+	_, err = db.Exec(`
+		-- Recipe indexes
+		CREATE INDEX IF NOT EXISTS idx_recipes_user_id ON recipes(user_id);
+		CREATE INDEX IF NOT EXISTS idx_recipes_status ON recipes(status);
+		CREATE INDEX IF NOT EXISTS idx_recipes_created_at ON recipes(created_at DESC);
+		
+		-- Recipe version indexes
+		CREATE INDEX IF NOT EXISTS idx_recipe_versions_recipe_id ON recipe_versions(recipe_id);
+		CREATE INDEX IF NOT EXISTS idx_recipe_versions_is_active ON recipe_versions(is_active);
+		
+		-- Recipe ingredient indexes
+		CREATE INDEX IF NOT EXISTS idx_recipe_ingredients_version_id ON recipe_ingredients(version_id);
+		CREATE INDEX IF NOT EXISTS idx_recipe_ingredients_accord_id ON recipe_ingredients(accord_id);
+		
+		-- Recipe note indexes
+		CREATE INDEX IF NOT EXISTS idx_recipe_notes_recipe_id ON recipe_notes(recipe_id);
+		CREATE INDEX IF NOT EXISTS idx_recipe_notes_version_id ON recipe_notes(version_id);
+		
+		-- Recipe tag indexes
+		CREATE INDEX IF NOT EXISTS idx_recipe_tags_recipe_id ON recipe_tags(recipe_id);
+		CREATE INDEX IF NOT EXISTS idx_recipe_tags_tag ON recipe_tags(tag);
+		
+		-- Recipe collection indexes
+		CREATE INDEX IF NOT EXISTS idx_recipe_collections_user_id ON recipe_collections(user_id);
+		CREATE INDEX IF NOT EXISTS idx_recipe_collection_members_collection_id ON recipe_collection_members(collection_id);
+		CREATE INDEX IF NOT EXISTS idx_recipe_collection_members_recipe_id ON recipe_collection_members(recipe_id);
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create recipe indexes: %w", err)
+	}
+
 	log.Println("✅ Database migrations completed")
 	return nil
 }
