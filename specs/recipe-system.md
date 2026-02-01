@@ -3,8 +3,8 @@
 **Created**: January 31, 2026  
 **Updated**: February 1, 2026  
 **Phase**: 10  
-**Status**: Phase 10.2 Complete - Repository Layer Implemented (197 tests passing)  
-**Version**: 1.2
+**Status**: Phase 10.3 Complete - Service Layer Implemented (197 tests passing)  
+**Version**: 1.3
 
 ---
 
@@ -339,9 +339,69 @@ These decisions have been confirmed with the project stakeholders and should be 
 **Files Created**: 6 repositories (1,167 lines) + 6 test files (~2,500 lines)  
 **Files Modified**: accord_repo.go, testutil/db.go
 
-### Phase 10.3: Backend - Service Layer (NEXT)
+### ✅ Phase 10.3: Backend - Service Layer (COMPLETE)
 
-### Phase 10.4: Backend - Handler Layer
+**Implementation Details:**
+
+- [x] **Recipe Service** (`recipe_service.go` - 273 lines)
+  - CreateRecipe, GetRecipe, ListRecipes, SearchRecipes
+  - UpdateRecipe, DeleteRecipe, GetRecipesByTags, GetRecipesByCollection
+  - GetRecipeStats (count by status)
+  - Full validation and error handling
+
+- [x] **Recipe Version Service** (`recipe_version_service.go` - 280 lines)
+  - CreateVersion (auto-numbering), GetVersion, ListVersions
+  - GetActiveVersion, SetActiveVersion, DeleteVersion
+  - DuplicateVersion (copies ingredients)
+  - Proper RecipeVersionResponse construction
+
+- [x] **Recipe Ingredient Service** (`recipe_ingredient_service.go` - 215 lines)
+  - AddIngredient, GetIngredients, UpdateIngredient, DeleteIngredient
+  - GetTotalVolume calculation
+  - Optional volume validation per user preference
+
+- [x] **Recipe Note Service** (`recipe_note_service.go` - 126 lines)
+  - CreateNote, GetNotes (with type filtering), UpdateNote, DeleteNote
+  - Note types: general, version, test
+  - Default to 'general' if not specified
+
+- [x] **Recipe Tag Service** (`recipe_tag_service.go` - 106 lines)
+  - AddTag (idempotent), RemoveTag, GetTags
+  - GetPopularTags (most frequently used)
+  - Proper struct handling for tag counts
+
+- [x] **Recipe Collection Service** (`recipe_collection_service.go` - 214 lines)
+  - CreateCollection, GetCollection, ListCollections
+  - UpdateCollection, DeleteCollection
+  - AddRecipeToCollection, RemoveRecipeFromCollection, GetRecipeCollections
+
+- [x] **Accord Service Enhancement** (35 lines added)
+  - DeleteAccord now checks recipe usage via IsUsedInRecipes()
+  - Returns helpful error with recipe names via GetRecipesUsingAccord()
+  - Implements ON DELETE RESTRICT behavior at service layer
+
+- [x] **Models Additions** (30 lines added)
+  - UpdateRecipeCollectionRequest, CreateRecipeIngredientRequest
+  - UpdateRecipeIngredientRequest, UpdateRecipeNoteRequest
+  - RecipeStats, TagCount structs
+
+**Quality & Status:**
+- All compilation errors resolved
+- All services follow repository → service → handler pattern
+- User data isolation enforced at every level
+- Proper error messages and validation
+- All 197 existing tests still passing (6.4s for services)
+
+**Deferred Work:**
+- Service tests (will write alongside handler tests)
+- Integration tests between services
+
+**Completion Date**: February 1, 2026  
+**Files Created**: 6 services (1,214 lines)  
+**Files Modified**: accord_service.go, models.go  
+**Commits**: 2 (feat: Phase 10.3 WIP + fix: compilation errors)
+
+### Phase 10.4: Backend - Handler Layer (NEXT)
 
 - [ ] **Recipe Handlers**
   - [ ] `POST /api/recipes` - Create recipe
