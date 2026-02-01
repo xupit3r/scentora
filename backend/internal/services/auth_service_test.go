@@ -33,13 +33,13 @@ func setupAuthService(t *testing.T) (*AuthService, *testutil.TestDB) {
 }
 
 // Helper function to create a test user directly in database
-func createTestUser(t *testing.T, tdb *testutil.TestDB, email, username, password string) *models.User {
+func createTestUser(t *testing.T, tdb *testutil.TestDB, emailPrefix, usernamePrefix, password string) *models.User {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	require.NoError(t, err)
 	
 	user := &models.User{
-		Email:        email,
-		Username:     username,
+		Email:        testutil.UniqueEmail(emailPrefix),
+		Username:     usernamePrefix + "_" + testutil.UniqueEmail(""),
 		PasswordHash: string(hashedPassword),
 	}
 	
@@ -276,19 +276,18 @@ func TestAuthService_Login(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create test user
-	email := "login@example.com"
 	password := "password123"
-	createTestUser(t, tdb, email, "loginuser", password)
+	user := createTestUser(t, tdb, "login", "loginuser", password)
 	
-	// Login
-	authResponse, err := authService.Login(email, password)
+	// Login with the user's actual email
+	authResponse, err := authService.Login(user.Email, password)
 	
 	require.NoError(t, err)
 	require.NotNil(t, authResponse)
 	assert.NotEmpty(t, authResponse.AccessToken)
 	assert.NotEmpty(t, authResponse.RefreshToken)
 	assert.NotNil(t, authResponse.User)
-	assert.Equal(t, email, authResponse.User.Email)
+	assert.Equal(t, user.Email, authResponse.User.Email)
 	assert.Empty(t, authResponse.User.PasswordHash)
 }
 
@@ -310,11 +309,10 @@ func TestAuthService_Login_InvalidPassword(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create test user
-	email := "test@example.com"
-	createTestUser(t, tdb, email, "testuser", "correctpassword")
+	user := createTestUser(t, tdb, "test", "testuser", "correctpassword")
 	
 	// Try to login with wrong password
-	_, err := authService.Login(email, "wrongpassword")
+	_, err := authService.Login(user.Email, "wrongpassword")
 	
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid credentials")
@@ -326,11 +324,10 @@ func TestAuthService_Refresh(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create and login user
-	email := "refresh@example.com"
 	password := "password123"
-	createTestUser(t, tdb, email, "refreshuser", password)
+	user := createTestUser(t, tdb, "refresh", "refreshuser", password)
 	
-	loginResponse, err := authService.Login(email, password)
+	loginResponse, err := authService.Login(user.Email, password)
 	require.NoError(t, err)
 	
 	oldAccessToken := loginResponse.AccessToken
@@ -348,7 +345,7 @@ func TestAuthService_Refresh(t *testing.T) {
 	assert.NotEmpty(t, refreshResponse.RefreshToken)
 	assert.NotEqual(t, oldAccessToken, refreshResponse.AccessToken, "Access token should be new")
 	assert.NotEqual(t, oldRefreshToken, refreshResponse.RefreshToken, "Refresh token should be new")
-	assert.Equal(t, email, refreshResponse.User.Email)
+	assert.Equal(t, user.Email, refreshResponse.User.Email)
 }
 
 func TestAuthService_Refresh_InvalidToken(t *testing.T) {
@@ -369,11 +366,10 @@ func TestAuthService_Refresh_RevokedToken(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create and login user
-	email := "test@example.com"
 	password := "password123"
-	createTestUser(t, tdb, email, "testuser", password)
+	user := createTestUser(t, tdb, "test", "testuser", password)
 	
-	loginResponse, err := authService.Login(email, password)
+	loginResponse, err := authService.Login(user.Email, password)
 	require.NoError(t, err)
 	
 	// Logout (revoke refresh token)
@@ -392,11 +388,10 @@ func TestAuthService_Logout(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create and login user
-	email := "logout@example.com"
 	password := "password123"
-	createTestUser(t, tdb, email, "logoutuser", password)
+	user := createTestUser(t, tdb, "logout", "logoutuser", password)
 	
-	loginResponse, err := authService.Login(email, password)
+	loginResponse, err := authService.Login(user.Email, password)
 	require.NoError(t, err)
 	
 	// Logout
@@ -414,18 +409,17 @@ func TestAuthService_LogoutAll(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create and login user multiple times
-	email := "multidevice@example.com"
 	password := "password123"
-	user := createTestUser(t, tdb, email, "multiuser", password)
+	user := createTestUser(t, tdb, "multidevice", "multiuser", password)
 	
 	// Login from 3 different "devices"
-	login1, err := authService.Login(email, password)
+	login1, err := authService.Login(user.Email, password)
 	require.NoError(t, err)
 	
-	login2, err := authService.Login(email, password)
+	login2, err := authService.Login(user.Email, password)
 	require.NoError(t, err)
 	
-	login3, err := authService.Login(email, password)
+	login3, err := authService.Login(user.Email, password)
 	require.NoError(t, err)
 	
 	// Verify all tokens work
@@ -455,7 +449,7 @@ func TestAuthService_GetUserByID(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create test user
-	user := createTestUser(t, tdb, "getuser@example.com", "getuser", "password")
+	user := createTestUser(t, tdb, "getuser", "getuser", "password")
 	
 	// Get user by ID
 	fetchedUser, err := authService.GetUserByID(user.ID)
@@ -484,12 +478,11 @@ func TestAuthService_TokenGeneration(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create and login user
-	email := "tokentest@example.com"
 	password := "password123"
-	createTestUser(t, tdb, email, "tokenuser", password)
+	user := createTestUser(t, tdb, "tokentest", "tokenuser", password)
 	
 	// Login to generate tokens
-	response, err := authService.Login(email, password)
+	response, err := authService.Login(user.Email, password)
 	require.NoError(t, err)
 	
 	// Verify access token is a valid JWT
@@ -509,7 +502,7 @@ func TestAuthService_PasswordHashing(t *testing.T) {
 	defer tdb.CleanupTables(t)
 	
 	// Create creator and invitation
-	creator := createTestUser(t, tdb, "creator@example.com", "creator", "password")
+	creator := createTestUser(t, tdb, "creator", "creator", "password")
 	invitation := createTestInvitation(t, tdb, creator.ID, nil, 7)
 	
 	// Register user

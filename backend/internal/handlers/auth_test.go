@@ -37,13 +37,13 @@ handler := NewAuthHandler(authService)
 return handler, authService, tdb
 }
 
-func createTestUser(t *testing.T, tdb *testutil.TestDB, email, username, password string) *models.User {
+func createTestUser(t *testing.T, tdb *testutil.TestDB, emailPrefix, usernamePrefix, password string) *models.User {
 hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 require.NoError(t, err)
 
 user := &models.User{
-Email:        email,
-Username:     username,
+Email:        testutil.UniqueEmail(emailPrefix),
+Username:     usernamePrefix + "_" + testutil.UniqueEmail(""),
 PasswordHash: string(hashedPassword),
 }
 
@@ -116,13 +116,12 @@ defer tdb.Teardown(t)
 defer tdb.CleanupTables(t)
 
 // Create test user
-email := "login@example.com"
 password := "password123"
-createTestUser(t, tdb, email, "loginuser", password)
+user := createTestUser(t, tdb, "login", "loginuser", password)
 
 // Setup Echo
 e := echo.New()
-reqBody := `{"email": "` + email + `", "password": "` + password + `"}`
+reqBody := `{"email": "` + user.Email + `", "password": "` + password + `"}`
 req := httptest.NewRequest(http.MethodPost, "/api/auth/login", strings.NewReader(reqBody))
 req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 rec := httptest.NewRecorder()
@@ -140,7 +139,7 @@ err = json.Unmarshal(rec.Body.Bytes(), &response)
 require.NoError(t, err)
 assert.NotEmpty(t, response.AccessToken)
 assert.NotEmpty(t, response.RefreshToken)
-assert.Equal(t, email, response.User.Email)
+assert.Equal(t, user.Email, response.User.Email)
 }
 
 func TestAuthHandler_Login_InvalidCredentials(t *testing.T) {
@@ -173,11 +172,10 @@ defer tdb.Teardown(t)
 defer tdb.CleanupTables(t)
 
 // Create and login user
-email := "refresh@example.com"
 password := "password123"
-createTestUser(t, tdb, email, "refreshuser", password)
+user := createTestUser(t, tdb, "refresh", "refreshuser", password)
 
-loginResponse, err := authService.Login(email, password)
+loginResponse, err := authService.Login(user.Email, password)
 require.NoError(t, err)
 
 // Setup Echo
@@ -208,11 +206,10 @@ defer tdb.Teardown(t)
 defer tdb.CleanupTables(t)
 
 // Create and login user
-email := "logout@example.com"
 password := "password123"
-createTestUser(t, tdb, email, "logoutuser", password)
+user := createTestUser(t, tdb, "logout", "logoutuser", password)
 
-loginResponse, err := authService.Login(email, password)
+loginResponse, err := authService.Login(user.Email, password)
 require.NoError(t, err)
 
 // Setup Echo
