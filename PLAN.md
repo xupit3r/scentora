@@ -1045,7 +1045,7 @@ All previous phases are complete and documented in historical files:
 5. ⏭️ E2E Testing (deferred to future)
 
 ### Active Phase (10): Recipe/Formula System 📋
-**Status**: Phase 10.1 Complete ✅ | Phase 10.2 Starting  
+**Status**: Phase 10.2 In Progress - Models Complete ✅  
 **Start Date**: February 1, 2026  
 **Estimated Duration**: 25-35 days
 
@@ -1057,7 +1057,8 @@ Enable users to create perfume recipes/formulas by combining their accords with 
 - ✅ Test isolation issues resolved
 - ✅ Design decisions documented and committed
 - ✅ **Phase 10.1 Complete**: Database schema created (7 new tables)
-- 🎯 **Next**: Phase 10.2 - Repository Layer
+- ✅ **Phase 10.2 Started**: Recipe models defined
+- 🎯 **Next**: Phase 10.2 - Repository implementations
 
 **Core Features**:
 - ✨ Create recipes with target volumes
