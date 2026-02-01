@@ -45,10 +45,15 @@ func (s *RecipeNoteService) CreateNote(recipeID, userID string, req *models.Crea
 	}
 
 	// Create note
+	noteType := "general" // default
+	if req.NoteType != nil {
+		noteType = *req.NoteType
+	}
+	
 	note := &models.RecipeNote{
 		RecipeID: recipeID,
 		Content:  req.Content,
-		NoteType: req.NoteType,
+		NoteType: noteType,
 	}
 
 	err = s.noteRepo.Create(note)

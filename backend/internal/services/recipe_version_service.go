@@ -34,8 +34,22 @@ func (s *RecipeVersionService) CreateVersion(recipeID, userID string, req *model
 		return nil, fmt.Errorf("recipe not found: %w", err)
 	}
 
-	// Create version (repo handles auto-numbering and activation)
-	version, err := s.versionRepo.Create(recipe.ID, req)
+	// Get next version number
+	count, err := s.versionRepo.CountByRecipeID(recipe.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count versions: %w", err)
+	}
+
+	// Create version
+	version := &models.RecipeVersion{
+		RecipeID:      recipe.ID,
+		VersionNumber: count + 1,
+		Name:          fmt.Sprintf("v%d", count+1),
+		Notes:         req.Notes,
+		IsActive:      false, // Will be set by repo
+	}
+	
+	err = s.versionRepo.Create(version)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create version: %w", err)
 	}
@@ -57,16 +71,30 @@ func (s *RecipeVersionService) GetVersion(versionID string) (*models.RecipeVersi
 		return nil, fmt.Errorf("failed to load ingredients: %w", err)
 	}
 
-	// Calculate total volume
-	totalVolume, err := s.ingredientRepo.GetTotalVolume(versionID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to calculate total volume: %w", err)
+	// Convert ingredients to response format
+	ingredientResponses := make([]models.RecipeIngredientResponse, len(ingredients))
+	for i, ing := range ingredients {
+		ingredientResponses[i] = models.RecipeIngredientResponse{
+			ID:            ing.ID,
+			VersionID:     ing.VersionID,
+			AccordID:      ing.AccordID,
+			QuantityMl:    ing.QuantityMl,
+			QuantityDrops: ing.QuantityDrops,
+			Percentage:    ing.Percentage,
+			Notes:         ing.Notes,
+			CreatedAt:     ing.CreatedAt,
+		}
 	}
 
 	response := &models.RecipeVersionResponse{
-		RecipeVersion: *version,
-		Ingredients:   ingredients,
-		TotalVolume:   totalVolume,
+		ID:            version.ID,
+		RecipeID:      version.RecipeID,
+		VersionNumber: version.VersionNumber,
+		Name:          version.Name,
+		Notes:         version.Notes,
+		IsActive:      version.IsActive,
+		Ingredients:   ingredientResponses,
+		CreatedAt:     version.CreatedAt,
 	}
 
 	return response, nil
@@ -108,16 +136,30 @@ func (s *RecipeVersionService) GetActiveVersion(recipeID, userID string) (*model
 		return nil, fmt.Errorf("failed to load ingredients: %w", err)
 	}
 
-	// Calculate total volume
-	totalVolume, err := s.ingredientRepo.GetTotalVolume(version.ID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to calculate total volume: %w", err)
+	// Convert ingredients to response format
+	ingredientResponses := make([]models.RecipeIngredientResponse, len(ingredients))
+	for i, ing := range ingredients {
+		ingredientResponses[i] = models.RecipeIngredientResponse{
+			ID:            ing.ID,
+			VersionID:     ing.VersionID,
+			AccordID:      ing.AccordID,
+			QuantityMl:    ing.QuantityMl,
+			QuantityDrops: ing.QuantityDrops,
+			Percentage:    ing.Percentage,
+			Notes:         ing.Notes,
+			CreatedAt:     ing.CreatedAt,
+		}
 	}
 
 	response := &models.RecipeVersionResponse{
-		RecipeVersion: *version,
-		Ingredients:   ingredients,
-		TotalVolume:   totalVolume,
+		ID:            version.ID,
+		RecipeID:      version.RecipeID,
+		VersionNumber: version.VersionNumber,
+		Name:          version.Name,
+		Notes:         version.Notes,
+		IsActive:      version.IsActive,
+		Ingredients:   ingredientResponses,
+		CreatedAt:     version.CreatedAt,
 	}
 
 	return response, nil
@@ -164,7 +206,7 @@ func (s *RecipeVersionService) DeleteVersion(versionID, userID string) error {
 	}
 
 	// Delete version (repo handles "only version" protection and auto-activation)
-	err = s.versionRepo.Delete(versionID)
+	err = s.versionRepo.Delete(versionID, version.RecipeID)
 	if err != nil {
 		return fmt.Errorf("failed to delete version: %w", err)
 	}
@@ -192,11 +234,22 @@ func (s *RecipeVersionService) DuplicateVersion(versionID, userID string) (*mode
 		return nil, fmt.Errorf("failed to load ingredients: %w", err)
 	}
 
-	// Create new version
-	req := &models.CreateRecipeVersionRequest{
-		Notes: existingVersion.Notes,
+	// Get next version number
+	count, err := s.versionRepo.CountByRecipeID(existingVersion.RecipeID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count versions: %w", err)
 	}
-	newVersion, err := s.versionRepo.Create(existingVersion.RecipeID, req)
+
+	// Create new version
+	newVersion := &models.RecipeVersion{
+		RecipeID:      existingVersion.RecipeID,
+		VersionNumber: count + 1,
+		Name:          fmt.Sprintf("v%d", count+1),
+		Notes:         existingVersion.Notes,
+		IsActive:      false,
+	}
+	
+	err = s.versionRepo.Create(newVersion)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create version: %w", err)
 	}
@@ -211,7 +264,7 @@ func (s *RecipeVersionService) DuplicateVersion(versionID, userID string) (*mode
 		err = s.ingredientRepo.Create(newIngredient)
 		if err != nil {
 			// If ingredient copy fails, clean up and return error
-			_ = s.versionRepo.Delete(newVersion.ID)
+			_ = s.versionRepo.Delete(newVersion.ID, newVersion.RecipeID)
 			return nil, fmt.Errorf("failed to copy ingredients: %w", err)
 		}
 	}

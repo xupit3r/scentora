@@ -88,8 +88,8 @@ func (s *RecipeTagService) GetTags(recipeID, userID string) ([]string, error) {
 
 // GetPopularTags retrieves the most popular tags for a user
 func (s *RecipeTagService) GetPopularTags(userID string, limit int) ([]struct {
-	Tag   string `json:"tag"`
-	Count int    `json:"count"`
+	Tag   string `db:"tag"`
+	Count int    `db:"count"`
 }, error) {
 	if limit <= 0 {
 		limit = 10
