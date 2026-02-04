@@ -1,7 +1,7 @@
 // Recipe System Types
 
 export type RecipeStatus = 'draft' | 'in_progress' | 'tested' | 'finalized' | 'archived';
-export type NoteType = 'general' | 'observation' | 'adjustment' | 'reminder';
+export type NoteType = 'general' | 'observation'; // Backend only supports these two
 
 // Recipe
 export interface Recipe {
@@ -46,7 +46,6 @@ export interface RecipeVersion {
   notes?: string;
   isActive: boolean;
   createdAt: string;
-  updatedAt?: string;
 }
 
 export interface CreateRecipeVersionRequest {
@@ -59,18 +58,25 @@ export interface RecipeIngredient {
   _id: string;
   versionId: string;
   accordId: string;
+  accordName?: string; // Populated via join in backend
   quantityMl: number;
+  quantityDrops: number; // Auto-calculated by backend
+  percentage?: number;
+  notes?: string;
   createdAt: string;
-  updatedAt?: string;
 }
 
 export interface CreateRecipeIngredientRequest {
   accordId: string;
   quantityMl: number;
+  percentage?: number;
+  notes?: string;
 }
 
 export interface UpdateRecipeIngredientRequest {
-  quantityMl: number;
+  quantityMl?: number;
+  percentage?: number;
+  notes?: string;
 }
 
 // Recipe Note
