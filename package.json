@@ -38,5 +38,8 @@
     "postgresql"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "9.1.7"
+  }
 }
