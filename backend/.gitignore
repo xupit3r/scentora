@@ -1,7 +1,6 @@
 .env
 .DS_Store
-scentora-backend
-backend-go
+node_modules/
 dist/
 tmp/
 logs/
