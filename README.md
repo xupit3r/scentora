@@ -2,131 +2,89 @@
 
 A perfume formulation and accord management system for DIY perfumers and enthusiasts.
 
-## 🎯 Project Status
-
-**Current Phase**: Recipe System Implementation (Phase 10.4 Complete)  
-**Latest**: Phase 10.4 (Recipe Handlers) Complete - **210 tests passing** ✅  
-**Coverage**: Backend 80% complete (frontend pending)  
-**Next**: Phase 10.5 (Integration Testing) - Manual API verification
-
 ## Tech Stack
 
-- **Backend**: Go + Echo + PostgreSQL + JWT Authentication
+- **Backend**: Koa.js + TypeScript + Prisma + Zod + JWT Authentication
 - **Frontend**: Vue.js 3 + TypeScript + Pinia + Naive UI + Tailwind CSS v4
 - **Database**: PostgreSQL
+- **Testing**: Vitest + Supertest (backend), Vitest (frontend)
 - **Design System**: Notion-inspired minimalist UI
 
 ## Features
 
 ### Authentication & Security
-- 🔐 JWT-based authentication with refresh tokens
-- 🔄 Automatic token refresh (15-min access, 7-day refresh)
-- 🛡️ Rate limiting on auth endpoints (brute force protection)
-- 👥 Multi-user support with complete data isolation
-- 🔒 Secure password hashing (bcrypt)
-- 📱 Persistent sessions with logout-all capability
-- 🚫 Token rotation for enhanced security
-- 🎫 Invitation-only registration system
+- JWT-based authentication with refresh tokens
+- Automatic token refresh (15-min access, 7-day refresh)
+- Rate limiting on auth endpoints (brute force protection)
+- Multi-user support with complete data isolation
+- Secure password hashing (bcrypt)
+- Persistent sessions with logout-all capability
+- Token rotation for enhanced security
+- Invitation-only registration system
 
-### Accord Management (Core Features)
-- ✨ Manage perfume accords and essential oils
-- 🏺 Track pyramid position (top, middle, base notes)
-- 📦 Inventory management (volume tracking in ml and drops)
-- 🏷️ Rich tagging system with 57+ predefined tags
-- 🔍 Advanced filtering by position, volume, supplier, tags
-- 🔎 Full-text search across names, notes, and metadata
-- ⚠️ Low stock warnings and inventory alerts
-- 📊 Tag-based organization and discovery
+### Accord Management
+- Manage perfume accords and essential oils
+- Track pyramid position (top, middle, base notes)
+- Inventory management (volume tracking in ml and drops)
+- Rich tagging system with 57+ predefined tags
+- Advanced filtering by position, volume, supplier, tags
+- Full-text search across names, notes, and metadata
+- Low stock warnings and inventory alerts
 
-### Analytics & Export (Phase 8.4 Complete)
-- 📈 Collection statistics dashboard
-- 📊 Pyramid position distribution analysis
-- 🏷️ Tag usage statistics
-- 🏢 Supplier breakdown
-- 📉 Volume analytics (min/max/average)
-- ⚠️ Low inventory alerts (< 10ml threshold)
-- 📤 Export collection as JSON
-- 📥 Import accords from JSON backup
+### Recipe System
+- Create and manage perfume recipes with versioning
+- Recipe versions with ingredient tracking
+- Ingredient volume validation against accord inventory
+- Recipe notes (general, testing, observation, adjustment, reminder)
+- Recipe tagging and search
+- Recipe collections for organization
+- Version duplication for iterating on formulas
 
-### UI/UX (Phase 8.9 Complete)
-- 🎨 Notion-inspired clean, minimalist interface
-- 📱 Fully responsive design (desktop, tablet, mobile)
-- ⌨️ Keyboard shortcuts (N for new accord)
-- 🎯 Collapsible sidebar navigation (280px ↔ 64px)
-- 🎭 Skeleton loading states with shimmer animation
-- 💫 Smooth transitions (200ms standard)
-- 🎪 Empty state designs with helpful CTAs
-- 🌈 Subtle pastel color accents
-- 📏 8px spacing grid for visual consistency
-- ✨ Hover-reveal action buttons
-- 🔔 Toast notifications for user feedback
-- 🖼️ **[View Design Mockups](mockups/)** - Interactive gallery of wireframes and high-fidelity designs
+### Analytics & Export
+- Collection statistics dashboard
+- Pyramid position distribution analysis
+- Tag and supplier usage statistics
+- Volume analytics (min/max/average)
+- Low inventory alerts (< 10ml threshold)
+- Export collection as JSON
+- Import accords from JSON backup
+
+### UI/UX
+- Notion-inspired clean, minimalist interface
+- Fully responsive design (desktop, tablet, mobile)
+- Keyboard shortcuts
+- Collapsible sidebar navigation
+- Skeleton loading states with shimmer animation
+- Toast notifications for user feedback
 
 ## Getting Started
 
 ### Prerequisites
 
-- Go 1.21+
-- Node.js 18+ 
+- Node.js 18+
 - Docker & Docker Compose (for PostgreSQL)
-- npm or yarn
+- npm
 
-### Quick Start (Automated)
+### Quick Start
 
-**The easiest way to run Scentora:**
-
-```bash
-# Linux/Mac
-./scentora.sh start
-
-# Windows
-scentora.bat start
-
-# Or using npm
-npm start
-```
-
-That's it! The launcher will:
-- Start PostgreSQL
-- Build Go backend if needed
-- Install frontend dependencies if needed
-- Start backend and frontend
-- Show you the URLs
-
-Access the app at http://localhost:5173
-
-See [LAUNCHER_GUIDE.md](docs/LAUNCHER_GUIDE.md) for more launcher options.
-
-### Manual Setup
-
-If you prefer to start services manually:
-
-1. **Clone and navigate to the project**:
+1. **Start PostgreSQL**:
    ```bash
-   git clone <repo-url>
-   cd scentora
+   docker compose up -d
    ```
 
-2. **Start PostgreSQL**:
+2. **Backend Setup**:
    ```bash
-   docker compose up -d postgres
-   ```
-
-3. **Backend Setup**:
-   ```bash
-   cd backend-go
-   
-   # Configure environment (optional - defaults work locally)
+   cd backend
+   npm install
    cp .env.example .env
-   # Edit .env to set JWT_SECRET in production
-   
-   # Build and run
-   go build -o scentora-backend cmd/server/main.go
-   ./scentora-backend
+   # Edit .env to set JWT_SECRET for production
+   npx prisma generate
+   npx prisma db push
+   npm run dev
    ```
    Backend runs at http://localhost:3000
 
-4. **Frontend Setup** (in a new terminal):
+3. **Frontend Setup** (in a new terminal):
    ```bash
    cd frontend
    npm install
@@ -134,181 +92,190 @@ If you prefer to start services manually:
    ```
    Frontend runs at http://localhost:5173
 
-5. **Access the app**:
+4. **Access the app**:
    - Open http://localhost:5173
    - You'll need an invitation code to register
    - See [Creating Invitations](#creating-invitations) below
-   - Start cataloging your perfumes!
 
 ## Environment Variables
 
-Create `backend/.env` (or use defaults):
+Create `backend/.env` from the example:
 ```env
-# Server
 PORT=3000
 NODE_ENV=development
-
-# CouchDB
-COUCHDB_URL=http://localhost:5984
-COUCHDB_USER=admin
-COUCHDB_PASSWORD=password
-COUCHDB_DATABASE=scentora
-
-# JWT (CHANGE IN PRODUCTION!)
+DATABASE_URL=postgres://admin:password@localhost:5435/scentora?sslmode=disable
 JWT_SECRET=your-secret-key-change-in-production
-JWT_ACCESS_EXPIRES_IN=15m   # Access token expiry
-JWT_REFRESH_EXPIRES_IN=7d   # Refresh token expiry
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
 ## Creating Invitations
 
-Scentora uses an invitation-only registration system. To create your first user and generate invitations:
+Scentora uses an invitation-only registration system.
 
-### Method 1: Direct Database Creation (First User)
-
-For the very first user, create an invitation directly in CouchDB:
+### Method 1: Direct Database (First User)
 
 ```bash
-# Generate a random invitation code
-INVITATION_CODE=$(openssl rand -hex 16)
-echo "Your invitation code: $INVITATION_CODE"
+# Connect to PostgreSQL
+docker exec -it scentora-postgres psql -U admin -d scentora
 
-# Create invitation in database
-curl -X POST "http://admin:password@localhost:5984/scentora" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"type\": \"invitation\",
-    \"code\": \"$INVITATION_CODE\",
-    \"createdBy\": \"system\",
-    \"expiresAt\": \"$(date -u -d '+7 days' +%Y-%m-%dT%H:%M:%S.000Z)\",
-    \"used\": false,
-    \"createdAt\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"
-  }"
+# Create a first user manually (password: 'password')
+INSERT INTO users (email, username, password_hash)
+VALUES ('admin@example.com', 'admin', '$2a$10$your-bcrypt-hash');
+
+# Create an invitation
+INSERT INTO invitations (code, created_by, expires_at)
+VALUES ('my-invite-code', (SELECT id FROM users LIMIT 1), NOW() + INTERVAL '7 days');
 ```
-
-Then use this code to register at http://localhost:5173/register
 
 ### Method 2: API (Authenticated Users)
 
-Once you have an account, you can create invitations through the API:
-
 ```bash
-# Login and get access token
-ACCESS_TOKEN="your-access-token"
-
-# Create invitation
 curl -X POST "http://localhost:3000/api/invitations" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -d '{
-    "email": "friend@example.com",
-    "expiresInDays": 7
-  }'
+  -d '{"email": "friend@example.com", "expiresInDays": 7}'
 ```
-
-The response will include the invitation code to share with the new user.
 
 ## Project Structure
 
 ```
 scentora/
-├── backend/              # Koa.js API server
-├── frontend/             # Vue.js SPA
-└── docker-compose.yml    # CouchDB setup
+├── backend/                # Koa.js + TypeScript API
+│   ├── prisma/
+│   │   └── schema.prisma   # Database schema (14 models)
+│   ├── src/
+│   │   ├── middleware/      # Auth, error handling, rate limiting
+│   │   ├── routes/          # API route handlers
+│   │   ├── services/        # Business logic
+│   │   ├── schemas/         # Zod validation schemas
+│   │   ├── utils/           # Errors, response helpers
+│   │   ├── types/           # TypeScript types
+│   │   ├── app.ts           # Koa app setup
+│   │   └── index.ts         # Entry point
+│   └── tests/               # Vitest integration tests
+├── frontend/                # Vue.js 3 SPA
+│   ├── src/
+│   │   ├── components/      # Vue components
+│   │   ├── views/           # Page views
+│   │   ├── stores/          # Pinia stores
+│   │   ├── services/        # API client
+│   │   └── types/           # TypeScript interfaces
+│   └── ...
+├── specs/                   # API and design specifications
+├── docker-compose.yml       # PostgreSQL container
+└── README.md
 ```
 
 ## API Endpoints
 
-### Authentication (Public)
-- `POST /api/auth/register` - Create new account (requires invitation code)
-- `POST /api/auth/login` - Login with email/password
-- `GET /api/auth/me` - Get current user info
+### Authentication
+- `POST /api/auth/register` - Register (requires invitation code)
+- `POST /api/auth/login` - Login
+- `POST /api/auth/refresh` - Refresh tokens
+- `POST /api/auth/logout` - Logout (revoke refresh token)
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/logout-all` - Revoke all sessions
 
 ### Invitations (Protected)
-- `POST /api/invitations` - Create a new invitation
-- `GET /api/invitations` - List your created invitations
-- `DELETE /api/invitations/:code` - Revoke an invitation
+- `POST /api/invitations` - Create invitation
+- `GET /api/invitations` - List invitations
+- `DELETE /api/invitations/:code` - Revoke invitation
 
-### Perfumes (Protected)
-- `GET /api/perfumes` - List all perfumes (with filters)
-- `GET /api/perfumes/:id` - Get perfume details
-- `POST /api/perfumes` - Create new perfume
-- `PUT /api/perfumes/:id` - Update perfume
-- `DELETE /api/perfumes/:id` - Delete perfume
+### Accords (Protected)
+- `POST /api/accords` - Create accord
+- `GET /api/accords` - List accords (with filters)
+- `GET /api/accords/:id` - Get accord
+- `PUT /api/accords/:id` - Update accord
+- `DELETE /api/accords/:id` - Delete accord
+- `POST /api/accords/:id/tags` - Add tag
+- `DELETE /api/accords/:id/tags/:tag` - Remove tag
 
-### Journal Entries (Protected)
-- `GET /api/perfumes/:id/journal` - Get journal entries for perfume
-- `POST /api/perfumes/:id/journal` - Create journal entry
-- `PUT /api/journal/:id` - Update journal entry
-- `DELETE /api/journal/:id` - Delete journal entry
+### Tags (Public)
+- `GET /api/tags` - List all predefined tags
+- `GET /api/tags/search?q=...` - Search tags
+- `GET /api/tags/categories` - List categories
+- `GET /api/tags/grouped` - Tags grouped by category
+- `GET /api/tags/category/:category` - Tags by category
 
-### Other (Protected)
-- `GET /api/notes` - Get all unique notes in collection
-- `GET /api/stats` - Get collection statistics
-- `GET /api/export/collection` - Export collection as JSON
-- `POST /api/export/import` - Import collection from JSON
+### Statistics (Protected)
+- `GET /api/stats` - Collection statistics
 
-## Documentation
+### Export/Import (Protected)
+- `GET /api/export` - Export accords as JSON
+- `POST /api/export/import` - Import accords from JSON
 
-### Design & Planning
-- **[Design Mockups](mockups/)** - Interactive gallery of wireframes and high-fidelity designs for Phase 8.9
-- [PLAN.md](PLAN.md) - Complete project roadmap and phase planning
-- [TESTING_PLAN.md](docs/TESTING_PLAN.md) - Comprehensive testing strategy and timeline
+### Recipes (Protected) - 21 endpoints
+- `POST /api/recipes` - Create recipe
+- `GET /api/recipes` - List recipes
+- `GET /api/recipes/search?q=...` - Search recipes
+- `GET /api/recipes/:id` - Get recipe
+- `PUT /api/recipes/:id` - Update recipe
+- `DELETE /api/recipes/:id` - Delete recipe
+- `POST /api/recipes/:id/versions` - Create version
+- `GET /api/recipes/:id/versions` - List versions
+- `GET /api/recipes/:id/versions/:versionId` - Get version
+- `POST /api/recipes/:id/versions/:versionNumber/activate` - Activate version
+- `POST /api/recipes/:id/versions/:versionId/duplicate` - Duplicate version
+- `POST /api/recipes/:id/versions/:versionId/ingredients` - Add ingredient
+- `PUT /api/recipes/:id/versions/:versionId/ingredients/:ingredientId` - Update ingredient
+- `DELETE /api/recipes/:id/versions/:versionId/ingredients/:ingredientId` - Remove ingredient
+- `POST /api/recipes/:id/notes` - Create note
+- `GET /api/recipes/:id/notes` - List notes
+- `PUT /api/recipes/:id/notes/:noteId` - Update note
+- `DELETE /api/recipes/:id/notes/:noteId` - Delete note
+- `POST /api/recipes/:id/tags` - Add tag
+- `DELETE /api/recipes/:id/tags/:tag` - Remove tag
+- `GET /api/recipes/tags/popular` - Popular tags
 
-### Technical Documentation
-- [QUICKSTART.md](QUICKSTART.md) - Quick start guide
-- [AUTH_IMPLEMENTATION.md](docs/AUTH_IMPLEMENTATION.md) - Authentication details
-- [REFRESH_TOKENS_RATE_LIMITING.md](docs/REFRESH_TOKENS_RATE_LIMITING.md) - Refresh tokens & rate limiting
-- [LAUNCHER_GUIDE.md](docs/LAUNCHER_GUIDE.md) - Launcher script usage
-- [TESTING_IMPLEMENTATION.md](TESTING_IMPLEMENTATION.md) - Testing framework and guidelines
+### Collections (Protected)
+- `POST /api/collections` - Create collection
+- `GET /api/collections` - List collections
+- `GET /api/collections/:id` - Get collection
+- `PUT /api/collections/:id` - Update collection
+- `DELETE /api/collections/:id` - Delete collection
+- `POST /api/collections/:id/recipes` - Add recipe to collection
+- `DELETE /api/collections/:id/recipes/:recipeId` - Remove recipe from collection
 
-### Testing
-- [TESTING_PLAN.md](docs/TESTING_PLAN.md) - Comprehensive testing plan (Phase 9)
-- [TESTING_MILESTONE.md](docs/TESTING_MILESTONE.md) - **123 tests achievement summary** 🎉
-- **Backend Tests:** **123 tests passing** ✅
-  - Repository layer: 59.9% coverage (40 tests)
-  - Service layer: 59.6% coverage (70 tests)
-    - AuthService: 20 tests (registration, login, tokens)
-    - InvitationService: 16 tests (creation, validation)
-    - TagService: 11 tests (search, categorization)
-    - AccordService: 23 tests (CRUD, validation)
-  - Handler layer: ~20% coverage (7 tests)
-    - AuthHandler: 7 tests (HTTP endpoints)
-  - Config layer: 6 tests
-  - Run: `cd backend && go test ./...`
-- **Frontend Tests:** Setup in progress (Phase 9.4)
+### Health
+- `GET /api/health` - Health check
 
-### Phase History
-All phase completion documents are in [docs/phases/](docs/phases/):
-- [PHASE9_2_COMPLETE.md](docs/phases/PHASE9_2_COMPLETE.md) - Backend service tests (70 tests) ✅
-- [PHASE9_1_COMPLETE.md](docs/phases/PHASE9_1_COMPLETE.md) - Backend repository tests (40 tests) ✅
-- [PHASE8_9_COMPLETE.md](docs/phases/PHASE8_9_COMPLETE.md) - Notion-inspired UI redesign
-- [PHASE8_8_COMPLETE.md](docs/phases/PHASE8_8_COMPLETE.md) - Features & Polish
-- [PHASE8_5_COMPLETE.md](docs/phases/PHASE8_5_COMPLETE.md) - Frontend cleanup
-- [PHASE8_4_COMPLETE.md](docs/phases/PHASE8_4_COMPLETE.md) - Statistics & Export
-- See [docs/phases/README.md](docs/phases/README.md) for complete list
+## Testing
 
-## Security Features
+```bash
+# Start PostgreSQL first
+docker compose up -d
 
-✅ **Implemented:**
+# Run backend tests
+cd backend
+npm test
+```
+
+70 integration tests across auth, accords, invitations, tags, stats, export/import, recipes, and collections.
+
+## Security
+
 - JWT refresh tokens with automatic rotation
 - Short-lived access tokens (15 minutes)
 - Rate limiting on auth endpoints (5 requests/15 min)
-- Bcrypt password hashing
+- Bcrypt password hashing (cost 10)
+- SHA-256 hashed refresh tokens in database
 - Token revocation (logout/logout-all)
 - Complete user data isolation
 
-⚠️ **Before deploying to production:**
-- Change `JWT_SECRET` to a strong random value
+**Before deploying to production:**
+- Set `JWT_SECRET` to a strong random value (`openssl rand -hex 32`)
 - Enable HTTPS
-- Consider migrating rate limiting to Redis
-- Review all security recommendations in documentation
-- Add rate limiting for auth endpoints
+- Consider migrating rate limiting to Redis for multi-instance deployments
+
+## Documentation
+
+- [API Spec](specs/api-spec.md) - Accord API specification
+- [Recipe API](specs/recipe-api.md) - Recipe system API specification
+- [Data Models](specs/data-models.md) - Database schema
+- [Tag System](specs/tag-system.md) - Predefined tag categories
 
 ## License
 
 MIT
-
-## Contributing
-
-Contributions welcome! Please feel free to submit a Pull Request.
