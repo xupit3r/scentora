@@ -15,7 +15,7 @@ export const updateRecipeSchema = z.object({
 });
 
 export const createVersionSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1).optional(),
   notes: z.string().optional(),
 });
 
@@ -35,7 +35,7 @@ export const updateIngredientSchema = z.object({
 export const createNoteSchema = z.object({
   versionId: z.string().uuid().optional(),
   content: z.string().min(1),
-  noteType: z.enum(['general', 'testing', 'observation']).optional(),
+  noteType: z.enum(['general', 'testing', 'observation', 'adjustment', 'reminder']).optional(),
 });
 
 export const updateNoteSchema = z.object({

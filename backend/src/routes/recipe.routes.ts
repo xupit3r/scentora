@@ -173,7 +173,7 @@ router.post('/:id/tags', async (ctx) => {
   if (!parsed.success) throw new ValidationError('Validation failed', parsed.error.format());
   await tagService.addTag(ctx.params.id, ctx.state.userId, parsed.data.tag);
   ctx.status = 201;
-  ctx.body = { message: 'Tag added successfully', tag: parsed.data.tag };
+  ctx.body = { tag: parsed.data.tag };
 });
 
 // DELETE /api/recipes/:id/tags/:tag

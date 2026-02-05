@@ -156,8 +156,8 @@ describe('Auth Routes', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);
-      expect(res.body._id).toBe(user.id);
-      expect(res.body.email).toBe(user.email);
+      expect(res.body.user._id).toBe(user.id);
+      expect(res.body.user.email).toBe(user.email);
     });
 
     it('should fail without auth token', async () => {

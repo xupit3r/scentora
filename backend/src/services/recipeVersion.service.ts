@@ -34,7 +34,7 @@ function versionWithIngredientsToApi(version: any, ingredients: any[]) {
   };
 }
 
-export async function createVersion(recipeId: string, userId: string, data: { name: string; notes?: string }) {
+export async function createVersion(recipeId: string, userId: string, data: { name?: string; notes?: string }) {
   // Verify recipe ownership
   const recipe = await prisma.recipe.findFirst({ where: { id: recipeId, userId } });
   if (!recipe) throw new NotFoundError('recipe not found');
@@ -42,11 +42,12 @@ export async function createVersion(recipeId: string, userId: string, data: { na
   // Get next version number
   const count = await prisma.recipeVersion.count({ where: { recipeId } });
 
+  const versionNumber = count + 1;
   const version = await prisma.recipeVersion.create({
     data: {
       recipeId,
-      versionNumber: count + 1,
-      name: data.name,
+      versionNumber,
+      name: data.name || `v${versionNumber}`,
       notes: data.notes ?? null,
       isActive: false,
     },
@@ -98,10 +99,10 @@ export async function activateVersion(recipeId: string, versionNumber: number, u
 
   // Deactivate all, activate target
   await prisma.recipeVersion.updateMany({ where: { recipeId }, data: { isActive: false } });
-  await prisma.recipeVersion.update({ where: { id: version.id }, data: { isActive: true } });
+  const activated = await prisma.recipeVersion.update({ where: { id: version.id }, data: { isActive: true } });
   await prisma.recipe.update({ where: { id: recipeId }, data: { activeVersionId: version.id } });
 
-  return { message: 'Version activated successfully' };
+  return versionToApi(activated);
 }
 
 export async function duplicateVersion(versionId: string, userId: string) {

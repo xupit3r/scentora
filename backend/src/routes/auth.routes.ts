@@ -56,7 +56,7 @@ router.post('/logout', authLimiter, async (ctx) => {
 // GET /api/auth/me (protected)
 router.get('/me', jwtAuth(), async (ctx) => {
   const user = await authService.getMe(ctx.state.userId);
-  ctx.body = user;
+  ctx.body = { user };
 });
 
 // POST /api/auth/logout-all (protected)

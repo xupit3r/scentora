@@ -203,7 +203,9 @@ describe('Recipe Version Routes', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.status).toBe(200);
-      expect(res.body.message).toContain('activated');
+      expect(res.body._id).toBeDefined();
+      expect(res.body.isActive).toBe(true);
+      expect(res.body.versionNumber).toBe(2);
     });
   });
 

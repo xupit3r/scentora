@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { prisma } from '../prisma.js';
+import { NotFoundError } from '../utils/errors.js';
 
 function invitationToApi(inv: any) {
   return {
@@ -43,7 +44,7 @@ export async function revokeInvitation(code: string, creatorId: string) {
   const invitation = await prisma.invitation.findFirst({
     where: { code, createdBy: creatorId },
   });
-  if (!invitation) throw new Error('invitation not found');
+  if (!invitation) throw new NotFoundError('invitation not found');
 
   await prisma.invitation.delete({ where: { id: invitation.id } });
 }
