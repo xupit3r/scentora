@@ -1,0 +1,14 @@
+.git
+.gitignore
+*.md
+!docs/*.md
+.env
+.env.*
+*.log
+.DS_Store
+node_modules
+coverage
+tests
+*.test.ts
+*.spec.ts
+deploy/archive

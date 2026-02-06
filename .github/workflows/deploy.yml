@@ -1,0 +1,116 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/test.yml
+
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Generate image tag
+        id: tag
+        run: echo "TAG=sha-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/scentora-backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/scentora-backend:${{ steps.tag.outputs.TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/scentora-frontend:latest
+            ${{ secrets.DOCKER_USERNAME }}/scentora-frontend:${{ steps.tag.outputs.TAG }}
+          build-args: |
+            VITE_API_URL=/api
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOMAIN: ${{ secrets.DOMAIN }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          envs: DOCKER_USERNAME,DOMAIN,JWT_SECRET,DB_PASSWORD
+          script: |
+            cd /opt/scentora
+
+            # Update environment file with secrets
+            cat > .env.production <<EOF
+            DOMAIN=$DOMAIN
+            DB_USER=admin
+            DB_PASSWORD=$DB_PASSWORD
+            DB_NAME=scentora
+            BACKEND_PORT=3000
+            JWT_SECRET=$JWT_SECRET
+            JWT_EXPIRES_IN=7d
+            JWT_REFRESH_EXPIRES_IN=30d
+            VITE_API_URL=/api
+            CORS_ALLOWED_ORIGINS=https://$DOMAIN
+            DOCKER_REGISTRY=$DOCKER_USERNAME
+            IMAGE_TAG=latest
+            EOF
+
+            # Pull latest images
+            docker compose -f docker-compose.prod.yml pull
+
+            # Restart containers (zero-downtime via health checks)
+            docker compose -f docker-compose.prod.yml up -d --no-deps --build
+
+            # Cleanup old images
+            docker image prune -f
+
+      - name: Health check
+        run: |
+          sleep 10
+          curl -f https://${{ secrets.DOMAIN }}/api/health || exit 1
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "Application available at: https://${{ secrets.DOMAIN }}"
+
+      - name: Notify deployment failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          exit 1

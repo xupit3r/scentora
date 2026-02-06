@@ -269,8 +269,30 @@ npm test
 - Enable HTTPS
 - Consider migrating rate limiting to Redis for multi-instance deployments
 
+## Deployment
+
+Scentora can be deployed to DigitalOcean with Docker, PostgreSQL, and automated CI/CD.
+
+**Quick Deploy**:
+```bash
+# On a fresh Ubuntu 24.04 droplet
+curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/scentora/main/deploy/setup-droplet.sh | bash -s your-domain.com your@email.com
+```
+
+**Features**:
+- ✅ Docker containers (frontend, backend, postgres)
+- ✅ SSL/HTTPS with Let's Encrypt
+- ✅ GitHub Actions CI/CD pipeline
+- ✅ Automated database migrations
+- ✅ Daily backups (2 AM)
+- ✅ Zero-downtime deployments
+- ✅ Security hardening (firewall, secrets management)
+
+**See [Deployment Guide](docs/DEPLOYMENT.md) for complete instructions.**
+
 ## Documentation
 
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Complete production deployment guide
 - [API Spec](specs/api-spec.md) - Accord API specification
 - [Recipe API](specs/recipe-api.md) - Recipe system API specification
 - [Data Models](specs/data-models.md) - Database schema
