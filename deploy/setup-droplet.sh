@@ -226,11 +226,11 @@ EOF
 configure_nginx_proxy() {
     log_info "Configuring nginx reverse proxy..."
 
-    # Create nginx config
-    cat > /etc/nginx/sites-available/scentora <<EOF
+    # Create nginx config (quoted heredoc preserves $ for nginx variables)
+    cat > /etc/nginx/sites-available/scentora <<'NGINXCONF'
 server {
     listen 80;
-    server_name $DOMAIN;
+    server_name __DOMAIN__;
 
     # Let's Encrypt challenge
     location /.well-known/acme-challenge/ {
@@ -239,17 +239,17 @@ server {
 
     # Redirect all other HTTP traffic to HTTPS
     location / {
-        return 301 https://\$server_name\$request_uri;
+        return 301 https://$server_name$request_uri;
     }
 }
 
 server {
     listen 443 ssl http2;
-    server_name $DOMAIN;
+    server_name __DOMAIN__;
 
     # SSL certificates (will be configured by certbot)
-    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/__DOMAIN__/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/__DOMAIN__/privkey.pem;
 
     # SSL configuration
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -268,13 +268,13 @@ server {
     location / {
         proxy_pass http://localhost:8080;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
     }
 
     # Increase timeouts for API calls
@@ -285,7 +285,10 @@ server {
     # Client max body size (for file uploads if needed in future)
     client_max_body_size 10M;
 }
-EOF
+NGINXCONF
+
+    # Substitute domain placeholder
+    sed -i "s/__DOMAIN__/$DOMAIN/g" /etc/nginx/sites-available/scentora
 
     # Enable site
     ln -sf /etc/nginx/sites-available/scentora /etc/nginx/sites-enabled/
