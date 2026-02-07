@@ -1,8 +1,8 @@
 # Scentora - Claude AI Agent Instructions
 
-**Last Updated**: February 6, 2026
-**Project Phase**: 10.8 Complete (UI Components) → Phase 10.9 (Views & Pages) Next
-**Current State**: Backend 100% Ready (210+ tests passing, 28 endpoints) | Frontend UI Components Complete
+**Last Updated**: February 7, 2026
+**Project Phase**: Phase 11 Complete (Deployment) | Phase 10.9 (Views & Pages) Next
+**Current State**: Backend 100% Ready (70 integration tests, 53 endpoints) | Deployed to scentora.thejoeshow.net | Frontend UI Components Complete
 
 ---
 
@@ -17,7 +17,7 @@
 
 ### Current Priorities
 1. **Phase 10.9**: Recipe Views & Pages (RecipesView, RecipeDetailView, routing)
-2. **Testing**: Maintain 100% test passing rate (210/210 tests)
+2. **Testing**: Maintain 100% test passing rate (70/70 integration tests)
 3. **Documentation**: Keep plan.md and phase docs updated
 4. **Code Quality**: Follow established patterns, no over-engineering
 
@@ -37,11 +37,12 @@ Scentora enables DIY perfumers to:
 ### Evolution Path
 1. ✅ **Phases 1-7**: Foundation (auth, basic CRUD, migration to Koa.js/TypeScript)
 2. ✅ **Phase 8**: Accord system (inventory management)
-3. ✅ **Phase 9**: Testing infrastructure (210 tests)
+3. ✅ **Phase 9**: Testing infrastructure (70 integration tests)
 4. ✅ **Phase 10.1-10.5**: Recipe backend (models, repos, services, handlers, routes)
 5. ✅ **Phase 10.6-10.8**: Recipe frontend types, stores, UI components
-6. 🎯 **Phase 10.9 (NEXT)**: Recipe views & pages
-7. 📋 **Phase 10.10-10.12**: Features, testing, deployment
+6. ✅ **Phase 11**: Deployment (Docker, CI/CD, DigitalOcean, SSL)
+7. 🎯 **Phase 10.9 (NEXT)**: Recipe views & pages
+8. 📋 **Phase 10.10-10.12**: Features, testing, polish
 
 ---
 
@@ -76,8 +77,11 @@ Scentora enables DIY perfumers to:
 - **Migrations**: Prisma migrations
 
 **Infrastructure**
-- **Container**: Docker Compose (PostgreSQL)
-- **Launcher**: scentora.sh (Linux/Mac), scentora.bat (Windows)
+- **Container (dev)**: Docker Compose (PostgreSQL on port 5435)
+- **Container (prod)**: `docker-compose.prod.yml` (postgres, backend, frontend)
+- **CI/CD**: GitHub Actions (`test.yml` for PRs, `deploy.yml` for main)
+- **Deployment**: DigitalOcean droplet, nginx reverse proxy, Let's Encrypt SSL
+- **Live URL**: https://scentora.thejoeshow.net
 
 ### Architecture Pattern
 
@@ -103,6 +107,19 @@ Routes → Services → Prisma (no repository layer)
 ---
 
 ## 📊 Current Phase Status
+
+### ✅ Phase 11 Complete: Deployment (February 7, 2026)
+
+**Delivered**: Full production deployment pipeline
+- Docker multi-stage builds (backend: Node Alpine, frontend: nginx Alpine)
+- `docker-compose.prod.yml` with health checks and dependency ordering
+- GitHub Actions CI/CD: `test.yml` (PRs + reusable) → `deploy.yml` (push to main)
+- Automated Prisma migrations on container startup
+- DigitalOcean droplet with nginx reverse proxy + Let's Encrypt SSL
+- Rate limiting disabled in test environment (`NODE_ENV=test`)
+- Container health checks use `127.0.0.1` (not `localhost`) to avoid IPv6 issues
+
+**Live**: https://scentora.thejoeshow.net
 
 ### ✅ Phase 10.8 Complete: UI Components (February 6, 2026)
 
@@ -143,8 +160,8 @@ Routes → Services → Prisma (no repository layer)
 - ✅ 14 Prisma models (recipes, versions, ingredients, notes, tags, collections)
 - ✅ Migrations applied (8 new tables)
 - ✅ 6 service modules (recipe, version, ingredient, note, tag, collection)
-- ✅ 28 API endpoints (fully functional)
-- ✅ 210 tests passing (100% success rate)
+- ✅ 53 API endpoints (fully functional)
+- ✅ 70 integration tests passing (100% success rate)
 - ✅ Manual testing complete (phase10-5-manual-test.sh)
 
 **API Endpoints Available**:
@@ -508,7 +525,7 @@ npm test                 # Run all tests
 npm run test:watch       # Watch mode
 ```
 
-**Current Status**: 210/210 tests passing (100%)
+**Current Status**: 70/70 integration tests passing (100%)
 
 ### Error Handling
 
@@ -976,7 +993,7 @@ console.debug('Recipe store state:', recipeStore.recipes);
 
 ---
 
-## 🎯 Current Priorities (February 6, 2026)
+## 🎯 Current Priorities (February 7, 2026)
 
 1. **Phase 10.9**: Recipe Views & Pages
    - RecipesView.vue (main list page)
@@ -985,7 +1002,7 @@ console.debug('Recipe store state:', recipeStore.recipes);
    - Navigation testing
 
 2. **Maintain Quality**:
-   - Keep 100% test pass rate (210/210)
+   - Keep 100% test pass rate (70/70)
    - Update documentation as you go
    - Follow established patterns
 
@@ -996,8 +1013,9 @@ console.debug('Recipe store state:', recipeStore.recipes);
 
 ---
 
-**Last Updated**: February 6, 2026
-**Status**: Ready for Phase 10.9 - Views & Pages
-**Test Status**: 210/210 passing (100%)
+**Last Updated**: February 7, 2026
+**Status**: Phase 11 (Deployment) Complete | Ready for Phase 10.9 - Views & Pages
+**Test Status**: 70/70 passing (100%)
+**Deployment**: Live at https://scentora.thejoeshow.net
 **Backend**: 100% complete and functional
 **Frontend**: UI components complete, views next

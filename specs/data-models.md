@@ -1,7 +1,7 @@
 # Data Models Specification
 
-**Last Updated**: January 31, 2026  
-**Version**: 2.0 (Accord System)
+**Last Updated**: February 7, 2026
+**Version**: 3.0 (Accord + Recipe System - Koa.js/TypeScript/Prisma)
 
 ---
 
@@ -41,24 +41,9 @@ CREATE INDEX idx_accords_position ON accords(pyramid_position);
 CREATE INDEX idx_accords_created_at ON accords(created_at DESC);
 ```
 
-#### Go Struct
+#### Prisma Model
 
-```go
-type Accord struct {
-    ID                 string    `json:"_id" db:"id"`
-    UserID             string    `json:"userId" db:"user_id"`
-    Name               string    `json:"name" db:"name"`
-    PyramidPosition    string    `json:"pyramidPosition" db:"pyramid_position"`
-    VolumeMl           float64   `json:"volumeMl" db:"volume_ml"`
-    VolumeDrops        int       `json:"volumeDrops" db:"volume_drops"`
-    Supplier           *string   `json:"supplier,omitempty" db:"supplier"`
-    PurchaseDate       *string   `json:"purchaseDate,omitempty" db:"purchase_date"`
-    DilutionPercentage *float64  `json:"dilutionPercentage,omitempty" db:"dilution_percentage"`
-    Notes              *string   `json:"notes,omitempty" db:"notes"`
-    CreatedAt          time.Time `json:"createdAt" db:"created_at"`
-    UpdatedAt          time.Time `json:"updatedAt" db:"updated_at"`
-}
-```
+See `backend/prisma/schema.prisma` for the authoritative schema. Fields use camelCase with `@map("snake_case")` annotations.
 
 #### TypeScript Interface
 
@@ -125,28 +110,6 @@ CREATE INDEX idx_accord_tags_accord_id ON accord_tags(accord_id);
 CREATE INDEX idx_accord_tags_tag ON accord_tags(tag);
 ```
 
-#### Go Struct
-
-```go
-type AccordTag struct {
-    ID        string    `json:"_id" db:"id"`
-    AccordID  string    `json:"accordId" db:"accord_id"`
-    Tag       string    `json:"tag" db:"tag"`
-    CreatedAt time.Time `json:"createdAt" db:"created_at"`
-}
-```
-
-#### TypeScript Interface
-
-```typescript
-interface AccordTag {
-  _id: string;
-  accordId: string;
-  tag: string;
-  createdAt: string;
-}
-```
-
 #### Constraints
 
 - **Unique**: `(accord_id, tag)` - Same tag cannot be added twice to an accord
@@ -170,17 +133,6 @@ CREATE TABLE predefined_tags (
 );
 
 CREATE INDEX idx_predefined_tags_category ON predefined_tags(category);
-```
-
-#### Go Struct
-
-```go
-type PredefinedTag struct {
-    ID        string    `json:"_id" db:"id"`
-    Category  string    `json:"category" db:"category"`
-    Tag       string    `json:"tag" db:"tag"`
-    CreatedAt time.Time `json:"createdAt" db:"created_at"`
-}
 ```
 
 #### TypeScript Interface
@@ -210,13 +162,6 @@ See [Tag System Specification](tag-system.md) for complete list of predefined ta
 
 Accord with tags array included (for API responses).
 
-```go
-type AccordResponse struct {
-    Accord
-    Tags []string `json:"tags"`
-}
-```
-
 ```typescript
 interface AccordResponse extends Accord {
   tags: string[];
@@ -229,18 +174,7 @@ interface AccordResponse extends Accord {
 
 ### CreateAccordRequest
 
-```go
-type CreateAccordRequest struct {
-    Name               string   `json:"name" validate:"required,min=1,max=255"`
-    PyramidPosition    string   `json:"pyramidPosition" validate:"required,oneof=top middle base"`
-    VolumeMl           float64  `json:"volumeMl" validate:"required,gte=0"`
-    Supplier           *string  `json:"supplier" validate:"omitempty,max=255"`
-    PurchaseDate       *string  `json:"purchaseDate" validate:"omitempty,datetime=2006-01-02"`
-    DilutionPercentage *float64 `json:"dilutionPercentage" validate:"omitempty,gte=0,lte=100"`
-    Notes              *string  `json:"notes" validate:"omitempty"`
-    Tags               []string `json:"tags" validate:"omitempty,dive,min=1,max=50"`
-}
-```
+Validated via Zod schemas in `backend/src/schemas/`.
 
 ```typescript
 interface CreateAccordRequest {
@@ -258,19 +192,6 @@ interface CreateAccordRequest {
 ### UpdateAccordRequest
 
 All fields optional (partial update).
-
-```go
-type UpdateAccordRequest struct {
-    Name               *string  `json:"name" validate:"omitempty,min=1,max=255"`
-    PyramidPosition    *string  `json:"pyramidPosition" validate:"omitempty,oneof=top middle base"`
-    VolumeMl           *float64 `json:"volumeMl" validate:"omitempty,gte=0"`
-    Supplier           *string  `json:"supplier" validate:"omitempty,max=255"`
-    PurchaseDate       *string  `json:"purchaseDate" validate:"omitempty,datetime=2006-01-02"`
-    DilutionPercentage *float64 `json:"dilutionPercentage" validate:"omitempty,gte=0,lte=100"`
-    Notes              *string  `json:"notes" validate:"omitempty"`
-    Tags               []string `json:"tags" validate:"omitempty,dive,min=1,max=50"`
-}
-```
 
 ```typescript
 interface UpdateAccordRequest {
@@ -406,7 +327,7 @@ The following models were removed during the transition to accord system:
 
 ---
 
-## Planned Models (Phase 10)
+## Implemented Models (Phase 10)
 
 ### Recipe
 
@@ -432,23 +353,6 @@ CREATE TABLE recipes (
 CREATE INDEX idx_recipes_user_id ON recipes(user_id);
 CREATE INDEX idx_recipes_status ON recipes(status);
 CREATE INDEX idx_recipes_created_at ON recipes(created_at DESC);
-```
-
-#### Go Struct
-
-```go
-type Recipe struct {
-    ID              string    `json:"_id" db:"id"`
-    UserID          string    `json:"userId" db:"user_id"`
-    Name            string    `json:"name" db:"name"`
-    Description     *string   `json:"description,omitempty" db:"description"`
-    TargetVolumeMl  float64   `json:"targetVolumeMl" db:"target_volume_ml"`
-    Status          string    `json:"status" db:"status"`
-    ActiveVersionID *string   `json:"activeVersionId,omitempty" db:"active_version_id"`
-    Tags            []string  `json:"tags" db:"-"`
-    CreatedAt       time.Time `json:"createdAt" db:"created_at"`
-    UpdatedAt       time.Time `json:"updatedAt" db:"updated_at"`
-}
 ```
 
 #### TypeScript Interface
@@ -512,20 +416,6 @@ ALTER TABLE recipes
     REFERENCES recipe_versions(id) ON DELETE SET NULL;
 ```
 
-#### Go Struct
-
-```go
-type RecipeVersion struct {
-    ID            string    `json:"_id" db:"id"`
-    RecipeID      string    `json:"recipeId" db:"recipe_id"`
-    VersionNumber int       `json:"versionNumber" db:"version_number"`
-    Name          string    `json:"name" db:"name"`
-    Notes         *string   `json:"notes,omitempty" db:"notes"`
-    IsActive      bool      `json:"isActive" db:"is_active"`
-    CreatedAt     time.Time `json:"createdAt" db:"created_at"`
-}
-```
-
 #### TypeScript Interface
 
 ```typescript
@@ -563,21 +453,6 @@ CREATE TABLE recipe_ingredients (
 
 CREATE INDEX idx_recipe_ingredients_version_id ON recipe_ingredients(version_id);
 CREATE INDEX idx_recipe_ingredients_accord_id ON recipe_ingredients(accord_id);
-```
-
-#### Go Struct
-
-```go
-type RecipeIngredient struct {
-    ID            string    `json:"_id" db:"id"`
-    VersionID     string    `json:"versionId" db:"version_id"`
-    AccordID      string    `json:"accordId" db:"accord_id"`
-    QuantityMl    float64   `json:"quantityMl" db:"quantity_ml"`
-    QuantityDrops int       `json:"quantityDrops" db:"quantity_drops"`
-    Percentage    float64   `json:"percentage" db:"percentage"`
-    Notes         *string   `json:"notes,omitempty" db:"notes"`
-    CreatedAt     time.Time `json:"createdAt" db:"created_at"`
-}
 ```
 
 #### TypeScript Interface
@@ -619,20 +494,6 @@ CREATE INDEX idx_recipe_notes_recipe_id ON recipe_notes(recipe_id);
 CREATE INDEX idx_recipe_notes_version_id ON recipe_notes(version_id);
 ```
 
-#### Go Struct
-
-```go
-type RecipeNote struct {
-    ID        string     `json:"_id" db:"id"`
-    RecipeID  string     `json:"recipeId" db:"recipe_id"`
-    VersionID *string    `json:"versionId,omitempty" db:"version_id"`
-    Content   string     `json:"content" db:"content"`
-    NoteType  string     `json:"noteType" db:"note_type"`
-    CreatedAt time.Time  `json:"createdAt" db:"created_at"`
-    UpdatedAt time.Time  `json:"updatedAt" db:"updated_at"`
-}
-```
-
 ---
 
 ### RecipeCollection
@@ -668,23 +529,13 @@ CREATE INDEX idx_recipe_collection_members_recipe_id
     ON recipe_collection_members(recipe_id);
 ```
 
-#### Go Struct
-
-```go
-type RecipeCollection struct {
-    ID          string    `json:"_id" db:"id"`
-    UserID      string    `json:"userId" db:"user_id"`
-    Name        string    `json:"name" db:"name"`
-    Description *string   `json:"description,omitempty" db:"description"`
-    Tags        []string  `json:"tags" db:"-"`
-    CreatedAt   time.Time `json:"createdAt" db:"created_at"`
-    UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
-}
-```
-
 ---
 
-## Future Models (Phase 11+)
+## Future Models (Phase 12+)
+
+Potential additions: batch tracking, cost tracking, safety data (IFRA limits), maturation tracking.
+
+---
 
 ## Migration Strategy
 
@@ -717,9 +568,11 @@ INSERT INTO predefined_tags (category, tag) VALUES
 
 ## Notes
 
-- All UUIDs generated via `gen_random_uuid()` (PostgreSQL)
+- All UUIDs generated via `gen_random_uuid()` (PostgreSQL) / Prisma `@default(uuid())`
 - All timestamps in UTC
-- JSON responses use camelCase for compatibility with frontend
-- Database columns use snake_case per PostgreSQL convention
+- Prisma schema uses camelCase fields with `@map("snake_case")` annotations
+- JSON responses transform `id` → `_id`, Prisma Decimal → JS number, null omission (matching Go-era `omitempty`)
+- API response shapes: accords wrapped `{ accord }`, recipes returned directly (no wrapper)
+- Generated columns (`volume_drops`, `quantity_drops`) are DB-computed; API uses `Math.round(ml * 20)` fallback
 - Soft deletes not implemented (hard deletes with CASCADE)
-- Audit logging not implemented (future consideration)
+- Authoritative schema: `backend/prisma/schema.prisma` (14 models)

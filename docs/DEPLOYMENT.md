@@ -2,6 +2,8 @@
 
 Complete guide for deploying Scentora to DigitalOcean with Docker, PostgreSQL, and automated CI/CD.
 
+**Live deployment**: https://scentora.thejoeshow.net
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -42,15 +44,15 @@ Complete guide for deploying Scentora to DigitalOcean with Docker, PostgreSQL, a
 4. **Run the setup script** on your droplet:
 
 ```bash
-ssh root@YOUR_DROPLET_IP
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/scentora/main/deploy/setup-droplet.sh | bash -s your-domain.com your@email.com
+ssh root@scentora.thejoeshow.net
+curl -sSL https://raw.githubusercontent.com/xupit3r/scentora/main/deploy/setup-droplet.sh | bash -s scentora.thejoeshow.net your@email.com
 ```
 
 5. **Deploy your application files**:
 
 ```bash
 # On your local machine
-rsync -avz --exclude 'node_modules' --exclude '.git' . root@YOUR_DROPLET_IP:/opt/scentora/
+rsync -avz --exclude 'node_modules' --exclude '.git' . root@scentora.thejoeshow.net:/opt/scentora/
 
 # On the droplet
 cd /opt/scentora
@@ -60,7 +62,7 @@ docker compose -f docker-compose.prod.yml up -d
 6. **Verify deployment**:
 
 ```bash
-curl https://your-domain.com/api/health
+curl https://scentora.thejoeshow.net/api/health
 ```
 
 ### Option 2: GitHub Actions CI/CD
@@ -87,7 +89,7 @@ Point your domain's A record to the droplet's IP:
 ```
 Type: A
 Name: @ (or subdomain)
-Data: YOUR_DROPLET_IP
+Data: scentora.thejoeshow.net
 TTL: 3600
 ```
 
@@ -98,7 +100,7 @@ Wait 5-10 minutes for DNS propagation.
 SSH into your droplet:
 
 ```bash
-ssh root@YOUR_DROPLET_IP
+ssh root@scentora.thejoeshow.net
 ```
 
 Update packages:
@@ -110,7 +112,7 @@ apt-get update && apt-get upgrade -y
 ### Step 4: Run Setup Script
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/scentora/main/deploy/setup-droplet.sh | bash -s your-domain.com your@email.com
+curl -sSL https://raw.githubusercontent.com/xupit3r/scentora/main/deploy/setup-droplet.sh | bash -s scentora.thejoeshow.net your@email.com
 ```
 
 This script will:
@@ -127,13 +129,13 @@ Copy your application files:
 
 ```bash
 # From your local machine
-rsync -avz --exclude 'node_modules' --exclude '.git' . root@YOUR_DROPLET_IP:/opt/scentora/
+rsync -avz --exclude 'node_modules' --exclude '.git' . root@scentora.thejoeshow.net:/opt/scentora/
 ```
 
 Start containers:
 
 ```bash
-ssh root@YOUR_DROPLET_IP
+ssh root@scentora.thejoeshow.net
 cd /opt/scentora
 docker compose -f docker-compose.prod.yml --env-file .env.production up -d
 ```
@@ -148,10 +150,10 @@ docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml logs -f
 
 # Test API
-curl https://your-domain.com/api/health
+curl https://scentora.thejoeshow.net/api/health
 
 # Test frontend
-open https://your-domain.com
+open https://scentora.thejoeshow.net
 ```
 
 ## GitHub Actions Setup
@@ -184,7 +186,7 @@ ssh-keygen -t ed25519 -C "github-actions" -f ~/.ssh/github_actions
 Add the public key to your droplet:
 
 ```bash
-ssh-copy-id -i ~/.ssh/github_actions.pub root@YOUR_DROPLET_IP
+ssh-copy-id -i ~/.ssh/github_actions.pub root@scentora.thejoeshow.net
 ```
 
 Copy the private key to GitHub Secrets:
@@ -215,7 +217,7 @@ Located at `/opt/scentora/.env.production` on the droplet:
 
 ```bash
 # Domain Configuration
-DOMAIN=your-domain.com
+DOMAIN=scentora.thejoeshow.net
 
 # Database Configuration
 DB_USER=admin
@@ -232,7 +234,7 @@ JWT_REFRESH_EXPIRES_IN=30d
 VITE_API_URL=/api
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS=https://your-domain.com
+CORS_ALLOWED_ORIGINS=https://scentora.thejoeshow.net
 
 # Docker Configuration
 DOCKER_REGISTRY=scentora
@@ -340,10 +342,10 @@ docker stats --no-stream
 
 ```bash
 # API health check
-curl https://your-domain.com/api/health
+curl https://scentora.thejoeshow.net/api/health
 
 # Expected response:
-# {"status":"ok","timestamp":"2024-02-06T12:00:00.000Z","service":"scentora-api"}
+# {"status":"ok","timestamp":"2026-02-07T12:00:00.000Z","service":"scentora-api"}
 ```
 
 ### System Resources
@@ -533,7 +535,7 @@ git push origin main
 
 ```bash
 # SSH to droplet
-ssh root@YOUR_DROPLET_IP
+ssh root@scentora.thejoeshow.net
 cd /opt/scentora
 
 # List available images
@@ -549,7 +551,7 @@ docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
 
 # Verify
-curl https://your-domain.com/api/health
+curl https://scentora.thejoeshow.net/api/health
 ```
 
 ### Database Rollback
@@ -667,5 +669,5 @@ For issues or questions:
 
 ---
 
-**Last Updated**: February 2024
-**Version**: 1.0.0
+**Last Updated**: February 7, 2026
+**Version**: 2.0.0

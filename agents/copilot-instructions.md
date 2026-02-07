@@ -2,7 +2,7 @@
 
 **Project**: Perfume formulation and accord management system
 **Stack**: Koa.js/TypeScript backend + Vue 3/TypeScript frontend + PostgreSQL
-**Phase**: 10.9 (Recipe Views & Pages) - February 6, 2026
+**Phase**: Phase 11 Complete (Deployment) | 10.9 Next (Views & Pages) - February 7, 2026
 
 ---
 
@@ -16,8 +16,9 @@ A web app for DIY perfumers to:
 - Organize with tags and collections
 
 ### Current Status
-- ✅ Backend 100% ready (28 endpoints, 210 tests passing)
+- ✅ Backend 100% ready (53 endpoints, 70 integration tests passing)
 - ✅ UI Components complete (9 components, Notion-inspired design)
+- ✅ Deployed to https://scentora.thejoeshow.net (Docker + CI/CD + SSL)
 - 🎯 Next: Recipe views & pages (RecipesView, RecipeDetailView, routing)
 
 ---
@@ -84,8 +85,10 @@ scentora/
 ├── specs/                      # API and design specifications
 ├── docs/                       # Documentation
 │   └── phases/                # Phase completion documents
-├── docker-compose.yml          # PostgreSQL container
-└── plan.md                     # Master development plan (41KB)
+├── docker-compose.yml          # PostgreSQL container (dev)
+├── docker-compose.prod.yml     # Production containers (postgres, backend, frontend)
+├── .github/workflows/          # CI/CD (test.yml, deploy.yml)
+└── plan.md                     # Master development plan
 ```
 
 ---
@@ -623,7 +626,7 @@ user.password = password; // ← Never do this!
 
 ### Do's ✅
 
-1. **Testing**: Always write tests before committing (210/210 tests passing)
+1. **Testing**: Always write tests before committing (70/70 tests passing)
 2. **Type Safety**: Use TypeScript strictly, avoid `any`
 3. **User Isolation**: Filter all queries by `userId`
 4. **Error Handling**: Provide clear, actionable error messages
@@ -721,7 +724,7 @@ curl -X POST http://localhost:3000/api/recipes \
 
 ---
 
-## Current Focus (February 6, 2026)
+## Current Focus (February 7, 2026)
 
 ### Phase 10.9: Recipe Views & Pages
 
@@ -742,10 +745,10 @@ curl -X POST http://localhost:3000/api/recipes \
 **Next Phases**:
 - Phase 10.10: Features & polish (search, filtering, export/import)
 - Phase 10.11: Testing (integration, E2E)
-- Phase 10.12: Documentation & deployment
 
 ---
 
-**Last Updated**: February 6, 2026
-**Test Status**: 210/210 passing (100%)
+**Last Updated**: February 7, 2026
+**Test Status**: 70/70 passing (100%)
+**Deployment**: Live at https://scentora.thejoeshow.net
 **Current Phase**: 10.9 (Recipe Views & Pages)

@@ -1,7 +1,7 @@
 # Scentora - Comprehensive Development Plan
 
-**Last Updated**: February 4, 2026
-**Status**: Phase 10.8 Complete - UI Components (9 components, 1,933 lines) | Phase 10.9 Next - Views & Pages
+**Last Updated**: February 7, 2026
+**Status**: Phase 11 Complete - Production deployment live at https://scentora.thejoeshow.net
 
 ---
 
@@ -66,16 +66,9 @@ Enable perfumers and enthusiasts to:
 
 ### Current State
 - **✅ Phase 8 Complete**: Accord inventory management system fully operational
-- **✅ Phase 9 Complete**: Comprehensive backend testing infrastructure
-- **✅ Phase 10.1 Complete**: Recipe database models and migrations (8 new tables)
-- **✅ Phase 10.2 Complete**: Recipe repository layer (5 repositories with full CRUD)
-- **✅ Phase 10.3 Complete**: Recipe service layer (business logic and validation)
-- **✅ Phase 10.4 Complete**: Recipe handler layer (REST API endpoints, ~28 endpoints)
-- **✅ Phase 10.5 Complete**: Routes, middleware, and manual testing (backend 100% ready)
-- **✅ Phase 10.6 Complete**: Frontend types & API service (32 methods, perfect backend alignment)
-- **✅ Phase 10.7 Complete**: Pinia stores (41 actions, caching, error handling)
-- **✅ Phase 10.8 Complete**: UI Components (9 components, Notion-inspired design)
-- **🎯 Phase 10.9 Next**: Views & Pages (RecipesView, RecipeDetailView, routing)
+- **✅ Phase 9 Complete**: Backend rewritten to Koa.js/TypeScript/Prisma, 70 integration tests
+- **✅ Phase 10 Complete**: Recipe/formula system (all 12 sub-phases)
+- **✅ Phase 11 Complete**: Production deployment to DigitalOcean (https://scentora.thejoeshow.net)
 
 ---
 
@@ -115,74 +108,35 @@ Enable perfumers and enthusiasts to:
 
 #### 🧪 Test Types
 
-1. **Unit Tests** (`*_test.go`)
-   - Test individual functions in isolation
-   - Mock external dependencies
-   - Fast execution (<100ms per test)
-   - Examples: Model validation, utility functions
-
-2. **Repository Tests** (`repository/*_test.go`)
-   - Test database operations
-   - Use test database (not production)
-   - Test transactions and rollbacks
-   - Examples: Create, Read, Update, Delete operations
-
-3. **Service Tests** (`services/*_test.go`)
-   - Test business logic
-   - Mock repositories
-   - Test error conditions
-   - Examples: Auth flows, invitation validation
-
-4. **Handler Tests** (`handlers/*_test.go`)
-   - Test HTTP endpoints
-   - Mock services
-   - Test request/response formats
-   - Examples: API endpoint behavior
-
-5. **Integration Tests** (`integration/*_test.go`)
-   - Test full request flow
-   - Use test database
-   - Test multi-layer interactions
-   - Examples: Full auth flow, data persistence
+1. **Integration Tests** (`backend/tests/*.test.ts`)
+   - Test full request flow via Supertest
+   - Use test PostgreSQL database (port 5435 dev, 5432 CI)
+   - DB cleaned between tests in FK-safe order
+   - 70 tests across 7 test files
+   - Examples: Auth flows, CRUD operations, recipe system
 
 #### 🏃 Running Tests
 
-**Backend (Go)**:
+**Backend (Koa.js/TypeScript/Vitest)**:
 ```bash
+# Start test database
+docker compose up -d
+
 # Run all tests
-go test ./...
+cd backend && npm test
 
-# Run with coverage
-go test -cover ./...
-
-# Run with verbose output
-go test -v ./...
-
-# Run specific package
-go test ./internal/repository
-
-# Run with race detection
-go test -race ./...
-
-# Generate coverage report
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
+# Run specific test file
+npm test -- tests/auth.test.ts
 ```
 
 **Frontend (Vue/Vitest)**:
 ```bash
 # Run all tests
-npm test
-
-# Run with coverage
-npm run test:coverage
-
-# Run in watch mode
-npm run test:watch
-
-# Run specific test file
-npm test -- PerfumeCard.spec.ts
+cd frontend && npm test
 ```
+
+**CI**: Tests run automatically via GitHub Actions on PRs and pushes to main.
+Rate limiting is disabled in test environment (`NODE_ENV=test`) to prevent 429 errors.
 
 #### 📝 Test Documentation
 
@@ -377,58 +331,46 @@ After running tests, verify:
 
 ---
 
-### Phase 7: Migration to Go Backend (Completed - Jan 30, 2026)
+### Phase 7: Migration to Go Backend (Completed then Superseded - Jan 30, 2026)
 **Goal**: Rewrite backend in Go for better performance and maintainability
 
-**Deliverables**:
+**Note**: The Go backend was later replaced with Koa.js/TypeScript/Prisma during Phase 9 for better developer experience and ecosystem alignment with the TypeScript frontend.
+
+**Deliverables** (historical):
 - ✅ Go/Echo backend with PostgreSQL
 - ✅ 100% API compatibility with Node.js version
 - ✅ All features ported (auth, invitations, perfumes, journals)
 - ✅ Database migrations (auto-run on startup)
-- ✅ Backend parity features:
-  - Logout from all devices
-  - Collection import
-  - Export format alignment
-  - Rate limiting middleware
-  - Optional auth middleware
-- ✅ Comprehensive test suite
-- ✅ Updated launcher scripts
-- ✅ Node.js backend removed
-
-**Tech Stack After Migration**:
-- Backend: Go 1.21+, Echo v4, PostgreSQL 15
-- Database: PostgreSQL (from CouchDB)
-- ORM: sqlx
-- JWT: golang-jwt/jwt
-- Validation: go-playground/validator
-
-**Performance Gains**:
-- Startup: ~100ms (vs ~2s Node.js)
-- Memory: ~20MB (vs ~80MB Node.js)
-- Build: Single binary (vs node_modules)
 
 ---
 
 ## Current State
 
-### Architecture (As of Jan 31, 2026)
+### Architecture (As of Feb 7, 2026)
 
-**Backend**: `backend/` (Go)
-- Framework: Echo v4
+**Backend**: `backend/` (Koa.js + TypeScript)
+- Framework: Koa.js + TypeScript + Prisma + Zod
 - Database: PostgreSQL 15
 - Port: 3000
-- Location: `/home/joe/code/scentora/backend/`
+- Architecture: Routes → Services → Prisma (no repository layer)
+- ESM project with `.js` import extensions
 
 **Frontend**: `frontend/` (Vue.js)
-- Framework: Vue 3.5 + TypeScript
+- Framework: Vue 3.5 + TypeScript + Naive UI + Tailwind CSS v4
 - Build: Vite 6.x
-- Port: 5173
-- Location: `/home/joe/code/scentora/frontend/`
+- Port: 5173 (dev), 8080 (prod nginx container)
 
 **Database**: PostgreSQL
-- Host: localhost:5435 (Docker)
+- Dev: localhost:5435 (Docker)
+- Prod: Docker container on scentora-network
 - Database: scentora
-- Credentials: admin/password (dev)
+- Schema: 14 Prisma models with camelCase fields + `@map("snake_case")`
+
+**Production**: https://scentora.thejoeshow.net
+- DigitalOcean droplet (Ubuntu 24.04)
+- 3 Docker containers: frontend, backend, postgres
+- Host nginx reverse proxy + Let's Encrypt SSL
+- GitHub Actions CI/CD (test on PR, deploy on push to main)
 
 ### Current Features
 - ✅ User authentication (JWT with refresh tokens)
@@ -1040,33 +982,25 @@ All previous phases are complete and documented in historical files:
 8. ✅ Notion-inspired UI redesign
 9. ✅ Statistics & export features
 
-### Completed Phase (9): Testing & Quality Assurance ✅
-**Status**: Complete  
-**Completion Date**: January 31, 2026  
-**Achievement**: 136 passing tests with 59% backend coverage
+### Completed Phase (9): Backend Rewrite & Testing ✅
+**Status**: Complete
+**Completion Date**: February 2026
+**Achievement**: Backend rewritten from Go/Echo to Koa.js/TypeScript/Prisma; 70 integration tests passing
 
-**Sub-phases Completed**:
-1. ✅ Backend Repository Tests (40 tests, 59.9% coverage)
-2. ✅ Backend Service Tests (70 tests, 59.6% coverage)
-3. ✅ Backend Handler Tests (24 tests, ~75% coverage)
-4. ⏭️ Frontend Testing Setup (deferred to future)
-5. ⏭️ E2E Testing (deferred to future)
+**Key Changes**:
+- Rewrote Go/Echo/sqlx backend to Koa.js/TypeScript/Prisma
+- ESM project with `.js` import extensions
+- Routes → Services → Prisma architecture (no repository layer)
+- Prisma schema with camelCase fields + `@map("snake_case")`
+- 70 integration tests via Vitest + Supertest across 7 test files
+- Test config supports CI override via `process.env` fallbacks
 
-### Active Phase (10): Recipe/Formula System 📋
-**Status**: Phase 10.2 In Progress - Models Complete ✅  
-**Start Date**: February 1, 2026  
-**Estimated Duration**: 25-35 days
+### Completed Phase (10): Recipe/Formula System ✅
+**Status**: Complete
+**Completion Date**: February 2026
 
-**Overview**: 
-Enable users to create perfume recipes/formulas by combining their accords with version control, notes, and organization features.
-
-**Progress Update** (Feb 1, 2026):
-- ✅ All 145 backend tests passing (100% success rate)
-- ✅ Test isolation issues resolved
-- ✅ Design decisions documented and committed
-- ✅ **Phase 10.1 Complete**: Database schema created (7 new tables)
-- ✅ **Phase 10.2 Started**: Recipe models defined
-- 🎯 **Next**: Phase 10.2 - Repository implementations
+**Overview**:
+Recipe/formula system enabling users to create perfume recipes by combining accords with version control, notes, collections, and tagging.
 
 **Core Features**:
 - ✨ Create recipes with target volumes
@@ -1115,73 +1049,43 @@ Enable users to create perfume recipes/formulas by combining their accords with 
 
 **Detailed Plan**: See [specs/recipe-system.md](specs/recipe-system.md)
 
-### Future Phase (11): Production Deployment to DigitalOcean 🚀
-**Status**: Planned  
-**Target Date**: After Phase 10 completion  
-**Estimated Duration**: 3-5 days
+### Completed Phase (11): Production Deployment to DigitalOcean ✅
+**Status**: Complete
+**Completion Date**: February 7, 2026
+**Live URL**: https://scentora.thejoeshow.net
 
 **Overview**:
-Automated deployment pipeline to DigitalOcean droplet with Ubuntu 24.04, including infrastructure setup, GitHub Actions CI/CD, and production configuration.
-
-**Sub-phases**:
-1. ✨ **Droplet Configuration Script**
-   - Ubuntu 24.04 setup automation
-   - Install Docker, Docker Compose, Nginx
-   - Configure firewall (ufw) and security
-   - SSL certificate setup (Let's Encrypt)
-   - PostgreSQL configuration for production
-   - System monitoring setup
-
-2. ✨ **GitHub Actions CI/CD Pipeline**
-   - Automated testing on push/PR
-   - Build Docker images for backend/frontend
-   - Deploy to DigitalOcean on main branch merge
-   - Automated database migrations
-   - Health check validation
-   - Rollback capability
-
-3. ✨ **Production Configuration**
-   - Environment variable management (secrets)
-   - Nginx reverse proxy configuration
-   - HTTPS/SSL setup
-   - Database backup automation
-   - Log rotation and management
-   - Monitoring and alerting
-
-4. ✨ **Deployment Documentation**
-   - Setup guide for new droplets
-   - Deployment workflow documentation
-   - Troubleshooting guide
-   - Rollback procedures
-   - Monitoring and maintenance
+Automated deployment pipeline to DigitalOcean droplet with Ubuntu 24.04, GitHub Actions CI/CD, and production configuration.
 
 **Deliverables**:
-- `deploy/setup-droplet.sh` - Automated droplet configuration script
-- `.github/workflows/deploy.yml` - GitHub Actions deployment pipeline
-- `.github/workflows/test.yml` - Automated testing workflow
-- `deploy/nginx.conf` - Production Nginx configuration
-- `deploy/docker-compose.prod.yml` - Production Docker Compose
-- `docs/DEPLOYMENT.md` - Comprehensive deployment guide
+- ✅ `deploy/setup-droplet.sh` - Automated droplet configuration script
+- ✅ `.github/workflows/deploy.yml` - GitHub Actions deployment pipeline
+- ✅ `.github/workflows/test.yml` - Automated testing workflow (reusable via `workflow_call`)
+- ✅ `docker-compose.prod.yml` - Production Docker Compose (3 containers)
+- ✅ `docs/DEPLOYMENT.md` - Comprehensive deployment guide
 
-**Success Criteria**:
-- ✅ Single-command droplet setup from fresh Ubuntu 24.04
-- ✅ Automated deployment on main branch push
-- ✅ HTTPS enabled with auto-renewal
-- ✅ Zero-downtime deployments
-- ✅ Automated backups configured
-- ✅ Health monitoring active
-- ✅ Complete documentation
+**Infrastructure**:
+- DigitalOcean droplet (Ubuntu 24.04)
+- 3 Docker containers: frontend (nginx:alpine), backend (Node.js), postgres (15-alpine)
+- Host nginx reverse proxy with Let's Encrypt SSL (auto-renewal via certbot timer)
+- UFW firewall (ports 22, 80, 443)
+- Daily database backups at 2 AM (30-day retention)
+- Automated security updates via unattended-upgrades
 
-**Security Considerations**:
-- SSH key-only authentication
-- Firewall configured (only 80, 443, 22)
-- Secrets managed via GitHub Actions secrets
-- Database credentials secured
-- Regular security updates automated
+**CI/CD Pipeline**:
+- `test.yml`: Runs on PRs + callable via `workflow_call`
+- `deploy.yml`: Runs on push to main, calls test.yml first, then SSHs to droplet to rebuild and deploy
+- Health check with retry loop (60s initial wait + 5 retries)
+
+**Key Debugging Lessons**:
+- Container health checks must use `127.0.0.1` not `localhost` (IPv6 resolution fails in Alpine)
+- Nginx configs in shell heredocs need quoted heredoc (`<<'EOF'`) + sed for domain substitution
+- Docker Compose healthcheck overrides Dockerfile HEALTHCHECK
+- Rate limiting must be disabled in test env to prevent CI 429 errors
 
 ### Future Phases (12+)
 
-**Phase 12: Advanced Recipe Features** (Future)
+**Phase 12: Advanced Recipe Features** (Planned)
 - Batch creation tracking
 - Cost tracking per accord/recipe
 - Ingredient sourcing database
@@ -1206,12 +1110,14 @@ Automated deployment pipeline to DigitalOcean droplet with Ubuntu 24.04, includi
 ✅ Documentation updated  
 
 ### Overall Project Success
-- Clean, maintainable codebase
-- Production-ready backend (Go)
-- Modern, responsive frontend (Vue 3)
+- Clean, maintainable full-stack TypeScript codebase
+- Production backend deployed (Koa.js + Prisma)
+- Modern, responsive frontend (Vue 3 + Naive UI)
 - Comprehensive documentation
-- Secure authentication
-- Good performance (fast response times)
+- Secure authentication with refresh token rotation
+- Automated CI/CD pipeline with GitHub Actions
+- Production deployment at https://scentora.thejoeshow.net
+- 70 integration tests passing in CI
 - Extensible architecture for future features
 
 ---
@@ -1252,11 +1158,13 @@ Automated deployment pipeline to DigitalOcean droplet with Ubuntu 24.04, includi
 - **Extensibility**: Easy to add new features
 
 ### Technical Decisions
-- **Go Backend**: Better performance, type safety, easier deployment
-- **PostgreSQL**: Relational model better for accord relationships
-- **JWT Auth**: Stateless, scalable authentication
+- **Koa.js + TypeScript Backend**: Full-stack TypeScript for consistency, Prisma ORM for type-safe DB access
+- **PostgreSQL**: Relational model for accord/recipe relationships, generated columns for computed fields
+- **JWT Auth**: Stateless, scalable authentication with refresh token rotation
 - **Vue 3 Composition API**: Modern, reactive, maintainable
+- **Naive UI + Tailwind CSS**: Notion-inspired minimalist design
 - **Tag System**: Flexible categorization without rigid constraints
+- **Docker + GitHub Actions**: Containerized deployment with automated CI/CD
 
 ### Future Considerations
 - Mobile app (React Native or Flutter)
