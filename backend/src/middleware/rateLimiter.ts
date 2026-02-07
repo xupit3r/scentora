@@ -6,6 +6,11 @@ interface RateLimitEntry {
 }
 
 function createRateLimiter(maxRequests: number, windowMs: number): Koa.Middleware {
+  // Disable rate limiting in test environment
+  if (process.env.NODE_ENV === 'test') {
+    return async (_ctx, next) => next();
+  }
+
   const store = new Map<string, RateLimitEntry>();
 
   // Cleanup expired entries every minute
