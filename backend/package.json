@@ -10,7 +10,9 @@
     "test:watch": "vitest",
     "prisma:generate": "prisma generate",
     "prisma:pull": "prisma db pull",
-    "prisma:push": "prisma db push"
+    "prisma:push": "prisma db push",
+    "cli": "node dist/cli.js",
+    "cli:dev": "tsx src/cli.ts"
   },
   "dependencies": {
     "@koa/cors": "^5.0.0",
