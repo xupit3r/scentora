@@ -1,7 +1,7 @@
 # API Specification
 
-**Last Updated**: January 31, 2026  
-**Version**: 2.0 (Accord System)  
+**Last Updated**: February 10, 2026  
+**Version**: 2.1 (Koa.js 3.1.1)  
 **Base URL**: `http://localhost:3000/api`
 
 ---

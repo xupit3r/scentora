@@ -4,7 +4,7 @@ A perfume formulation and accord management system for DIY perfumers and enthusi
 
 ## Tech Stack
 
-- **Backend**: Koa.js + TypeScript + Prisma + Zod + JWT Authentication
+- **Backend**: Koa.js 3.1.1 + TypeScript + Prisma + Zod + JWT Authentication
 - **Frontend**: Vue.js 3 + TypeScript + Pinia + Naive UI + Tailwind CSS v4
 - **Database**: PostgreSQL
 - **Testing**: Vitest + Supertest (backend), Vitest (frontend)

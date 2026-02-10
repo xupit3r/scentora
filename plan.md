@@ -1,7 +1,7 @@
 # Scentora - Comprehensive Development Plan
 
-**Last Updated**: February 7, 2026
-**Status**: Phase 11 Complete - Production deployment live at https://scentora.thejoeshow.net
+**Last Updated**: February 10, 2026
+**Status**: Phase 12 In Progress - Upgrading to Koa.js 3.1.1
 
 ---
 
@@ -69,6 +69,7 @@ Enable perfumers and enthusiasts to:
 - **✅ Phase 9 Complete**: Backend rewritten to Koa.js/TypeScript/Prisma, 70 integration tests
 - **✅ Phase 10 Complete**: Recipe/formula system (all 12 sub-phases)
 - **✅ Phase 11 Complete**: Production deployment to DigitalOcean (https://scentora.thejoeshow.net)
+- **🔄 Phase 12 In Progress**: Upgrading to Koa.js 3.1.1 and latest ecosystem packages
 
 ---
 
@@ -349,7 +350,7 @@ After running tests, verify:
 ### Architecture (As of Feb 7, 2026)
 
 **Backend**: `backend/` (Koa.js + TypeScript)
-- Framework: Koa.js + TypeScript + Prisma + Zod
+- Framework: Koa.js 3.1.1 + TypeScript + Prisma + Zod
 - Database: PostgreSQL 15
 - Port: 3000
 - Architecture: Routes → Services → Prisma (no repository layer)
@@ -394,7 +395,45 @@ After running tests, verify:
 
 ## Planned Work
 
-### Phase 8: Transition to Accord Management System (In Planning)
+### Phase 12: Koa.js 3.1.1 Upgrade (In Progress)
+**Goal**: Upgrade Koa.js and ecosystem packages to latest stable versions
+**Status**: 🔄 In Progress
+**Started**: February 10, 2026
+
+**Objective**: Update backend framework dependencies to modern versions for improved performance, security, and compatibility with latest Node.js features.
+
+**Package Upgrades**:
+- `koa`: 2.16.3 → 3.1.1
+- `@koa/router`: 13.1.1 → 15.3.0
+- `@types/koa`: 2.15.0 → 3.0.1
+
+**Breaking Changes Assessment**:
+✅ No generator functions (already using async/await)
+✅ No ctx.throw() usage (custom error handler)
+✅ No redirect('back') usage
+✅ No legacy querystring module usage
+✅ Node.js v20.20.0 compatible (requires v18+)
+
+**Implementation Phases**:
+1. Package updates and dependency installation
+2. TypeScript compilation verification
+3. Code compatibility review (middleware, routes)
+4. Development server testing
+5. Integration test suite verification
+6. Production build and deployment
+
+**Benefits**:
+- Access to latest Koa.js features (AsyncLocalStorage, WHATWG standards)
+- Improved performance and security
+- Better TypeScript type definitions
+- Future-proof dependency chain
+- Compatibility with upcoming Node.js LTS releases
+
+**Detailed Plan**: See `/home/joe/.copilot/session-state/180a914b-46df-44f7-bf4f-564700f67d9d/plan.md`
+
+---
+
+### Phase 8: Transition to Accord Management System (Completed)
 **Goal**: Transform from perfume catalog to accord inventory system
 
 **Strategic Pivot**: 
