@@ -11,6 +11,7 @@
     "prisma:generate": "prisma generate",
     "prisma:pull": "prisma db pull",
     "prisma:push": "prisma db push",
+    "console": "tsx cli/index.ts",
     "cli": "node dist/cli.js",
     "cli:dev": "tsx src/cli.ts"
   },
@@ -28,18 +29,25 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/inquirer": "^9.0.9",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/koa": "^3.0.1",
-    "@types/koa-bodyparser": "^4.3.12",
     "@types/koa__cors": "^5.0.0",
     "@types/koa__router": "^12.0.5",
+    "@types/koa-bodyparser": "^4.3.12",
     "@types/node": "^22.10.0",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^10.0.0",
+    "@types/vorpal": "^1.12.8",
+    "chalk": "^5.6.2",
+    "cli-table3": "^0.6.5",
+    "inquirer": "^13.2.2",
+    "ora": "^9.3.0",
     "prisma": "^6.3.0",
     "supertest": "^7.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "vorpal": "^1.12.0"
   }
 }
