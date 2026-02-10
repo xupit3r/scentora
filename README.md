@@ -49,6 +49,12 @@ A perfume formulation and accord management system for DIY perfumers and enthusi
 - Export collection as JSON
 - Import accords from JSON backup
 
+### CLI Console (Phase 13 - In Progress)
+- Interactive REPL for administration
+- User management (create, list, delete, reset passwords)
+- Future: Accord/recipe import/export commands
+- Future: Database operations and maintenance
+
 ### UI/UX
 - Notion-inspired clean, minimalist interface
 - Fully responsive design (desktop, tablet, mobile)
@@ -243,6 +249,34 @@ scentora/
 
 ### Health
 - `GET /api/health` - Health check
+
+## CLI Console
+
+Interactive command-line interface for administration tasks.
+
+```bash
+cd backend
+npm run console
+```
+
+**Available Commands** (Phase 13.1):
+- `create-user` - Create new user account
+- `list-users` - Display all users in formatted table
+- `delete-user <email|id>` - Delete user with confirmation
+- `reset-password <email|id>` - Reset user password
+- `show-user <email|id>` - Display detailed user information
+
+**Features**:
+- Auto-complete with Tab
+- Command history (↑/↓ arrows)
+- Colored output and progress indicators
+- Interactive prompts with validation
+
+**Future commands** (Phases 13.2-13.4):
+- Accord/recipe import and export
+- Database operations (migrations, seeding, backups)
+
+See [docs/CLI_CONSOLE.md](docs/CLI_CONSOLE.md) for complete documentation.
 
 ## Testing
 

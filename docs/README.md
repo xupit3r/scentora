@@ -31,6 +31,14 @@ User guide for launcher scripts:
 - Troubleshooting common issues
 - Platform-specific instructions (Linux/Mac/Windows)
 
+### [CLI_CONSOLE.md](CLI_CONSOLE.md)
+CLI Console user guide:
+- Interactive command-line interface for administration
+- User management commands (create, list, delete, reset-password)
+- Terminal features (auto-complete, history, colored output)
+- Common tasks and troubleshooting
+- Future: Accord/recipe management and database operations
+
 ## Related Documentation
 
 - **/README.md** - Project overview and quick start

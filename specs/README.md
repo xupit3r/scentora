@@ -37,6 +37,15 @@ User interface and experience design:
 - Responsive design breakpoints
 - Accessibility guidelines
 
+### [cli-console.md](cli-console.md)
+CLI Console specification:
+- Interactive REPL for administration
+- User management commands
+- Accord/recipe import/export commands
+- Database operations
+- Command architecture and UX features
+- Testing strategy and implementation phases
+
 ## Usage
 
 These specifications serve as the source of truth for implementation. Developers should refer to these documents when:

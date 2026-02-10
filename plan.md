@@ -1,7 +1,7 @@
 # Scentora - Comprehensive Development Plan
 
 **Last Updated**: February 10, 2026
-**Status**: Phase 12 Complete - Upgraded to Koa.js 3.1.1
+**Status**: Phase 13 In Progress - CLI Console (Planning/Documentation)
 
 ---
 
@@ -70,6 +70,7 @@ Enable perfumers and enthusiasts to:
 - **✅ Phase 10 Complete**: Recipe/formula system (all 12 sub-phases)
 - **✅ Phase 11 Complete**: Production deployment to DigitalOcean (https://scentora.thejoeshow.net)
 - **✅ Phase 12 Complete**: Upgraded to Koa.js 3.1.1 and latest ecosystem packages
+- **🔄 Phase 13 In Progress**: CLI Console (interactive REPL for administration)
 
 ---
 
@@ -421,556 +422,128 @@ After running tests, verify:
 
 ### Future Work
 
-### Phase 13: Database Migration System (Planned)
-**Goal**: Transform from perfume catalog to accord inventory system
-
-**Strategic Pivot**: 
-The application will shift from tracking commercial perfumes to managing DIY perfume creation components (accords) and recipes.
-
-#### What's Changing
-**Remove**:
-- Perfume tracking (entire feature set)
-- Journal entries linked to perfumes
-- Perfume-related UI components
-- Perfume statistics
-
-**Add**:
-- Accord inventory management
-- Rich tagging system for accords
-- Volume tracking (ml + drops)
-- Supplier and purchase tracking
-- Recipe system (future phase)
-
-#### Key Concepts
-
-**Accord**: A harmonious blend of aromatic materials that creates a distinct scent impression. Accords are the building blocks used in perfume recipes.
-
-**Pyramid Position**: Where an accord sits in the fragrance structure:
-- **Top**: Volatile, first impression (citrus, herbs)
-- **Middle**: Heart notes, core character (florals, spices)
-- **Base**: Foundation, lasting (woods, resins, musks)
-
-**Volume Tracking**: Dual measurement system:
-- Primary: Milliliters (ml) - precise liquid measurement
-- Secondary: Drops - practical measurement (1 ml ≈ 20 drops)
-
-#### Accord Data Model
-
-**Core Properties**:
-- Name (string, required)
-- Pyramid position (enum: top/middle/base, required)
-- Volume in ML (decimal, required)
-- Volume in drops (calculated: ml × 20)
-- Supplier/vendor (string, optional)
-- Purchase date (date, optional)
-- Dilution percentage (decimal 0-100%, optional)
-- Notes/description (text, optional)
-- Tags (array of strings)
-
-**Unique Constraint**: `(name + pyramid_position)` per user
-- Example: Can't have two "Citrus Accord" in "top" position
-- But can have "Citrus Accord" in both "top" and "middle"
-
-#### Tag System
-
-**Default Tag Categories** (90+ predefined tags):
-1. **Character**: fresh, warm, cool, dry, powdery, creamy, sharp, soft, rich, light
-2. **Mood**: romantic, sensual, energetic, calming, mysterious, playful, sophisticated, innocent
-3. **Season**: spring, summer, autumn, winter
-4. **Time**: morning, afternoon, evening, night
-5. **Intensity**: subtle, moderate, strong, intense, bold
-6. **Quality**: clean, dirty, animalic, synthetic, natural, modern, vintage
-7. **Scent Family**: floral, fruity, woody, oriental, fresh, aromatic, spicy, gourmand
-8. **Texture**: smooth, rough, silky, velvety, airy, dense
-9. **Style**: casual, formal, sporty, elegant, edgy
-
-**Custom Tags**: Users can create their own tags beyond predefined options.
-
-#### Database Schema Changes
-
-**Drop Tables**:
-```sql
-DROP TABLE journal_entries;
-DROP TABLE perfumes;
-```
-
-**New Tables**:
-
-```sql
--- Accords table
-CREATE TABLE accords (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    pyramid_position VARCHAR(10) NOT NULL CHECK (pyramid_position IN ('top', 'middle', 'base')),
-    volume_ml DECIMAL(10,2) NOT NULL CHECK (volume_ml >= 0),
-    volume_drops INTEGER GENERATED ALWAYS AS (ROUND(volume_ml * 20)) STORED,
-    supplier VARCHAR(255),
-    purchase_date DATE,
-    dilution_percentage DECIMAL(5,2) CHECK (dilution_percentage >= 0 AND dilution_percentage <= 100),
-    notes TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    UNIQUE(user_id, name, pyramid_position)
-);
-
--- Accord tags (many-to-many)
-CREATE TABLE accord_tags (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    accord_id UUID NOT NULL REFERENCES accords(id) ON DELETE CASCADE,
-    tag VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    UNIQUE(accord_id, tag)
-);
-
--- Predefined tags (seeded data)
-CREATE TABLE predefined_tags (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    category VARCHAR(50) NOT NULL,
-    tag VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    UNIQUE(tag)
-);
-```
-
-**Indexes**:
-```sql
-CREATE INDEX idx_accords_user_id ON accords(user_id);
-CREATE INDEX idx_accords_position ON accords(pyramid_position);
-CREATE INDEX idx_accords_created_at ON accords(created_at DESC);
-CREATE INDEX idx_accord_tags_accord_id ON accord_tags(accord_id);
-CREATE INDEX idx_accord_tags_tag ON accord_tags(tag);
-CREATE INDEX idx_predefined_tags_category ON predefined_tags(category);
-```
-
-#### Backend Implementation Plan
-
-**Phase 8.1: Database & Cleanup**
-- [ ] Create migration to drop old tables
-- [ ] Create migration to add new tables
-- [ ] Seed predefined_tags table with 90+ tags
-- [ ] Remove perfume/journal repositories
-- [ ] Remove perfume/journal services
-- [ ] Remove perfume/journal handlers
-- [ ] Update models (remove old, add Accord types)
-- [ ] Update routes
-
-**Phase 8.2: Accord Core Features**
-- [ ] Create `accord_repo.go` (CRUD operations)
-- [ ] Create `accord_tag_repo.go` (tag management)
-- [ ] Create `predefined_tag_repo.go` (tag lookup)
-- [ ] Create `accord_service.go` (business logic)
-- [ ] Create `accord.go` handler (HTTP endpoints)
-- [ ] Create `tags.go` handler (tag endpoints)
-- [ ] Add routes for `/api/accords` and `/api/tags`
-
-**Phase 8.3: Search & Filter**
-- [ ] Implement filtering by position
-- [ ] Implement filtering by volume range
-- [ ] Implement filtering by tags
-- [ ] Implement search by name/notes
-- [ ] Implement filter by supplier
-- [ ] Implement low stock filtering
-
-**Phase 8.4: Statistics & Export**
-- [ ] Update stats handler (accord metrics)
-- [ ] Update export handler (accord format)
-- [ ] Update import handler (accord import)
-- [ ] Add low inventory alerts
-
-**API Endpoints** (New):
-```
-GET    /api/accords              - List accords (with filters)
-POST   /api/accords              - Create accord
-GET    /api/accords/:id          - Get accord details
-PUT    /api/accords/:id          - Update accord
-DELETE /api/accords/:id          - Delete accord
-GET    /api/accords/:id/tags     - Get accord tags
-POST   /api/accords/:id/tags     - Add tag to accord
-DELETE /api/accords/:id/tags/:tag - Remove tag from accord
-GET    /api/tags/predefined      - Get predefined tags
-GET    /api/tags                 - Get all user tags
-GET    /api/stats                - Accord statistics
-GET    /api/export               - Export accords
-POST   /api/export/import        - Import accords
-```
-
-#### Frontend Implementation Plan
-
-**Phase 8.5: Frontend Cleanup**
-- [ ] Remove `PerfumeDetail.vue`
-- [ ] Remove `PerfumeForm.vue`
-- [ ] Remove `PerfumePyramid.vue`
-- [ ] Remove `SearchFilters.vue`
-- [ ] Remove `Statistics.vue` (will recreate)
-- [ ] Update `Home.vue` (remove perfume grid)
-- [ ] Update types (remove Perfume, Journal)
-- [ ] Update API service (remove perfume methods)
-- [ ] Update router (remove perfume routes)
-
-**Phase 8.6: New Components**
-- [ ] Create `AccordCard.vue` - Display accord in grid
-- [ ] Create `AccordForm.vue` - Add/edit accord modal
-- [ ] Create `AccordDetail.vue` - Full accord view
-- [ ] Create `AccordFilters.vue` - Filter sidebar/panel
-- [ ] Create `TagSelector.vue` - Tag autocomplete component
-
-**Phase 8.7: New Views**
-- [ ] Update `Home.vue` - Accord inventory grid
-- [ ] Create `AccordDetailView.vue` - Detailed accord page
-- [ ] Create `Statistics.vue` (simplified) - Accord stats
-- [ ] Update `About.vue` - New app description
-
-**Phase 8.8: Features & Polish**
-- [ ] Implement tag autocomplete
-- [ ] Implement filter combinations
-- [ ] Add volume conversion display
-- [ ] Add low stock warnings
-- [ ] Add confirmation dialogs
-- [ ] Responsive design testing
-- [ ] Mobile UI optimization
-
-#### UI/UX Specifications
-
-**Color Scheme**:
-- Top notes: Yellow gradient (#FFD93D → #FFA800)
-- Middle notes: Purple gradient (#B565D8 → #8B5CF6)
-- Base notes: Brown gradient (#A0826D → #6B4423)
-- Accent: Teal (#14B8A6)
-- Background: Light gray (#F5F5F5)
-
-**Components**:
-- **AccordCard**: Name, position badge, volume, tags, hover actions
-- **AccordForm**: Multi-section form (Basic/Inventory/Tags/Notes)
-- **TagSelector**: Autocomplete with grouped suggestions
-- **AccordFilters**: Collapsible sidebar with multiple filter types
-
-**Interactions**:
-- Add/Edit: Modal form with tabbed sections
-- Delete: Confirmation dialog
-- Tags: Autocomplete dropdown with custom tag creation
-- Filter: Slide-in panel (mobile) or sidebar (desktop)
-- Low volume: Orange (< 5ml) or red (< 1ml) badge
-
-**Search & Filter**:
-- Search: Name, notes, supplier (fuzzy match)
-- Filters: Position, volume range, tags, supplier, low stock
-- Sort: Name, date added, volume, position
-
-**Statistics** (Simplified):
-- Total accord count
-- Count by pyramid position
-- Total volume by position
-- Most used tags (top 20)
-- Low inventory alerts
-
-#### Export/Import Format
-
-```json
-{
-  "version": "2.0",
-  "exportDate": "2026-01-31T15:00:00Z",
-  "accords": [
-    {
-      "name": "Citrus Fresh Accord",
-      "pyramidPosition": "top",
-      "volumeMl": 25.5,
-      "volumeDrops": 510,
-      "supplier": "Perfumer's Apprentice",
-      "purchaseDate": "2025-12-15",
-      "dilutionPercentage": 10,
-      "notes": "Very bright and zesty. Works well in summer blends.",
-      "tags": ["fresh", "energetic", "citrus", "summer", "morning"],
-      "createdAt": "2025-12-15T10:30:00Z",
-      "updatedAt": "2026-01-20T14:00:00Z"
-    }
-  ]
-}
-```
-
-#### Testing Checklist
-
-**Backend**:
-- [ ] Create accord (valid data)
-- [ ] Create accord (duplicate name+position, should fail)
-- [ ] Update accord (all fields)
-- [ ] Delete accord
-- [ ] List with filters (position, volume, tags)
-- [ ] Search (name, notes)
-- [ ] Add/remove tags
-- [ ] Get predefined tags
-- [ ] Export/import accords
-- [ ] Statistics calculation
-
-**Frontend**:
-- [ ] Display accord grid
-- [ ] Create new accord (form validation)
-- [ ] Edit accord
-- [ ] Delete accord (with confirmation)
-- [ ] Filter by position/volume/tags
-- [ ] Search by name
-- [ ] Tag autocomplete
-- [ ] Add custom tag
-- [ ] View accord detail
-- [ ] Export/import
-- [ ] View statistics
-- [ ] Mobile responsive
-
----
-
-### Phase 8.9: Notion-Inspired UI/UX Redesign
-
-**Status**: Planned  
-**Priority**: High  
-**Timeline**: 1-2 weeks  
-**Goal**: Transform Scentora into a clean, minimalist interface inspired by Notion's design principles
-
-#### Design Framework Selection
-
-After evaluating 6 Vue UI frameworks, the recommended approach is:
-
-**Selected Stack**: **Naive UI + Tailwind CSS** (Hybrid Approach)
-
-**Framework Comparison**:
-- ✅ **Naive UI** (9/10) - Clean, minimalist, TypeScript-first, lightweight
-- Headless UI (10/10) - Maximum control but more development time
-- PrimeVue (6/10) - Requires heavy theming
-- Element Plus (5/10) - Too opinionated
-- Vuetify (4/10) - Material Design conflicts with Notion aesthetic
-- Ant Design Vue (5/10) - Different design language
-
-**Rationale**:
-- Naive UI provides clean, minimalist base components
-- Tailwind CSS for utility-first custom styling
-- Best balance of speed vs. control
-- Excellent TypeScript support
-- Lightweight and performant
-
-#### Design Principles to Implement
-
-**1. Clean Typography**
-- System font stack with excellent readability
-- Clear hierarchy (titles, headings, body, captions)
-- Generous line height (1.5-1.7)
-- Restrained font sizes (14px base, 16px for comfortable reading)
-
-**2. Minimalist Color Palette**
-```javascript
-// Notion-inspired colors
-text: {
-  primary: '#37352F',
-  secondary: '#787774',
-  tertiary: '#9B9A97',
-}
-background: {
-  primary: '#FFFFFF',
-  secondary: '#FAFAFA',
-  tertiary: '#F7F6F3',
-}
-border: {
-  default: '#E9E9E7',
-}
-accent: {
-  primary: '#0F766E', // Teal for actions
-}
-```
-
-**3. Spacing System**
-- Consistent 8px grid system
-- Generous whitespace for breathing room
-- 48-64px padding for main containers
-- 24-32px gaps between major sections
-- 8-16px gaps between related items
-
-**4. Interaction Design**
-- Subtle hover states (background changes, not borders)
-- Smooth transitions (150-200ms)
-- Inline editing (click to edit in place)
-- Keyboard shortcuts
-- Delayed tooltips (500ms)
-
-**5. Navigation**
-- Fixed sidebar (collapsible on mobile)
-- Clear hierarchy (workspace → pages → sub-pages)
-- Icon + label for clarity
-- Active state highlighting
-- Breadcrumbs for deep navigation
-
-**6. Component Design**
-- Cards with subtle shadows (0 1px 3px rgba(0,0,0,0.12))
-- Rounded corners (6-8px, not too rounded)
-- Ghost buttons (transparent until hover)
-- Inline actions that appear on hover
-- Modals with backdrop blur
-
-#### Implementation Sub-Phases
-
-**Phase 8.9.1: Foundation & Setup** (2-3 days)
-- [ ] Install Naive UI and Tailwind CSS
-- [ ] Create design system (`design-system/tokens.ts`)
-- [ ] Configure Tailwind with custom theme
-- [ ] Set up global styles and typography
-- [ ] Create base component wrappers
-
-**Phase 8.9.2: Navigation & Layout** (2-3 days)
-- [ ] Create `AppSidebar.vue` component
-  - Logo area at top
-  - Navigation items with icons (Home, Statistics, Settings)
-  - User profile at bottom
-  - Collapse/expand functionality
-- [ ] Restructure `App.vue` for sidebar layout
-- [ ] Implement responsive sidebar (collapse on mobile)
-- [ ] Add breadcrumb navigation
-- [ ] Create header with page title + actions
-
-**Phase 8.9.3: Core Components Redesign** (3-4 days)
-- [ ] Redesign `AccordCard.vue`
-  - Simplify visual hierarchy
-  - Subtle position indicator (left border or emoji)
-  - Actions appear on hover only
-  - Smooth hover lift effect
-- [ ] Redesign `AccordForm.vue`
-  - Single-column layout
-  - Inline section headers
-  - Better input focus states
-  - Auto-save draft support
-  - Keyboard shortcuts (Cmd+Enter to save)
-- [ ] Redesign `TagSelector.vue`
-  - Notion-style dropdown
-  - Grouped categories with headers
-  - Keyboard navigation
-- [ ] Redesign `AccordFilters.vue`
-  - Collapsible sections
-  - Clean checkbox/radio styles
-  - Subtle active states
-
-**Phase 8.9.4: Advanced Interactions** (2-3 days)
-- [ ] Implement inline editing
-  - Click accord name to edit inline
-  - Click volume to quick-adjust
-  - Auto-save after delay
-- [ ] Add keyboard shortcuts
-  - `/` - Focus search
-  - `N` - New accord
-  - `?` - Show shortcuts help
-  - `Esc` - Close modals/cancel
-- [ ] Standardize hover effects (150ms ease)
-- [ ] Implement skeleton screens (not spinners)
-- [ ] Add optimistic UI updates
-
-**Phase 8.9.5: Typography & Spacing Refinement** (1-2 days)
-- [ ] Define type scale (12, 14, 16, 20, 24, 32, 40px)
-- [ ] Set line heights (1.4 for headings, 1.6 for body)
-- [ ] Review and apply 8px grid consistently
-- [ ] Increase whitespace strategically
-- [ ] Replace vibrant colors with subtle tones
-
-**Phase 8.9.6: Empty States & Feedback** (1 day)
-- [ ] Create beautiful empty states
-  - Empty inventory
-  - Empty search results
-  - Empty filters
-- [ ] Implement toast notifications
-- [ ] Add loading indicators
-- [ ] Create form validation feedback
-
-**Phase 8.9.7: Polish & Testing** (2-3 days)
-- [ ] Responsive testing (desktop, tablet, mobile)
-- [ ] Accessibility audit (keyboard nav, ARIA labels, contrast)
-- [ ] Performance optimization (lazy load, bundle size)
-- [ ] Browser testing (Chrome, Firefox, Safari)
-- [ ] Lighthouse audit (score > 90)
-
-#### New File Structure
+### Phase 13: CLI Console (In Progress)
+**Goal**: Interactive command-line interface for administration and data management
+**Status**: 📝 Planning / Documentation Phase
+**Started**: February 10, 2026
+
+**Objective**: Create an interactive REPL-style CLI console for managing users, accords, recipes, and performing database operations without the web UI.
+
+#### Technology Stack
+
+- **Framework**: Vorpal.js - Interactive CLI/REPL framework
+- **Runtime**: tsx - TypeScript execution matching backend stack
+- **UI Libraries**:
+  - chalk - Terminal colors and styling
+  - cli-table3 - Formatted ASCII tables
+  - ora - Loading spinners and progress indicators
+  - inquirer - Interactive prompts (integrated with Vorpal)
+
+#### Architecture
 
 ```
-frontend/src/
-├── design-system/
-│   ├── tokens.ts              # Design tokens
-│   ├── theme.ts               # Naive UI theme config
-│   └── tailwind.config.js     # Tailwind config
-│
-├── components/
-│   ├── layout/
-│   │   ├── AppSidebar.vue     # NEW: Sidebar navigation
-│   │   ├── AppHeader.vue      # NEW: Page header
-│   │   └── AppBreadcrumbs.vue # NEW: Breadcrumbs
-│   │
-│   ├── accord/
-│   │   ├── AccordCard.vue     # REDESIGN
-│   │   ├── AccordForm.vue     # REDESIGN
-│   │   ├── AccordGrid.vue     # NEW: Grid container
-│   │   └── AccordDetail.vue   # NEW: Detail view
-│   │
-│   ├── ui/
-│   │   ├── TagSelector.vue    # REDESIGN
-│   │   ├── FilterPanel.vue    # REDESIGN
-│   │   ├── EmptyState.vue     # NEW: Reusable empty state
-│   │   └── SkeletonCard.vue   # NEW: Loading skeleton
-│   │
-│   └── common/
-│       ├── Button.vue         # NEW: Custom button wrapper
-│       ├── Input.vue          # NEW: Custom input wrapper
-│       └── Modal.vue          # NEW: Custom modal wrapper
-│
-├── composables/
-│   ├── useKeyboard.ts         # NEW: Keyboard shortcuts
-│   ├── useToast.ts            # NEW: Toast notifications
-│   └── useTheme.ts            # NEW: Theme switching
-│
-└── App.vue                     # MAJOR REDESIGN
+backend/cli/
+├── index.ts              # Entry point, bootstrap REPL
+├── context.ts            # Application context (Prisma, services, config)
+├── commands/
+│   ├── user.ts          # User management commands
+│   ├── accord.ts        # Accord commands (future)
+│   ├── recipe.ts        # Recipe commands (future)
+│   └── db.ts            # Database operations (future)
+├── utils/
+│   ├── output.ts        # Formatted output helpers
+│   ├── validation.ts    # Input validation
+│   └── prompts.ts       # Reusable prompt definitions
+└── types/
+    └── context.ts       # Context type definitions
 ```
 
-#### Success Criteria
+#### Phase 13.1: User Management Commands (Initial Release)
 
-**Visual Quality**:
-- Clean, uncluttered interface
-- Consistent spacing throughout
-- Professional typography
-- Subtle, purposeful colors
-- Smooth animations (no jank)
+**Commands to Implement**:
+1. `create-user` - Create new user with interactive prompts
+2. `list-users` - Display all users in formatted table
+3. `delete-user <email|id>` - Delete user with confirmation
+4. `reset-password <email|id>` - Reset user password
+5. `show-user <email|id>` - Display detailed user information
 
-**Usability**:
-- Intuitive navigation
-- Fast, responsive interactions
-- Clear feedback for actions
-- Helpful empty states
-- Keyboard accessible
+**Features**:
+- ✅ Auto-complete for commands
+- ✅ Command history (persisted across sessions)
+- ✅ Colored output (success/error/warning/info)
+- ✅ Interactive prompts with validation
+- ✅ Password input hiding
+- ✅ Confirmation dialogs for destructive actions
+- ✅ Formatted tables for list views
+- ✅ Loading spinners for operations
 
-**Technical**:
-- TypeScript type safety maintained
-- Bundle size < 500KB (gzipped)
-- Lighthouse score > 90
-- No accessibility violations
-- Works on all modern browsers
+**Usage Example**:
+```bash
+cd backend
+npm run console
 
-#### Migration Strategy
+🌸 Scentora CLI Console (v1.0.0)
+Environment: development
+Database: localhost:5432/scentora
+Connected: ✅
 
-**Approach**: Gradual Migration
-1. Set up framework alongside existing components
-2. Migrate App.vue first (navigation/layout)
-3. Redesign one component at a time
-4. Keep old components until new ones are ready
-5. Remove old code once migration complete
+scentora> create-user
+? Email: admin@example.com
+? Password: ********
+? Username: admin
+✅ User created successfully!
+```
 
-**Risk Mitigation**:
-- Feature flags for new UI
-- Git branches for each phase
-- Regular user testing
-- Rollback plan if issues arise
-- Performance monitoring
+#### Phase 13.2: Accord Management (Future)
+- `import-accords <file>` - Import accords from JSON
+- `export-accords <email|id> [file]` - Export user's accords
+- `list-accords <email|id>` - List all accords for user
 
-#### Detailed Design Specifications
+#### Phase 13.3: Recipe Management (Future)
+- `import-recipes <file>` - Import recipes from JSON
+- `export-recipes <email|id> [file]` - Export user's recipes
+- `clone-recipe <id> <target-user>` - Clone recipe to another user
 
-For complete design specifications including:
-- Full color palette definitions
-- Typography scale and font weights
-- Spacing system (8px grid)
-- Shadow definitions
-- Component mockups
-- Interaction patterns
+#### Phase 13.4: Database Operations (Future)
+- `db:migrate` - Run pending migrations
+- `db:seed` - Seed test data
+- `db:backup [file]` - Create database backup
+- `db:restore <file>` - Restore from backup
 
-See: `/home/joe/.copilot/session-state/*/plan.md` (Session planning document)
+#### Implementation Tasks (Phase 13.1)
+
+- [ ] Setup Vorpal.js with TypeScript
+- [ ] Create CLI entry point and context loader
+- [ ] Install dependencies (chalk, cli-table3, ora, inquirer)
+- [ ] Implement `create-user` command with validation
+- [ ] Implement `list-users` command with table formatting
+- [ ] Implement `delete-user` command with confirmation
+- [ ] Implement `reset-password` command
+- [ ] Implement `show-user` command
+- [ ] Add output utilities (colors, tables, spinners)
+- [ ] Write tests for all commands (80%+ coverage)
+- [ ] Update package.json with `console` script
+- [ ] Document CLI in `docs/CLI_CONSOLE.md`
+
+#### Success Criteria (Phase 13.1)
+
+- ✅ CLI starts without errors
+- ✅ All 5 user commands functional
+- ✅ Auto-complete works for commands
+- ✅ Command history persists across sessions
+- ✅ Colored output renders correctly
+- ✅ Tables display properly formatted
+- ✅ Password prompts hide input
+- ✅ Confirmation prompts work correctly
+- ✅ Error messages are clear and helpful
+- ✅ Tests pass for all commands (80%+ coverage)
+- ✅ Documentation complete and accurate
+
+#### Documentation
+
+- **Spec**: `specs/cli-console.md` - Detailed technical specification
+- **User Guide**: `docs/CLI_CONSOLE.md` - User-facing documentation
+- **API Examples**: Included in spec for all commands
 
 ---
 
