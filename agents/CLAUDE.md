@@ -1,8 +1,8 @@
 # Scentora - Claude AI Agent Instructions
 
-**Last Updated**: February 7, 2026
-**Project Phase**: Phase 11 Complete (Deployment) | Phase 10.9 (Views & Pages) Next
-**Current State**: Backend 100% Ready (70 integration tests, 53 endpoints) | Deployed to scentora.thejoeshow.net | Frontend UI Components Complete
+**Last Updated**: February 10, 2026
+**Project Phase**: Phase 13.1 Complete (CLI Console)
+**Current State**: Production-ready system with CLI admin tools | Deployed to https://scentora.thejoeshow.net
 
 ---
 
@@ -16,7 +16,9 @@
 - **Maintainer**: Joe (xupit3r)
 
 ### Current Priorities
-1. **Phase 10.9**: Recipe Views & Pages (RecipesView, RecipeDetailView, routing)
+1. **Phase 13**: CLI Console (interactive REPL for administration)
+   - ✅ Phase 13.1 Complete: User management commands
+   - 🎯 Next: Write tests, future phases (accord/recipe management)
 2. **Testing**: Maintain 100% test passing rate (70/70 integration tests)
 3. **Documentation**: Keep plan.md and phase docs updated
 4. **Code Quality**: Follow established patterns, no over-engineering
@@ -38,11 +40,11 @@ Scentora enables DIY perfumers to:
 1. ✅ **Phases 1-7**: Foundation (auth, basic CRUD, migration to Koa.js/TypeScript)
 2. ✅ **Phase 8**: Accord system (inventory management)
 3. ✅ **Phase 9**: Testing infrastructure (70 integration tests)
-4. ✅ **Phase 10.1-10.5**: Recipe backend (models, repos, services, handlers, routes)
-5. ✅ **Phase 10.6-10.8**: Recipe frontend types, stores, UI components
-6. ✅ **Phase 11**: Deployment (Docker, CI/CD, DigitalOcean, SSL)
-7. 🎯 **Phase 10.9 (NEXT)**: Recipe views & pages
-8. 📋 **Phase 10.10-10.12**: Features, testing, polish
+4. ✅ **Phase 10**: Recipe system (backend + frontend, all 12 sub-phases)
+5. ✅ **Phase 11**: Production deployment (Docker, CI/CD, DigitalOcean, SSL)
+6. ✅ **Phase 12**: Framework upgrades (Koa.js 3.1.1, ecosystem updates)
+7. ✅ **Phase 13.1**: CLI Console user management (5 commands)
+8. 🎯 **Phase 13.2-13.4 (NEXT)**: CLI tests, accord/recipe management, DB operations
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Project**: Perfume formulation and accord management system
 **Stack**: Koa.js/TypeScript backend + Vue 3/TypeScript frontend + PostgreSQL
-**Phase**: Phase 11 Complete (Deployment) | 10.9 Next (Views & Pages) - February 7, 2026
+**Phase**: Phase 13.1 Complete (CLI Console) - February 10, 2026
 
 ---
 
@@ -16,10 +16,12 @@ A web app for DIY perfumers to:
 - Organize with tags and collections
 
 ### Current Status
-- ✅ Backend 100% ready (53 endpoints, 70 integration tests passing)
-- ✅ UI Components complete (9 components, Notion-inspired design)
+- ✅ Backend 100% ready (Koa.js 3.1.1, 70 integration tests passing)
+- ✅ Frontend complete (Vue 3, Naive UI, Notion-inspired design)
+- ✅ Recipe system complete (versions, ingredients, notes, collections)
 - ✅ Deployed to https://scentora.thejoeshow.net (Docker + CI/CD + SSL)
-- 🎯 Next: Recipe views & pages (RecipesView, RecipeDetailView, routing)
+- ✅ CLI Console (interactive REPL for user management)
+- 🎯 Next: CLI tests and future phases (accord/recipe management, DB operations)
 
 ---
 
@@ -56,6 +58,12 @@ scentora/
 ├── backend/                    # Koa.js API
 │   ├── prisma/
 │   │   └── schema.prisma      # Database schema (14 models)
+│   ├── cli/                   # Interactive CLI console (Phase 13)
+│   │   ├── commands/          # User, accord, recipe commands
+│   │   ├── utils/             # Output, validation utilities
+│   │   ├── types/             # Context types
+│   │   ├── context.ts         # App context loader
+│   │   └── index.ts           # CLI entry point
 │   ├── src/
 │   │   ├── middleware/        # Auth, CORS, rate limiting, error handling
 │   │   ├── routes/            # HTTP route handlers
@@ -83,7 +91,10 @@ scentora/
 │   │   └── design-system/     # Design tokens
 │   └── ...
 ├── specs/                      # API and design specifications
+│   ├── cli-console.md         # CLI console specification
+│   └── ...
 ├── docs/                       # Documentation
+│   ├── CLI_CONSOLE.md         # CLI user guide
 │   └── phases/                # Phase completion documents
 ├── docker-compose.yml          # PostgreSQL container (dev)
 ├── docker-compose.prod.yml     # Production containers (postgres, backend, frontend)
