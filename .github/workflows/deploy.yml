@@ -74,11 +74,12 @@ jobs:
           DOMAIN: ${{ secrets.DOMAIN }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MASTER_PASSWORD: ${{ secrets.MASTER_PASSWORD }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          envs: DOCKER_USERNAME,DOMAIN,JWT_SECRET,DB_PASSWORD
+          envs: DOCKER_USERNAME,DOMAIN,JWT_SECRET,DB_PASSWORD,MASTER_PASSWORD
           script: |
             mkdir -p /opt/scentora
             cd /opt/scentora
@@ -94,6 +95,7 @@ jobs:
             JWT_EXPIRES_IN=7d
             JWT_REFRESH_EXPIRES_IN=30d
             VITE_API_URL=/api
+            MASTER_PASSWORD=$MASTER_PASSWORD
             CORS_ALLOWED_ORIGINS=https://$DOMAIN
             DOCKER_REGISTRY=$DOCKER_USERNAME
             IMAGE_TAG=latest
