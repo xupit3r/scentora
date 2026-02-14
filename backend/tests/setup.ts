@@ -14,8 +14,6 @@ export async function cleanDatabase() {
   await testPrisma.recipe.deleteMany();
   await testPrisma.accordTag.deleteMany();
   await testPrisma.accord.deleteMany();
-  await testPrisma.refreshToken.deleteMany();
-  await testPrisma.invitation.deleteMany();
   await testPrisma.user.deleteMany();
   await testPrisma.predefinedTag.deleteMany();
 }

@@ -7,8 +7,9 @@ export const config = {
   databaseUrl: process.env.DATABASE_URL || '',
 
   jwtSecret: process.env.JWT_SECRET || '',
-  jwtAccessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
-  jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+  jwtAccessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '7d',
+
+  masterPassword: process.env.MASTER_PASSWORD || '',
 
   corsAllowedOrigins: (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:5173').split(','),
 
@@ -18,4 +19,8 @@ export const config = {
 
 if (!config.jwtSecret) {
   throw new Error('JWT_SECRET environment variable is required');
+}
+
+if (!config.masterPassword) {
+  throw new Error('MASTER_PASSWORD environment variable is required');
 }

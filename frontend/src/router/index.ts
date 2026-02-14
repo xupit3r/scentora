@@ -4,7 +4,6 @@ import Home from '@/views/Home.vue';
 import About from '@/views/About.vue';
 import Statistics from '@/views/Statistics.vue';
 import Login from '@/views/Login.vue';
-import Register from '@/views/Register.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -13,12 +12,6 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login,
-      meta: { public: true },
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: Register,
       meta: { public: true },
     },
     {

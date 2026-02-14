@@ -26,14 +26,3 @@ export async function createTestUser(overrides: { email?: string; username?: str
 export function generateAccessToken(userId: string, email: string) {
   return jwt.sign({ userId, email }, config.jwtSecret, { expiresIn: '15m' });
 }
-
-export async function createTestInvitation(creatorId: string) {
-  const code = `test-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  return testPrisma.invitation.create({
-    data: {
-      code,
-      createdBy: creatorId,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    },
-  });
-}

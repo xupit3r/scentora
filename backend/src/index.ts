@@ -1,8 +1,11 @@
 import { createApp } from './app.js';
 import { config } from './config.js';
 import { prisma } from './prisma.js';
+import { ensureSystemUser } from './services/systemUser.service.js';
 
 const app = createApp();
+
+await ensureSystemUser();
 
 const server = app.listen(config.port, () => {
   console.log(`Scentora API running on port ${config.port}`);

@@ -3,7 +3,7 @@
     <n-message-provider>
       <n-notification-provider>
         <n-dialog-provider>
-          <!-- Login/Register pages (no sidebar) -->
+          <!-- Login page (no sidebar) -->
           <div v-if="!authStore.isAuthenticated" id="app" class="app-auth">
             <router-view />
           </div>

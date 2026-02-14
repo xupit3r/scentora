@@ -13,6 +13,7 @@ export default defineConfig({
       DATABASE_URL: process.env.DATABASE_URL || 'postgres://admin:password@localhost:5435/scentora?sslmode=disable',
       PORT: '3001',
       NODE_ENV: 'test',
+      MASTER_PASSWORD: process.env.MASTER_PASSWORD || 'test-master-password',
     },
   },
 });

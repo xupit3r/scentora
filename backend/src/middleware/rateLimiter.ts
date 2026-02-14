@@ -45,11 +45,6 @@ function createRateLimiter(maxRequests: number, windowMs: number): Koa.Middlewar
   };
 }
 
-/** Auth rate limiter: 5 requests per 15 minutes */
-export function authRateLimiter(): Koa.Middleware {
-  return createRateLimiter(5, 15 * 60 * 1000);
-}
-
 /** General rate limiter: 100 requests per minute */
 export function generalRateLimiter(): Koa.Middleware {
   return createRateLimiter(100, 60 * 1000);

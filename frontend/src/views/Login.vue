@@ -4,19 +4,10 @@
       <div class="auth-header">
         <h1>🌸</h1>
         <h2>Welcome to Scentora</h2>
-        <p class="subtitle">Login to access your perfume collection</p>
+        <p class="subtitle">Enter the password to continue</p>
       </div>
 
       <n-form @submit.prevent="handleLogin" class="auth-form">
-        <n-form-item label="Email">
-          <n-input
-            v-model:value="email"
-            type="email"
-            placeholder="your@email.com"
-            size="large"
-          />
-        </n-form-item>
-
         <n-form-item label="Password">
           <n-input
             v-model:value="password"
@@ -41,12 +32,6 @@
           {{ authStore.error }}
         </div>
       </n-form>
-
-      <div class="auth-footer">
-        <p class="info-text">
-          Registration is by invitation only
-        </p>
-      </div>
     </div>
   </div>
 </template>
@@ -59,11 +44,10 @@ import { useAuthStore } from '../stores/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
-const email = ref('');
 const password = ref('');
 
 async function handleLogin() {
-  const success = await authStore.login(email.value, password.value);
+  const success = await authStore.login(password.value);
   if (success) {
     router.push('/');
   }
@@ -125,17 +109,5 @@ async function handleLogin() {
   border-radius: 8px;
   font-size: 14px;
   text-align: center;
-}
-
-.auth-footer {
-  text-align: center;
-  padding-top: 24px;
-  border-top: 1px solid #E9E9E7;
-}
-
-.info-text {
-  color: #9B9A97;
-  font-size: 14px;
-  margin: 0;
 }
 </style>
