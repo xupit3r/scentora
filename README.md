@@ -67,7 +67,7 @@ A perfume formulation and accord management system for DIY perfumers and enthusi
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Docker & Docker Compose (for PostgreSQL)
 - npm
 

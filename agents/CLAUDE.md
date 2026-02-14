@@ -53,7 +53,7 @@ Scentora enables DIY perfumers to:
 ### Tech Stack
 
 **Backend** (`backend/`)
-- **Runtime**: Node.js 18+
+- **Runtime**: Node.js 20+
 - **Framework**: Koa.js (HTTP server)
 - **Language**: TypeScript 5.x (strict mode)
 - **Database ORM**: Prisma
@@ -772,10 +772,11 @@ npx prisma migrate deploy
 2. **Type Safety**: Use TypeScript strictly, no `any`
 3. **User Isolation**: Filter all queries by `userId`
 4. **Error Messages**: Provide clear, actionable error messages
-5. **Documentation**: Update plan.md and phase docs
-6. **Security**: Validate all inputs, never expose secrets
-7. **Patterns**: Follow established code patterns
-8. **Simplicity**: Keep solutions simple, avoid over-engineering
+5. **Documentation**: Keep all documentation up-to-date. When you change code, update any affected docs (README, agent instructions, specs, QUICKSTART, etc.) in the same commit or immediately after.
+6. **Commit Frequently**: Make small, focused commits as you work. Don't accumulate large uncommitted changesets. Each logical change should be its own commit.
+7. **Security**: Validate all inputs, never expose secrets
+8. **Patterns**: Follow established code patterns
+9. **Simplicity**: Keep solutions simple, avoid over-engineering
 
 ### Don'ts ❌
 

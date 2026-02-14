@@ -40,7 +40,7 @@ scentora/
 ## Development Setup
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 20+
 - Docker & Docker Compose (for CouchDB)
 - npm
 

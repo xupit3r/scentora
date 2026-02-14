@@ -28,7 +28,7 @@ A web app for DIY perfumers to:
 ## Tech Stack
 
 **Backend** (Port 3000)
-- Node.js 18+ with Koa.js framework
+- Node.js 20+ with Koa.js framework
 - TypeScript 5.x (strict mode enabled)
 - Prisma ORM (PostgreSQL 15)
 - Zod for validation
@@ -637,14 +637,15 @@ user.password = password; // ← Never do this!
 
 ### Do's ✅
 
-1. **Testing**: Always write tests before committing (70/70 tests passing)
+1. **Testing**: Always write tests before committing
 2. **Type Safety**: Use TypeScript strictly, avoid `any`
 3. **User Isolation**: Filter all queries by `userId`
 4. **Error Handling**: Provide clear, actionable error messages
-5. **Documentation**: Update plan.md and phase docs
-6. **Security**: Validate all inputs, never expose secrets
-7. **Patterns**: Follow established code patterns
-8. **Simplicity**: Keep solutions simple, avoid over-engineering
+5. **Documentation**: Keep all documentation up-to-date. When you change code, update any affected docs (README, agent instructions, specs, QUICKSTART, etc.) in the same commit or immediately after.
+6. **Commit Frequently**: Make small, focused commits as you work. Don't accumulate large uncommitted changesets. Each logical change should be its own commit.
+7. **Security**: Validate all inputs, never expose secrets
+8. **Patterns**: Follow established code patterns
+9. **Simplicity**: Keep solutions simple, avoid over-engineering
 
 ### Don'ts ❌
 

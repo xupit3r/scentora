@@ -28,7 +28,7 @@ The CLI console is included with the Scentora backend. No additional installatio
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Scentora backend installed
 - Database configured and running
 

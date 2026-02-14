@@ -164,7 +164,7 @@ The launcher uses color-coded output for better readability:
 ## System Requirements
 
 ### Required
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
 - Docker (for CouchDB)
 

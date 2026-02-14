@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Docker & Docker Compose (for PostgreSQL)
 
 ## Starting the Application
