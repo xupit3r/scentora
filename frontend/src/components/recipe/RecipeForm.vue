@@ -44,10 +44,7 @@
         <n-form-item label="Target Volume (ml)" path="targetVolumeMl" required>
           <n-input
             v-model:value="form.targetVolumeMl"
-            type="number"
             placeholder="100"
-            min="0"
-            step="0.1"
           >
             <template #suffix>
               <span class="input-hint">ml</span>
@@ -167,7 +164,7 @@ const rules: FormRules = {
   targetVolumeMl: [
     { required: true, message: 'Target volume is required', trigger: ['blur', 'input'] },
     {
-      validator: (rule, value) => {
+      validator: (_rule, value) => {
         const num = parseFloat(value);
         if (isNaN(num) || num <= 0) {
           return new Error('Volume must be greater than 0');

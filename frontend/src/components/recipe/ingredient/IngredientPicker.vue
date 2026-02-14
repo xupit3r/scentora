@@ -34,10 +34,7 @@
       <n-form-item label="Quantity (ml)" path="quantityMl" required>
         <n-input
           v-model:value="form.quantityMl"
-          type="number"
           placeholder="15.0"
-          min="0"
-          step="0.1"
         >
           <template #suffix>
             <span class="input-hint">≈ {{ estimatedDrops }} drops</span>
@@ -48,11 +45,7 @@
       <n-form-item label="Percentage" path="percentage">
         <n-input
           v-model:value="form.percentage"
-          type="number"
           placeholder="15.0"
-          min="0"
-          max="100"
-          step="0.1"
         >
           <template #suffix>
             <span class="input-hint">%</span>
@@ -186,7 +179,7 @@ const rules: FormRules = {
   quantityMl: [
     { required: true, message: 'Quantity is required', trigger: ['blur', 'input'] },
     {
-      validator: (rule, value) => {
+      validator: (_rule, value) => {
         const num = parseFloat(value);
         if (isNaN(num) || num <= 0) {
           return new Error('Quantity must be greater than 0');
@@ -198,7 +191,7 @@ const rules: FormRules = {
   ],
   percentage: [
     {
-      validator: (rule, value) => {
+      validator: (_rule, value) => {
         if (!value) return true; // Optional field
         const num = parseFloat(value);
         if (isNaN(num) || num < 0 || num > 100) {

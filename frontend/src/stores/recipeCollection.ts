@@ -197,7 +197,7 @@ export const useRecipeCollectionStore = defineStore('recipeCollection', () => {
    * Note: This would require an additional API endpoint or client-side filtering
    * For now, we'll use a placeholder that fetches recipes and filters by collection
    */
-  async function fetchCollectionRecipes(collectionId: string): Promise<boolean> {
+  async function fetchCollectionRecipes(_collectionId: string): Promise<boolean> {
     isLoadingRecipes.value = true;
     error.value = null;
 

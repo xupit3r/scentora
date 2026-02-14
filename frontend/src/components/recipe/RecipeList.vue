@@ -37,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { NButton } from 'naive-ui';
 import RecipeCard from './RecipeCard.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
