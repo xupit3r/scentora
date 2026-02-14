@@ -86,20 +86,20 @@ jobs:
 
             # Update environment file with secrets
             cat > .env.production <<EOF
-            DOMAIN=$DOMAIN
-            DB_USER=admin
-            DB_PASSWORD=$DB_PASSWORD
-            DB_NAME=scentora
-            BACKEND_PORT=3000
-            JWT_SECRET=$JWT_SECRET
-            JWT_EXPIRES_IN=7d
-            JWT_REFRESH_EXPIRES_IN=30d
-            VITE_API_URL=/api
-            MASTER_PASSWORD=$MASTER_PASSWORD
-            CORS_ALLOWED_ORIGINS=https://$DOMAIN
-            DOCKER_REGISTRY=$DOCKER_USERNAME
-            IMAGE_TAG=latest
-            EOF
+DOMAIN=$DOMAIN
+DB_USER=admin
+DB_PASSWORD=$DB_PASSWORD
+DB_NAME=scentora
+BACKEND_PORT=3000
+JWT_SECRET=$JWT_SECRET
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_EXPIRES_IN=30d
+VITE_API_URL=/api
+MASTER_PASSWORD=$MASTER_PASSWORD
+CORS_ALLOWED_ORIGINS=https://$DOMAIN
+DOCKER_REGISTRY=$DOCKER_USERNAME
+IMAGE_TAG=latest
+EOF
 
             # Pull latest images
             docker compose --env-file .env.production -f docker-compose.prod.yml pull
