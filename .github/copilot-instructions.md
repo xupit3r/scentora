@@ -218,7 +218,6 @@ cd frontend && npm install && npm run dev
 - `README.md`: Getting started and overview
 - `API_REFERENCE.md`: Complete API documentation
 - `AUTH_IMPLEMENTATION.md`: Authentication details
-- `QUICKSTART.md`: Quick start guide
 - `LAUNCHER_GUIDE.md`: Launcher script usage
 
 ## Common Tasks

@@ -732,7 +732,6 @@ Automated deployment pipeline to DigitalOcean droplet with Ubuntu 24.04, GitHub 
 ### Key Documents
 - **PLAN.md** (this file) - Comprehensive development plan
 - **README.md** - Project overview and quick start
-- **QUICKSTART.md** - Quick start guide
 - **docs/AUTH_IMPLEMENTATION.md** - Authentication system
 - **docs/REFRESH_TOKENS_RATE_LIMITING.md** - Security features
 - **docs/LAUNCHER_GUIDE.md** - Launcher script usage
@@ -746,8 +745,7 @@ Automated deployment pipeline to DigitalOcean droplet with Ubuntu 24.04, GitHub 
 - docs/REFRESH_TOKENS_RATE_LIMITING.md - Security features
 
 ### Developer Resources
-- `backend/README.md` - Go backend documentation
-- `backend/QUICKSTART.md` - Backend quick start
+- `backend/README.md` - Backend documentation
 - `frontend/package.json` - Frontend dependencies and scripts
 - `.env.example` - Environment configuration template
 

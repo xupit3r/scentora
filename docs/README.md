@@ -42,7 +42,6 @@ CLI Console user guide:
 ## Related Documentation
 
 - **/README.md** - Project overview and quick start
-- **/QUICKSTART.md** - Getting started guide
 - **/PLAN.md** - Comprehensive development plan
 - **/specs/** - Technical specifications
 - **/specs/api-spec.md** - API endpoint specifications

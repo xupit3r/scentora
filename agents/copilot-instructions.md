@@ -641,7 +641,7 @@ user.password = password; // ← Never do this!
 2. **Type Safety**: Use TypeScript strictly, avoid `any`
 3. **User Isolation**: Filter all queries by `userId`
 4. **Error Handling**: Provide clear, actionable error messages
-5. **Documentation**: Keep all documentation up-to-date. When you change code, update any affected docs (README, agent instructions, specs, QUICKSTART, etc.) in the same commit or immediately after.
+5. **Documentation**: Keep all documentation up-to-date. When you change code, update any affected docs (README, agent instructions, specs, etc.) in the same commit or immediately after.
 6. **Commit Frequently**: Make small, focused commits as you work. Don't accumulate large uncommitted changesets. Each logical change should be its own commit.
 7. **Security**: Validate all inputs, never expose secrets
 8. **Patterns**: Follow established code patterns

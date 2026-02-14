@@ -772,7 +772,7 @@ npx prisma migrate deploy
 2. **Type Safety**: Use TypeScript strictly, no `any`
 3. **User Isolation**: Filter all queries by `userId`
 4. **Error Messages**: Provide clear, actionable error messages
-5. **Documentation**: Keep all documentation up-to-date. When you change code, update any affected docs (README, agent instructions, specs, QUICKSTART, etc.) in the same commit or immediately after.
+5. **Documentation**: Keep all documentation up-to-date. When you change code, update any affected docs (README, agent instructions, specs, etc.) in the same commit or immediately after.
 6. **Commit Frequently**: Make small, focused commits as you work. Don't accumulate large uncommitted changesets. Each logical change should be its own commit.
 7. **Security**: Validate all inputs, never expose secrets
 8. **Patterns**: Follow established code patterns
@@ -962,7 +962,6 @@ console.debug('Recipe store state:', recipeStore.recipes);
 
 **Guides:**
 - `README.md` - Project overview, quick start
-- `QUICKSTART.md` - Quick start guide
 - `docs/AUTH_IMPLEMENTATION.md` - Authentication details
 - `docs/TESTING_IMPLEMENTATION.md` - Testing framework
 
