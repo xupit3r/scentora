@@ -1,33 +1,18 @@
 <template>
-  <n-layout-sider
-    :collapsed="collapsed"
-    :collapsed-width="64"
-    :width="280"
-    bordered
-    show-trigger
-    collapse-mode="width"
-    @collapse="collapsed = true"
-    @expand="collapsed = false"
-    :native-scrollbar="false"
-    class="app-sidebar"
-  >
+  <n-drawer :show="open" :width="280" placement="left" @update:show="(val: boolean) => { if (!val) emit('close') }">
     <div class="sidebar-content">
-      <!-- Logo / Brand -->
+      <!-- Logo / Header -->
       <div class="sidebar-header">
         <div class="logo">
           <span class="logo-icon">🌸</span>
-          <transition name="fade">
-            <span v-if="!collapsed" class="logo-text">Scentora</span>
-          </transition>
+          <span class="logo-text">Scentora</span>
         </div>
+        <button class="close-btn" @click="emit('close')" aria-label="Close menu">✕</button>
       </div>
 
       <!-- Navigation Menu -->
       <n-menu
         v-model:value="activeKey"
-        :collapsed="collapsed"
-        :collapsed-width="64"
-        :collapsed-icon-size="22"
         :options="menuOptions"
         :indent="24"
         @update:value="handleMenuSelect"
@@ -39,17 +24,15 @@
           <div class="user-avatar">
             {{ userInitial }}
           </div>
-          <transition name="fade">
-            <div v-if="!collapsed" class="user-info">
-              <div class="user-name">{{ authStore.user?.username }}</div>
-              <div class="user-email">{{ authStore.user?.email }}</div>
-            </div>
-          </transition>
+          <div class="user-info">
+            <div class="user-name">{{ authStore.user?.username }}</div>
+            <div class="user-email">{{ authStore.user?.email }}</div>
+          </div>
         </div>
 
         <!-- User Menu Dropdown -->
         <transition name="slide-up">
-          <div v-if="showUserMenu && !collapsed" class="user-menu-dropdown">
+          <div v-if="showUserMenu" class="user-menu-dropdown">
             <div class="menu-item" @click="handleLogout">
               <span class="menu-icon">🚪</span>
               <span>Logout</span>
@@ -58,7 +41,7 @@
         </transition>
       </div>
     </div>
-  </n-layout-sider>
+  </n-drawer>
 </template>
 
 <script setup lang="ts">
@@ -67,44 +50,35 @@ import { useRouter, useRoute } from 'vue-router';
 import { MenuOption } from 'naive-ui';
 import { useAuthStore } from '@/stores/auth';
 
+const props = defineProps<{ open: boolean }>();
+const emit = defineEmits<{ (e: 'close'): void }>();
+
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
-const collapsed = ref(false);
 const showUserMenu = ref(false);
 const activeKey = ref<string>(route.path);
 
-// Update active key when route changes
+// Update active key when route changes, and close drawer on navigation
 router.afterEach((to) => {
   activeKey.value = to.path;
+  emit('close');
 });
 
 const userInitial = computed(() => {
   return authStore.user?.username?.charAt(0).toUpperCase() || 'U';
 });
 
-// Menu icon renderer helper
 function renderIcon(icon: string) {
   return () => h('span', { style: 'font-size: 18px;' }, icon);
 }
 
-// Menu options
 const menuOptions = computed<MenuOption[]>(() => [
   {
     label: 'Collection',
     key: '/',
     icon: renderIcon('🏺'),
-  },
-  {
-    label: 'Statistics',
-    key: '/statistics',
-    icon: renderIcon('📊'),
-  },
-  {
-    label: 'About',
-    key: '/about',
-    icon: renderIcon('ℹ️'),
   },
 ]);
 
@@ -113,9 +87,7 @@ function handleMenuSelect(key: string) {
 }
 
 function toggleUserMenu() {
-  if (!collapsed.value) {
-    showUserMenu.value = !showUserMenu.value;
-  }
+  showUserMenu.value = !showUserMenu.value;
 }
 
 function handleLogout() {
@@ -138,25 +110,20 @@ if (typeof window !== 'undefined') {
 </script>
 
 <style scoped>
-.app-sidebar {
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  background: #FFFFFF;
-  border-right: 1px solid #E9E9E7;
-}
-
 .sidebar-content {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: #FFFFFF;
 }
 
 /* Logo / Header */
 .sidebar-header {
-  padding: 24px 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid #E9E9E7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .logo {
@@ -177,7 +144,23 @@ if (typeof window !== 'undefined') {
 
 .logo-text {
   white-space: nowrap;
-  overflow: hidden;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #787774;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 150ms ease;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  background: #F7F6F3;
+  color: #37352F;
 }
 
 /* User Profile Footer */
@@ -275,16 +258,6 @@ if (typeof window !== 'undefined') {
 }
 
 /* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 200ms ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition: all 200ms ease;
@@ -294,13 +267,5 @@ if (typeof window !== 'undefined') {
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(8px);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .app-sidebar {
-    position: fixed;
-    z-index: 1300;
-  }
 }
 </style>
