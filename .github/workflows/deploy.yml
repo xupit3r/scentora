@@ -104,8 +104,8 @@ jobs:
             # Pull latest images
             docker compose --env-file .env.production -f docker-compose.prod.yml pull
 
-            # Restart containers
-            docker compose --env-file .env.production -f docker-compose.prod.yml up -d
+            # Restart containers and wait for them to be healthy
+            docker compose --env-file .env.production -f docker-compose.prod.yml up -d --wait
 
             # Cleanup old images
             docker image prune -f
