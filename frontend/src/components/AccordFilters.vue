@@ -351,6 +351,7 @@ function clearFilters() {
 .range-inputs {
   display: flex;
   align-items: center;
+  flex-direction: column;
   gap: 8px;
 }
 
